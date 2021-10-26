@@ -1,9 +1,9 @@
-import AutoGrid from "../components/AutoGrid"
+import Dashboard from "../components/Dashboard"
 
 export default function App() {
   return (
     <div className="App">
-      <AutoGrid></AutoGrid>
+      <Dashboard></Dashboard>
     </div>
   )
 }
