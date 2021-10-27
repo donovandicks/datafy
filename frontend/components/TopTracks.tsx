@@ -1,22 +1,35 @@
 import { Box, Card, CardHeader } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { useEffect, useState } from 'react';
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'Rank', width: 100 },
   { field: 'song', headerName: 'Song', width: 300 },
-  { field: 'artist', headerName: 'Artist', width: 400 },
+  { field: 'artist', headerName: 'Artists', width: 400 },
 ];
 
-const rows = [
-  { id: 1, song: 'PTSD', artist: 'JPEGMAFIA' },
-];
+const TopTracks = () => {
+  const [rows, setRows] = useState([]);
 
-export default function TopTracks() {
+  useEffect(() => {
+    fetch('http://localhost:5000/toptracks', {
+      mode: 'cors'
+    })
+      .then(res => res.json())
+      .then((result) => {
+        setRows(result.map((res: any, idx: number) => ({
+          id: idx + 1,
+          song: res.song,
+          artist: res.artists.join(', '),
+        })));
+      }, (_) => setRows([]))
+  }, []);
+
   return (
     <Card>
       <CardHeader title='Top Played' />
       <Box sx={{ minWidth: 800 }}>
-        <div style={{ height: 400, width: '100%' }}>
+        <div style={{ height: 540, width: '100%' }}>
           <DataGrid
             rows={rows}
             columns={columns}
@@ -28,3 +41,5 @@ export default function TopTracks() {
     </Card>
   );
 };
+
+export default TopTracks;
