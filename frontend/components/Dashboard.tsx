@@ -18,7 +18,10 @@ export default function Dashboard() {
       minHeight: '100%'
     }}>
       <Container maxWidth={false}>
-        <Grid container spacing={3}>
+        <Grid
+          container
+          spacing={3}
+        >
           <Grid
             item
             lg={8}
