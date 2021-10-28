@@ -17,7 +17,11 @@ committed to the repository.
 
 ## Contributing
 
-### Containerized
+### Development
+
+To install all deploy and dev dependencies, run `pip install -e .[dev]`
+
+### Container
 
 Run `docker build -t artists:<tag> .`
 

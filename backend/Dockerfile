@@ -6,15 +6,19 @@ WORKDIR /app
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+    curl \
     python3.9-full \
     python3-pip
 
-COPY setup.py ./
+RUN python3.9 -m pip install poetry
 
-RUN python3.9 -m pip install .
+COPY poetry.lock pyproject.toml ./
+
+RUN poetry config virtualenvs.create false \
+    && poetry install
 
 COPY . ./
 
 EXPOSE 5000
 
-CMD ["python3.9", "main.py"]
+CMD ["poetry", "run", "python3.9", "main.py"]

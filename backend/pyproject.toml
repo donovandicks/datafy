@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = "Backend system for the Datafy app"
+authors = ["Donovan Dicks <donovan.dicks@outlook.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+spotipy = "*"
+flask = "*"
+flask-restful = "*"
+python-dotenv = "*"
+
+[tool.poetry.dev-dependencies]
+black = "*"
+pylint = "*"
