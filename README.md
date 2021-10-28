@@ -59,14 +59,7 @@ container's port 3000. The app can be accessed in the browser at localhost:3000.
 
 ### Backend Only
 
-Similar to the frontend, enter a backend service directory, such as [artists](./artists),
-and run `docker build -t <service_name>:<tag> .`, where `<service_name>` is the
-name of the backend service you're building.
-
-After the build completes, run `docker run -p 5000:5000 <service_name>:<tag>` to
-run the container image. This will run the server and map your port 5000 to the
-container's port 5000. The app can be accessed via HTTP requests from the console
-or the browser.
+See each services `README` for more information on running individual backend services.
 
 __NOTE__: Running multiple services at the same time will require their ports to
 be mapped to different ports on the host machine. This can be accomplished like so:
