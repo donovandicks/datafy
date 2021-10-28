@@ -9,10 +9,10 @@ services:
     volumes:
       - ./frontend:/app
 
-  backend:
+  api:
     build:
-      context: ./backend
+      context: ./backend/api
     ports:
       - 5000:5000
     volumes:
-      - ./backend:/app
+      - ./backend/api:/app
