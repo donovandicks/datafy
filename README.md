@@ -6,10 +6,11 @@ A web application to view Spotify data
 
 ### Prerequisites
 
-Language Runtimes:
+Language Runtimes and Tools:
 
 - Python >= 3.9
 - pip >= 20
+- [poetry](https://python-poetry.org/docs/master/) >= 1.1.11 (dev)
 - Node >= 14
 - npm >= 7
 
@@ -25,7 +26,7 @@ configurations.
 
 To get these keys, reach out to [Donovan](donovan.dicks@outlook.com).
 
-Optional:
+Optional for Python version management:
 
 - [pyenv](https://github.com/pyenv/pyenv)
 - [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv)
@@ -59,10 +60,14 @@ container's port 3000. The app can be accessed in the browser at localhost:3000.
 
 ### Backend Only
 
-See each services `README` for more information on running individual backend services.
+See the backend [README](./backend/README.md) for more information on running
+the backend service.
 
-__NOTE__: Running multiple services at the same time will require their ports to
-be mapped to different ports on the host machine. This can be accomplished like so:
+### Notes on Port Mappings
+
+Running multiple services at the same time on the same port will require the
+port mapping to adjust to different ports on the host machine. This can be
+accomplished like so:  
 `docker run -p 5000:5000 serviceA && docker run -p 5001:5000 serviceB`
 The port exposed on the container will remain the same, but will be mapped to a
 different port on the host machine.
@@ -73,8 +78,8 @@ Both frontend and backend services can be run locally __without__ containerizati
 
 Frontend:
 
-- Run `npm run dev` from the [frontend](./fronted) directory
+- Run `npm run dev` from the [frontend](./frontend) directory
 
 Backend:
 
-- Run `python main.py` from the appropriate backend service directory
+- Run `poetry run python main.py` from the [backend](./backend) directory
