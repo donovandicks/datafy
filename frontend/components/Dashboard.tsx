@@ -1,6 +1,7 @@
 import { Box, Container, Grid, Paper } from '@mui/material';
 import { experimentalStyled as styled } from '@mui/material/styles';
 import * as React from 'react';
+import TopArtists from './TopArtists';
 import TopTracks from './TopTracks';
 import TracksByGenre from './TracksByGenre';
 
@@ -30,6 +31,15 @@ export default function Dashboard() {
             xs={12}
           >
             <TopTracks />
+          </Grid>
+          <Grid
+            item
+            lg={8}
+            md={12}
+            xl={8}
+            xs={12}
+          >
+            <TopArtists />
           </Grid>
           <Grid
             item

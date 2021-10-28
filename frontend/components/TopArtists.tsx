@@ -4,30 +4,28 @@ import { useEffect, useState } from 'react';
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'Rank', width: 100 },
-  { field: 'song', headerName: 'Song', width: 300 },
-  { field: 'artist', headerName: 'Artists', width: 400 },
+  { field: 'artist', headerName: 'Artists', width: 700 },
 ];
 
-const TopTracks = () => {
+const TopArtists = () => {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/songs', {
+    fetch('http://localhost:5000/artists', {
       mode: 'cors'
     })
       .then(res => res.json())
       .then((result) => {
         setRows(result.map((res: any, idx: number) => ({
           id: idx + 1,
-          song: res.song,
-          artist: res.artists.join(', '),
+          artist: res,
         })));
       }, (_) => setRows([]))
   }, []);
 
   return (
     <Card>
-      <CardHeader title='Top Tracks' />
+      <CardHeader title='Top Artists' />
       <Box sx={{ minWidth: 800 }}>
         <div style={{ height: 540, width: '100%' }}>
           <DataGrid
@@ -42,4 +40,4 @@ const TopTracks = () => {
   );
 };
 
-export default TopTracks;
+export default TopArtists;
