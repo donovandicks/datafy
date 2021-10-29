@@ -4,7 +4,7 @@ from enum import Enum
 from typing import Optional, Tuple
 
 from flask_restful import Resource
-from pydantic import BaseModel
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from pydantic_webargs import webargs
 
 from resources.base import BaseService
