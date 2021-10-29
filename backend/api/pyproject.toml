@@ -10,7 +10,11 @@ spotipy = "*"
 flask = "*"
 flask-restful = "*"
 python-dotenv = "*"
+pydantic-webargs = "*"
 
 [tool.poetry.dev-dependencies]
 black = "*"
 pylint = "*"
+
+[tool.pylint.'MESSAGES CONTROL']
+extension-pkg-whitelist = "pydantic"
