@@ -1,37 +1,12 @@
 """Datafy Songs Resource"""
 
-from enum import Enum
-from typing import Optional, Tuple
+from typing import Tuple
 
 from flask_restful import Resource
-from pydantic import BaseModel  # pylint: disable=no-name-in-module
+from models.song_query import SongModel
 from pydantic_webargs import webargs
 
 from resources.base import BaseService
-
-
-class TimeRange(Enum):
-    """The supported time ranges for the Spotify web API"""
-
-    SHORT_TERM = "short_term"
-    MEDIUM_TERM = "medium_term"
-    LONG_TERM = "long_term"
-
-
-class QueryModel(BaseModel):
-    """
-    The type definition for available query params on the Songs resource.
-    Validates that request query params follow the below schema and makes working
-    with their values easier
-    """
-
-    limit: Optional[int]
-    time_range: Optional[TimeRange]
-
-    class Config:
-        """Configuration for the QueryModel"""
-
-        use_enum_values = True  # Allows passing enum values in query params
 
 
 class Songs(Resource, BaseService):
@@ -45,7 +20,7 @@ class Songs(Resource, BaseService):
 
     __name__ = "songs"
 
-    @webargs(query=QueryModel)
+    @webargs(query=SongModel)
     def get(self, **kwargs) -> Tuple[list[dict], int, dict]:
         """
         Retrieves the current user's top songs.
