@@ -3,14 +3,13 @@
 from flask import Flask
 from flask_restful import Api
 
-from resources.artists import Artists
-from resources.songs import Songs
+from resources.registry import RESOURCE_REGISTRY
 
 app = Flask(__name__)
 api = Api(app)
 
-api.add_resource(Artists, "/artists")
-api.add_resource(Songs, "/songs")
+for path, res in RESOURCE_REGISTRY.items():
+    api.add_resource(res, f"/{path}")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
