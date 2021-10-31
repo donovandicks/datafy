@@ -61,7 +61,7 @@ container's port 3000. The app can be accessed in the browser at localhost:3000.
 ### Backend Only
 
 See the backend [README](./backend/README.md) for more information on running
-the backend service.
+backend services.
 
 ### Notes on Port Mappings
 
