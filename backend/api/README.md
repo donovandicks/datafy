@@ -1,4 +1,4 @@
-# Backend
+# Core API
 
 The core backend service for the project, housing the main API server.
 
