@@ -1,10 +1,9 @@
-import { Box, Button, Card, CardHeader, Menu, MenuItem } from '@mui/material';
+import { Box, Card } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import TableHeader from './TableHeader';
 
 const baseUrl = 'http://localhost:5000';
-
-const dateRanges = ['This month', 'Last 6 months', 'Last 3 years'];
 
 const dateToTerm: { [key: string]: string } = {
   'This month': 'short_term',
@@ -69,35 +68,12 @@ const TopArtists = () => {
 
   return (
     <Card>
-      <CardHeader 
-        action={
-          <div>
-            <Button
-              // className={classes.headerButton}
-              size="small"
-              variant="text"
-              aria-controls="simple-menu"
-              aria-haspopup="true"
-              onClick={handleClick}
-            >
-              {selectedDate}
-            </Button>
-            <Menu
-              id="simple-menu"
-              anchorEl={anchorEl}
-              keepMounted
-              open={Boolean(anchorEl)}
-              onClose={() => handleClose(selectedDate)}
-            >
-              {dateRanges.map((date) => (
-                <MenuItem key={date} onClick={() => handleClose(date)}>
-                  {date}
-                </MenuItem>
-              ))}
-            </Menu>
-          </div>
-        }
-        title='Top Artists'
+      <TableHeader
+        title="Top Artists"
+        selectedDate={selectedDate}
+        anchorEl={anchorEl}
+        handleClose={handleClose}
+        handleClick={handleClick}
       />
       <Box sx={{ minWidth: 800 }}>
         <div style={{ height: 540, width: '100%' }}>
