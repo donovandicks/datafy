@@ -11,5 +11,5 @@ interact with the system.
 
 You can install from source by running `poetry install` in the current directory
 and then running `python main.py -c CONTENT -t TIME_RANGE`. __NOTE__: To use the
-CLI, the backend API must be running. See the API [readme](./backend/api/README.md) for
+CLI, the backend API must be running. See the API [readme](../backend/api/README.md) for
 more information.
