@@ -23,6 +23,7 @@ See [CONTRIBUTING](CONTRIBUTING.md)
   - Better shuffle randomization
 - [ ] Enhanced recommendation service
 - [ ] Parameterized Playlist/Queue generation
+- [ ] Unified and effective logging
 
 ### CLI
 
