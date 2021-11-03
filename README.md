@@ -6,20 +6,30 @@ A web application to view Spotify data
 
 ### Prerequisites
 
-Language Runtimes and Tools:
+#### Language Runtimes and Tools
 
 - Python >= 3.9
 - pip >= 20
 - [poetry](https://python-poetry.org/docs/master/) >= 1.1.11 (dev)
+- [black](https://github.com/psf/black)
+- [pylint](https://pylint.org/)
 - Node >= 14
 - npm >= 7
-
-Software:
-
+- ESlint
 - Docker
 - Docker Compose
 
-Secrets:  
+#### Formatting, linting, and type checking
+
+For Python, code is linted with Pylint and formatted with Black. They can be used
+from the command line or via IDE integration. They are listed as dev-dependencies
+in python packages. Type checking is performed by the Pylance language server set
+to "basic".
+
+For TypeScript, code is linted and formatted with ESlint, which is also listed
+
+#### Secrets
+
 __The Spotify API keys are required for backend services__ to interact with the Spotify
 application. The application __will not work__ without these keys and their related
 configurations.
@@ -67,7 +77,7 @@ backend services.
 
 Running multiple services at the same time on the same port will require the
 port mapping to adjust to different ports on the host machine. This can be
-accomplished like so:  
+accomplished like so:
 `docker run -p 5000:5000 serviceA && docker run -p 5001:5000 serviceB`
 The port exposed on the container will remain the same, but will be mapped to a
 different port on the host machine.
