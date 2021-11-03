@@ -1,3 +1,5 @@
+"""Defines the base Spotify service with configurations"""
+
 from os import getenv
 
 from dotenv import load_dotenv
@@ -37,6 +39,8 @@ settings = {
 
 
 class BaseService:
+    """Defines a service that initializes the Spotify client"""
+
     def __init__(self) -> None:
         self.client = Spotify(
             auth_manager=SpotifyOAuth(
