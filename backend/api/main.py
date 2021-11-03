@@ -3,7 +3,7 @@
 from flask import Flask
 from flask_restful import Api, Resource
 
-from resources.registry import RESOURCE_REGISTRY
+from resources import RESOURCE_REGISTRY
 
 
 def init_flask_app() -> Flask:
