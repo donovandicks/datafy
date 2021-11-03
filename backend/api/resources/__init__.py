@@ -1,6 +1,7 @@
 """The resources package contains all code related to API resources"""
 
 from resources.artists import Artists
+from resources.genres import Genres
 from resources.songs import Songs
 
 # Holds a registry of all resources and their associated paths. The registry is
@@ -11,4 +12,5 @@ from resources.songs import Songs
 RESOURCE_REGISTRY: dict = {
     Artists: "/artists",
     Songs: "/songs",
+    Genres: "/genres",
 }
