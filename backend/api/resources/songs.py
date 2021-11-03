@@ -2,7 +2,7 @@
 
 from typing import Tuple
 
-from flask_restful import Resource
+from flask_restful import NotFound, Resource
 from models.song_query import SongModel
 from pydantic_webargs import webargs
 
@@ -35,6 +35,11 @@ class Songs(Resource, BaseService):
             limit=params["limit"],
             time_range=params["time_range"],
         )
+
+        if not top_tracks:
+            print("Failed to retrieve top artists")
+            raise NotFound
+
         return (
             [
                 {

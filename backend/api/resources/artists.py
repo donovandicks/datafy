@@ -2,7 +2,7 @@
 
 from typing import Tuple
 
-from flask_restful import Resource
+from flask_restful import NotFound, Resource
 from models.artist_query import ArtistModel
 from pydantic_webargs import webargs
 
@@ -20,7 +20,6 @@ class Artists(Resource, BaseService):
 
     __name__ = "artists"
 
-
     @webargs(query=ArtistModel)
     def get(self, **kwargs) -> Tuple[list[str], int, dict]:
         """
@@ -35,6 +34,10 @@ class Artists(Resource, BaseService):
             limit=params["limit"],
             time_range=params["time_range"],
         )
+
+        if not top_artists:
+            print("Failed to retrieve top artists")
+            raise NotFound
 
         return (
             [item["name"] for item in top_artists["items"]],
