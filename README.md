@@ -12,6 +12,7 @@ See [CONTRIBUTING](CONTRIBUTING.md)
 
 - [X] Retrieve top artists and songs from Spotify
 - [ ] Retrieve genre breakdown of top artists/songs
+- [ ] Aggregate and disaggregate genres
 - [ ] Cache responses from Spotify Web API
 - [ ] Store Spotify data in long term storage
   - Ideally with enough data could circumvent spotify's time range limitations
@@ -37,3 +38,4 @@ See [CONTRIBUTING](CONTRIBUTING.md)
 - [ ] Display genre breakdown
 - [ ] Unified time range control
 - [ ] Display changes in songs/artists over time (e.g. Rank +2 / Rank -1)
+- [ ] Support drilldown into genres
