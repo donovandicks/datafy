@@ -4,7 +4,10 @@ A web application to view Spotify data
 
 ## Contributing
 
-See [CONTRIBUTING](CONTRIBUTING.md)
+See [CONTRIBUTING](CONTRIBUTING.md) and the [Style Guide](style-guide.md)
+
+If you are using VSCode, it is recommended to use the Microsoft [Python](https://marketplace.visualstudio.com/items?itemName=ms-python.python)
+extension and the [Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) extension
 
 ## Roadmap
 
@@ -15,7 +18,7 @@ See [CONTRIBUTING](CONTRIBUTING.md)
 - [ ] Decide on cache technology (probably Redis)
 - [ ] Implement cache (installation, setup, config, Dockerize)
 - [ ] Mature logging practices across application
-- [ ] Migrate python pacakges to 3.10
+- [X] Migrate python pacakges to 3.10
 
 ### Backend
 
