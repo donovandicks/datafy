@@ -111,20 +111,24 @@ class Genres(Resource, BaseService):
         params = kwargs["query"]
         genre_count: dict[str, int] = {}
 
-        if params["content"] == "artists":
-            genre_count = self._get_genres_for_artists(params["time_range"])
-            if params["aggregate"]:
-                genre_count = self._aggregate_genres(genre_count)
+        match params["content"]:
+            case "artists" | None:
+                genre_count = self._get_genres_for_artists(params["time_range"])
+                if params["aggregate"]:
+                    genre_count = self._aggregate_genres(genre_count)
 
-        if params["content"] == "songs":
-            # Songs do not appear to containt any genre information despite
-            # documentation from Spotify. TODO: Look into efficient way to
-            # query the genres for a given song - a cache or DB read may be
-            # less intensive than a web api call
-            raise NotImplementedError
+            case "songs":
+                # Songs do not appear to containt any genre information despite
+                # documentation from Spotify. TODO: Look into efficient way to
+                # query the genres for a given song - a cache or DB read may be
+                # less intensive than a web api call
+                raise NotImplementedError
+
+            case _:
+                raise Exception("Content type not supported")
 
         return (
-            genre_count,
+            {"items": genre_count},
             200,
             {"Access-Control-Allow-Origin": "*"},
         )
