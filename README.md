@@ -8,11 +8,20 @@ See [CONTRIBUTING](CONTRIBUTING.md)
 
 ## Roadmap
 
+### Overall
+
+- [ ] Decide on storage technology (SQL vs NoSQL, which specifically of either)
+- [ ] Implement storage (installation, setup, config, Dockerize)
+- [ ] Decide on cache technology (probably Redis)
+- [ ] Implement cache (installation, setup, config, Dockerize)
+- [ ] Mature logging practices across application
+- [ ] Migrate python pacakges to 3.10
+
 ### Backend
 
 - [X] Retrieve top artists and songs from Spotify
-- [ ] Retrieve genre breakdown of top artists/songs
-- [ ] Aggregate and disaggregate genres
+- [X] Retrieve genre breakdown of top artists/songs
+- [X] Aggregate genres
 - [ ] Cache responses from Spotify Web API
 - [ ] Store Spotify data in long term storage
   - Ideally with enough data could circumvent spotify's time range limitations
@@ -24,11 +33,12 @@ See [CONTRIBUTING](CONTRIBUTING.md)
   - Better shuffle randomization
 - [ ] Enhanced recommendation service
 - [ ] Parameterized Playlist/Queue generation
-- [ ] Unified and effective logging
+- [ ] Investigate Django & Django-restful for a possible conversion from Flask
 
 ### CLI
 
 - [X] Get and display top artists and songs from the backend
+- [ ] Support genres resource
 - [ ] Access enriched data from the backend
 - [ ] Access spotify player through the backend
 
@@ -39,3 +49,4 @@ See [CONTRIBUTING](CONTRIBUTING.md)
 - [ ] Unified time range control
 - [ ] Display changes in songs/artists over time (e.g. Rank +2 / Rank -1)
 - [ ] Support drilldown into genres
+- [ ] Look for Spotify-esque styling/themes
