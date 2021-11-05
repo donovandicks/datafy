@@ -11,7 +11,7 @@ have the following keys:
 - CLIENT_SECRET=***
 - REDIRECT_URI=***
 
-The keys are available from [Donovan](donovan.dicks@outlook.com) and are required
+The keys are available from [Donovan](<donovan.dicks@outlook.com>) and are required
 for the service to authenticate properly with Spotify. They should __never__ be
 committed to the repository.
 
@@ -19,13 +19,21 @@ committed to the repository.
 
 ### Development
 
+The Python3.10 runtime is __required__ for development and deployment.
+
 To install all deploy and dev dependencies, run `poetry install`
+
+The API service is built on the Flask and Flask-Restful libraries. The Spotipy
+library is used for communicating with the Spotify application.
 
 ### Container
 
-Run `docker build -t backend:<tag> .`
+Steps to run:
 
-After the build completes, run `docker run -p 5000:5000 backend:<tag>` to
-run the container image. This will run the server and map your port 5000 to the
+1. Run `docker build -t datafy-api:<tag> .`
+2. Run `docker run -p 5000:5000 datafy-api:<tag>`
+    - You can also add the `-d` option to run in detached mode (as a background process)
+
+This will run the server and map your port 5000 to the
 container's port 5000. The app can be accessed via HTTP requests from the console
 or the browser.

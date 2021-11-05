@@ -38,7 +38,7 @@ See [CONTRIBUTING](CONTRIBUTING.md)
 ### CLI
 
 - [X] Get and display top artists and songs from the backend
-- [ ] Support genres resource
+- [X] Support genres resource
 - [ ] Access enriched data from the backend
 - [ ] Access spotify player through the backend
 

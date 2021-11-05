@@ -9,7 +9,16 @@ interact with the system.
 
 ## Usage
 
+The Python3.10 runtime is __required__ for development and to run the CLI from source.
+
 You can install from source by running `poetry install` in the current directory
-and then running `python main.py -c CONTENT -t TIME_RANGE`. __NOTE__: To use the
-CLI, the backend API must be running. See the API [readme](../backend/api/README.md) for
-more information.
+and then running `python main.py -c CONTENT [-t TIME_RANGE] [-a AGGREGATE]`.
+__NOTE__: To use the CLI, the backend API must be running. See the API [readme](../backend/api/README.md)
+for more information.
+
+
+## Contributing
+
+Run `poetry install` to install all requirements.
+
+The CLI uses the `argparse` library for argument parsing and validation.
