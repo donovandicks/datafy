@@ -1,16 +1,13 @@
-FROM ubuntu:20.04 AS base
+FROM python:3.10-slim AS base
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /app
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    curl \
-    python3.9-full \
-    python3-pip
+    && apt-get install -y --no-install-recommends
 
-RUN python3.9 -m pip install poetry
+RUN python3 -m pip install -U pip poetry
 
 COPY poetry.lock pyproject.toml ./
 
@@ -21,4 +18,4 @@ COPY . ./
 
 EXPOSE 5000
 
-CMD ["poetry", "run", "python3.9", "main.py"]
+CMD ["poetry", "run", "python3", "main.py"]
