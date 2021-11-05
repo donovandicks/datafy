@@ -21,7 +21,7 @@ class Songs(Resource, BaseService):
     __name__ = "songs"
 
     @webargs(query=SongModel)
-    def get(self, **kwargs) -> Tuple[list[dict], int, dict]:
+    def get(self, **kwargs) -> Tuple[dict[str, list[dict]], int, dict]:
         """
         Retrieves the current user's top songs.
 
@@ -41,13 +41,15 @@ class Songs(Resource, BaseService):
             raise NotFound
 
         return (
-            [
-                {
-                    "song": item["name"],
-                    "artists": [artist["name"] for artist in item["artists"]],
-                }
-                for item in top_tracks["items"]
-            ],
+            {
+                "items": [
+                    {
+                        "song": item["name"],
+                        "artists": [artist["name"] for artist in item["artists"]],
+                    }
+                    for item in top_tracks["items"]
+                ]
+            },
             200,
             {"Access-Control-Allow-Origin": "*"},
         )
