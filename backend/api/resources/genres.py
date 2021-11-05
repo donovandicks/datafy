@@ -10,20 +10,45 @@ from pydantic_webargs import webargs
 
 from resources.base import BaseService
 
-T = TypeVar("T")
+T = TypeVar("T")  # pylint: disable=invalid-name
 
+# TODO: Support an 'other' category that aggregates all other genres that don't
+# match below
 genre_bins = [
     "hip hop",
     "rap",
     "r&b",
     "metal",
     "rock",
+    "pop",
+    "indie",
+    "soul",
+    "folk",
+    "electronic",
+    "country",
 ]
 
 
 def filter_dict(
     obj: dict[str, T], opr: Callable[[Any, Any], bool], query: Any
 ) -> list[T]:
+    """Uses an operator to compare dictionary keys against a query value to filter
+    the dictionary and retrieve the values for the matching keys
+
+    Params
+    ------
+    obj: dict[str, T]
+        the dictionary to filter on
+    opr: Callable[[Any, Any], bool]
+        an operator function that takes any two arguments and returns a boolean
+    query: Any
+        the value used to filter keys
+
+    Returns
+    -------
+    values: list[T]
+        a list of all the values for the keys that matched the given query
+    """
     return [value for (key, value) in obj.items() if opr(key, query)]
 
 
@@ -33,12 +58,38 @@ class Genres(Resource, BaseService):
     """
 
     def _aggregate_genres(self, detail: dict[str, int]) -> dict[str, int]:
+        """Aggregates a detailed genre report into a high-level report with
+        broader genres
+
+        Params
+        ------
+        detail: dict[str, int]
+            an object containing a mapping of genres to counts
+
+        Returns
+        -------
+        aggregate: dict[str, int]
+            an object mapping broader genres to aggregated counts from subgenres
+        """
         app.logger.info("Aggregating genre counts for %i genres", len(detail.keys()))
         return {
             key: sum(filter_dict(detail, operator.contains, key)) for key in genre_bins
         }
 
     def _get_genres_for_artists(self, time_range: str) -> dict[str, int]:
+        """Generates a mapping from subgenre to count of appearance for all genres
+        associated with the current users top 100 artists
+
+        Params
+        ------
+        time_range: str
+            a Spotify API support time_range [short_term|medium_term|long_term]
+
+        Returns
+        -------
+        genre_count: dict[str, int]
+            an object mapping subgenres to a count of their appearances
+        """
         genre_count = {}
         top_artists = self.client.current_user_top_artists(
             limit=100,
