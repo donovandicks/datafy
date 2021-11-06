@@ -15,14 +15,15 @@
 - Docker
 - Docker Compose
 
-### Formatting, linting, and type checking
+Optional for Python version management:
 
-For Python, code is linted with Pylint and formatted with Black. They can be used
-from the command line or via IDE integration. They are listed as dev-dependencies
-in python packages. Type checking is performed by the Pylance language server set
-to "basic".
+- [pyenv](https://github.com/pyenv/pyenv)
+- [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv)
 
-For TypeScript, code is linted and formatted with ESlint, which is also listed
+For VSCode:
+
+- [Microsoft Python Extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python)
+- [Error Lens Extension](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) extension
 
 ### Secrets
 
@@ -32,12 +33,13 @@ configurations.
 
 To get these keys, reach out to <donovan.dicks@outlook.com>.
 
-Optional for Python version management:
+## Local Development
 
-- [pyenv](https://github.com/pyenv/pyenv)
-- [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv)
+Clone the repository to your machine and checkout a new branch.
 
-## Fullstack Development
+## Running Locally
+
+### Containerized Full-stack
 
 To run the full application with communicating backend and frontend, run the
 following command from the root directory:
@@ -53,7 +55,7 @@ rebuilding and rerunning the containers, with the exception being changes to the
 Dockerfiles and docker-compose file. While convenient, dev servers are less
 performant and may not represent production level speeds.
 
-## Frontend Only
+### Frontend Only
 
 Run `docker build -t frontend:<tag> .` from the [frontend](./frontend) directory
 to build the frontend container image. Use a tag that is descriptive to your
@@ -64,12 +66,16 @@ After the build completes, run `docker run -p 3000:3000 frontend:<tag>` to run
 the container image. This will run the server and map your port 3000 to the
 container's port 3000. The app can be accessed in the browser at localhost:3000.
 
-## Backend Only
+The application can also be run directly without a container via this command:
+
+- Run `npm run dev` from the [frontend](./frontend) directory
+
+### Backend Only
 
 See the backend [README](./backend/README.md) for more information on running
 backend services.
 
-## Notes on Port Mappings
+### Notes on Port Mappings
 
 Running multiple services at the same time on the same port will require the
 port mapping to adjust to different ports on the host machine. This can be
@@ -77,15 +83,3 @@ accomplished like so:
 `docker run -p 5000:5000 serviceA && docker run -p 5001:5000 serviceB`
 The port exposed on the container will remain the same, but will be mapped to a
 different port on the host machine.
-
-## Without Containers
-
-Both frontend and backend services can be run locally __without__ containerization.
-
-Frontend:
-
-- Run `npm run dev` from the [frontend](./frontend) directory
-
-Backend:
-
-- Run `poetry run python main.py` from the [backend](./backend) directory
