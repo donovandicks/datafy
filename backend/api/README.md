@@ -25,9 +25,9 @@ To install all deploy and dev dependencies, run `poetry install`
 The API service is built on the Flask and Flask-Restful libraries. The Spotipy
 library is used for communicating with the Spotify application.
 
-### Container
+### Running Locally
 
-Steps to run:
+Steps to run as a container:
 
 1. Run `docker build -t datafy-api:<tag> .`
 2. Run `docker run -p 5000:5000 datafy-api:<tag>`
@@ -36,3 +36,7 @@ Steps to run:
 This will run the server and map your port 5000 to the
 container's port 5000. The app can be accessed via HTTP requests from the console
 or the browser.
+
+Steps to run locally:
+
+- Run `poetry run python main.py`
