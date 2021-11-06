@@ -30,7 +30,7 @@ __The Spotify API keys are required for backend services__ to interact with the 
 application. The application __will not work__ without these keys and their related
 configurations.
 
-To get these keys, reach out to [Donovan](donovan.dicks@outlook.com).
+To get these keys, reach out to <donovan.dicks@outlook.com>.
 
 Optional for Python version management:
 
