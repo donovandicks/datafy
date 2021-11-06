@@ -4,8 +4,8 @@
 
 ### Language Runtimes and Tools
 
-- Python >= 3.9
-- pip >= 20
+- Python >= 3.10
+- pip >= 21
 - [poetry](https://python-poetry.org/docs/master/) >= 1.1.11 (dev)
 - [black](https://github.com/psf/black)
 - [pylint](https://pylint.org/)
