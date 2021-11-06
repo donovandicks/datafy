@@ -11,7 +11,7 @@ extension and the [Error Lens](https://marketplace.visualstudio.com/items?itemNa
 
 ## Roadmap
 
-### Overall
+### Technical - Project Wide
 
 - [ ] Decide on storage technology (SQL vs NoSQL, which specifically of either)
 - [ ] Implement storage (installation, setup, config, Dockerize)
@@ -19,6 +19,11 @@ extension and the [Error Lens](https://marketplace.visualstudio.com/items?itemNa
 - [ ] Implement cache (installation, setup, config, Dockerize)
 - [ ] Mature logging practices across application
 - [X] Migrate python pacakges to 3.10
+- [ ] Add unit tests
+- [ ] Automate testing via github actions CI
+- [ ] Automate docker builds via github actions
+- [ ] Deploy services on cloud compute and support CD
+- [ ] Use github issues to track roadmap/todo items
 
 ### Backend
 
@@ -37,6 +42,8 @@ extension and the [Error Lens](https://marketplace.visualstudio.com/items?itemNa
 - [ ] Enhanced recommendation service
 - [ ] Parameterized Playlist/Queue generation
 - [ ] Investigate Django & Django-restful for a possible conversion from Flask
+- [ ] Query for users friends/followees data and compare
+- [ ] Investigate Genius API for potential use-cases
 
 ### CLI
 
@@ -53,3 +60,4 @@ extension and the [Error Lens](https://marketplace.visualstudio.com/items?itemNa
 - [ ] Display changes in songs/artists over time (e.g. Rank +2 / Rank -1)
 - [ ] Support drilldown into genres
 - [ ] Look for Spotify-esque styling/themes
+- [ ] Mood tracker based on song data from spotify
