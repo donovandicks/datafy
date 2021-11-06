@@ -9,7 +9,6 @@ have the following keys:
 
 - CLIENT_ID=***
 - CLIENT_SECRET=***
-- REDIRECT_URI=***
 
 The keys are available from <donovan.dicks@outlook.com> and are required
 for the service to authenticate properly with Spotify. They should __never__ be
