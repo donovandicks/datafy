@@ -56,6 +56,18 @@ Your flow should look like this:
    1. Delete your remote branch
    2. Delete your local branch
 
+### Submitting Issues
+
+If you have a request for new functionality, would like to report a bug, or need
+to ask a question, create a new issue. If you are actively developing something
+that does not have a related issue, please create one and tag it appropriately.
+
+### Submitting PRs
+
+Pull requests should automatically be generated with a template for the repo. Please
+fill out the checklist and include the request information. If an item on the list
+does not apply to your change, mark it as N/A.
+
 ## Running Locally
 
 ### Containerized Full-stack
