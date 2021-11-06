@@ -35,7 +35,26 @@ To get these keys, reach out to <donovan.dicks@outlook.com>.
 
 ## Local Development
 
-Clone the repository to your machine and checkout a new branch.
+Visit the [issues](https://github.com/donovandicks/datafy/issues) page for items that
+need to be completed. Once you've selected an issue, assign it to yourself.
+
+To contribute to the repository, use [trunk-based development](https://www.atlassian.com/continuous-delivery/continuous-integration/trunk-based-development)
+
+Your flow should look like this:
+
+1. Clone the remote main (only need to do this once)
+2. Checkout a new branch with a descriptive name for your change
+3. Make your changes locally
+    1. Code
+    2. Tests
+    3. Documentation
+4. Test your changes locally
+5. Push to the remote
+6. Submit a PR for your branch
+7. Revise until approved
+8. Squash and merge on approval
+   1. Delete your remote branch
+   2. Delete your local branch
 
 ## Running Locally
 
