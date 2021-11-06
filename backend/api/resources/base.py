@@ -34,7 +34,6 @@ settings = {
     ),
     "client_id": getenv("CLIENT_ID"),
     "client_secret": getenv("CLIENT_SECRET"),
-    "redirect_uri": getenv("REDIRECT_URI"),
 }
 
 
@@ -46,7 +45,7 @@ class BaseService:
             auth_manager=SpotifyOAuth(
                 client_id=settings["client_id"],
                 client_secret=settings["client_secret"],
-                redirect_uri=settings["redirect_uri"],
+                redirect_uri="http://localhost:8080",
                 scope=settings["scopes"],
             )
         )
