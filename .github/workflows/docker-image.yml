@@ -8,8 +8,8 @@ on:
 
 jobs:
 
-  build:
-
+  build-api:
+    name: Build Core API
     runs-on: ubuntu-latest
 
     steps:
