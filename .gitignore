@@ -329,3 +329,6 @@ pip-selfcheck.json
 
 # Secrets
 *secrets*
+
+# bash scripts
+/backend/api/bandr

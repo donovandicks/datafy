@@ -172,4 +172,10 @@ if __name__ == "__main__":
         arg_help="Set to True to get an aggregated genre count",
         req=False,
         default=False,
+    ).add_argument(
+        "-l",
+        "--limit",
+        arg_type=int,
+        arg_help="The maximum number of results to retrieve",
+        req=False,
     ).run_command()
