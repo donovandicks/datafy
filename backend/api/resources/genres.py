@@ -105,6 +105,25 @@ class Genres(Resource, BaseService):
 
         return genre_count
 
+    def __sort_genres_by_count(self, genre_count) -> dict[str, int]:
+        """Sorts the dictionary of genres and song count descending by song count.
+
+        Parameters
+        ----------
+        genre_count : dict[str, int]
+            The dictionary of genre to the number of songs in that genre
+
+        Returns
+        -------
+        dict[str, int]
+            The sorted dictionary.
+
+        """
+
+        sorted_genres = {k: v for k, v in sorted(genre_count.items(), key=lambda item: item[1])}
+        return sorted_genres
+
+
     @webargs(query=GenreModel)
     def get(self, **kwargs) -> Tuple[dict, int, dict[str, str]]:
         """Retrieves the genres of all the top 100 pieces of content"""
@@ -127,8 +146,10 @@ class Genres(Resource, BaseService):
             case _:
                 raise Exception("Content type not supported")
 
+        sorted_genre_count = self.__sort_genres_by_count(genre_count)
+
         return (
-            {"items": genre_count},
+            {"items": sorted_genre_count},
             200,
             {"Access-Control-Allow-Origin": "*"},
         )
