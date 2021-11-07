@@ -163,6 +163,8 @@ if __name__ == "__main__":
         arg_type=str,
         choices=["short_term", "medium_term", "long_term"],
         arg_help="The time period from which to retrieve data",
+        req=False,
+        default="medium_term",
     ).add_argument(
         "-a",
         "--aggregate",
