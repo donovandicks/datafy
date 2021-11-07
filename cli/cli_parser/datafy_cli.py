@@ -1,8 +1,11 @@
+"""Defines the DatafyCLI"""
+
 import logging
 from argparse import ArgumentParser, Namespace
 from pprint import pprint
 from typing import Any
 
+from libs.url_builder import URLBuilder
 from prettytable import PrettyTable
 from requests import RequestException, get
 
@@ -28,6 +31,7 @@ A CLI application designed to interact with the Datafy backend from a terminal.
         self.args: Namespace = Namespace()
         self.table: PrettyTable = PrettyTable()
         self.base_uri: str = base_uri
+        self.endpoint: str = ""
 
     def add_argument(
         self,
@@ -127,22 +131,39 @@ A CLI application designed to interact with the Datafy backend from a terminal.
                 logger.exception("Failed to make request to Datafy: %s", response.text)
                 raise RequestException
 
-    def run_command(self):
-        """Execute the command determined by the arguments passed to the CLI"""
-        self._parse_args()
-
-        endpoint = ""
+    def make_endpoint(self):
+        """Constructs the API endpoint URL"""
         match self.args:
-            case Namespace(content="genres", time_range=str(rng), aggregate=bool(agg)):
-                endpoint = f"{self.base_uri}/genres?time_range={rng}&aggregate={agg}"
+            case Namespace(
+                content="genres",
+                time_range=str(rng),
+                aggregate=bool(agg),
+                limit=int(lmt)
+            ):
+                self.endpoint = URLBuilder(self.base_uri) \
+                    .with_resource("genres") \
+                    .with_param(key="time_range", value=rng) \
+                    .with_param(key="aggregate", value=agg) \
+                    .with_param(key="limit", value=lmt) \
+                    .build()
 
-            case Namespace(content=str(content), time_range=str(rng)):
-                endpoint = f"{self.base_uri}/{content}?time_range={rng}"
+            case Namespace(content=str(content), time_range=str(rng), limit=int(lmt)):
+                self.endpoint = URLBuilder(self.base_uri) \
+                    .with_resource(content) \
+                    .with_param(key="time_range", value=rng) \
+                    .with_param(key="limit", value=lmt) \
+                    .build()
 
             case _:
                 logger.exception("Unsupported CLI arguments passed %r", self.args)
 
-        data = self._send_request(endpoint)
+
+    def run_command(self):
+        """Execute the command determined by the arguments passed to the CLI"""
+        self._parse_args()
+        self.make_endpoint()
+
+        data = self._send_request(self.endpoint)
 
         parsed_data = self._parse_data(data)
         self.display_data(parsed_data)
