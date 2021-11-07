@@ -135,11 +135,12 @@ A CLI application designed to interact with the Datafy backend from a terminal.
 
         endpoint = ""
         match self.args:
-            case Namespace(content="genres", time_range=str(rng), aggregate=bool(agg), limit=int(lmt)):
+            case Namespace(content="genres", time_range=str(rng), aggregate=bool(agg),
+                            limit=int(lmt)):
                 endpoint = f"{self.base_uri}/genres?time_range={rng}&aggregate={agg}&limit={lmt}"
 
             case Namespace(content=str(content), time_range=str(rng), limit=int(lmt)):
-                endpoint = f"{self.base_uri}/{content}?time_range={rng}&limit={limit}"
+                endpoint = f"{self.base_uri}/{content}?time_range={rng}&limit={lmt}"
 
             case _:
                 logger.exception("Unsupported CLI arguments passed %r", self.args)
