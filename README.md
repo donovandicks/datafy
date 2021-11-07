@@ -2,6 +2,14 @@
 
 A web application to view Spotify data
 
+- [Datafy](#datafy)
+  - [Overview](#overview)
+    - [Frontend](#frontend)
+    - [CLI](#cli)
+    - [Backend](#backend)
+  - [Contributing](#contributing)
+  - [Resources](#resources)
+
 ## Overview
 
 ### Frontend
@@ -25,3 +33,7 @@ the requested information.
 ## Contributing
 
 See [CONTRIBUTING](CONTRIBUTING.md) and the [Style Guide](style-guide.md)
+
+## Resources
+
+- [Spotify API Docs](https://developer.spotify.com/documentation/web-api/reference/#/)
