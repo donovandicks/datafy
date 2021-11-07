@@ -119,10 +119,9 @@ class Genres(Resource, BaseService):
             The sorted dictionary.
 
         """
-
-        sorted_genres = {k: v for k, v in sorted(genre_count.items(), key=lambda item: item[1])}
+        # creates a tuple of the original dict, sorted descending by count, then creates a new dict
+        sorted_genres = dict(sorted(genre_count.items(), key=lambda x: x[1], reverse=True))
         return sorted_genres
-
 
     @webargs(query=GenreModel)
     def get(self, **kwargs) -> Tuple[dict, int, dict[str, str]]:
