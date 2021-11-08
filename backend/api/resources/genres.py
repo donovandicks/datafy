@@ -28,7 +28,7 @@ genre_bins = [
 
 
 def filter_dict(
-    obj: dict[str, T], opr: Callable[[Any, Any], bool], query: Any
+    obj: dict[str, T], opr: Callable[[str, Any], bool], query: Any
 ) -> list[T]:
     """Uses an operator to compare dictionary keys against a query value to filter
     the dictionary and retrieve the values for the matching keys
@@ -37,7 +37,7 @@ def filter_dict(
     ------
     obj: dict[str, T]
         the dictionary to filter on
-    opr: Callable[[Any, Any], bool]
+    opr: Callable[[str, Any], bool]
         an operator function that takes any two arguments and returns a boolean
     query: Any
         the value used to filter keys
@@ -55,7 +55,7 @@ class Genres(Resource, BaseService):
     Defines the resource used for retrieving the genres
     """
 
-    def _aggregate_genres(self, detail: dict[str, int]) -> dict[str, int]:
+    def __aggregate_genres(self, detail: dict[str, int]) -> dict[str, int]:
         """Aggregates a detailed genre report into a high-level report with
         broader genres
 
@@ -74,7 +74,7 @@ class Genres(Resource, BaseService):
             key: sum(filter_dict(detail, operator.contains, key)) for key in genre_bins
         }
 
-    def _get_genres_for_artists(self, time_range: str) -> dict[str, int]:
+    def __get_genres_for_artists(self, time_range: str) -> dict[str, int]:
         """Generates a mapping from subgenre to count of appearance for all genres
         associated with the current users top 100 artists
 
@@ -129,9 +129,9 @@ class Genres(Resource, BaseService):
 
         match params["content"]:
             case "artists" | None:
-                genre_count = self._get_genres_for_artists(params["time_range"])
+                genre_count = self.__get_genres_for_artists(params["time_range"])
                 if params["aggregate"]:
-                    genre_count = self._aggregate_genres(genre_count)
+                    genre_count = self.__aggregate_genres(genre_count)
 
             case "songs":
                 # Songs do not appear to containt any genre information despite
