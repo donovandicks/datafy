@@ -1,5 +1,20 @@
 # Contributing
 
+- [Contributing](#contributing)
+  - [Prerequisites](#prerequisites)
+    - [Language Runtimes and Tools](#language-runtimes-and-tools)
+    - [Secrets](#secrets)
+  - [Local Development](#local-development)
+    - [Getting Setup](#getting-setup)
+    - [Flow](#flow)
+    - [Submitting Issues](#submitting-issues)
+    - [Submitting PRs](#submitting-prs)
+  - [Running Locally](#running-locally)
+    - [Containerized Full-stack](#containerized-full-stack)
+    - [Frontend Only](#frontend-only)
+    - [Backend Only](#backend-only)
+    - [Notes on Port Mappings](#notes-on-port-mappings)
+
 ## Prerequisites
 
 ### Language Runtimes and Tools
@@ -34,6 +49,32 @@ configurations.
 To get these keys, reach out to <donovan.dicks@outlook.com>.
 
 ## Local Development
+
+### Getting Setup
+
+For Python work, it is recommended to make use of `pyenv` with virtual environments
+to manage different python interpreters. Since each python package has different
+dependencies, it can be easier to work with them as separate virtual environments.
+
+The dependency manager `poetry` is also being used to resolve and install dependencies.
+For the best experience, it is recommended to use poetry and pyenv in conjunction.
+
+See [pyenv build environment](https://github.com/pyenv/pyenv-installer) for the
+prerequisites for installing pyenv. This is recommended to avoid any issues with
+the pyenv installation.
+
+See [pyenv](https://github.com/pyenv/pyenv-installer) for installing pyenv.
+
+See [pyenv virtualenv](https://github.com/pyenv/pyenv-installer) for installing pyenv
+virtualenv for managing virtual environments with pyenv.
+
+See [poetry](https://python-poetry.org/docs/master/#installation) for installing
+the dev branch of poetry.
+
+See [poetry environments](https://python-poetry.org/docs/master/managing-environments/#switching-between-environments) for using
+poetry with pyenv virtual environments.
+
+### Flow
 
 Visit the [issues](https://github.com/donovandicks/datafy/issues) page for items that
 need to be completed. Once you've selected an issue, assign it to yourself.
