@@ -60,16 +60,16 @@ A CLI application designed to interact with the Datafy backend from a terminal.
         )
         return self
 
-    def _parse_args(self):
+    def __parse_args(self):
         """Parses the args passed by the user"""
         self.args = self.parser.parse_args()
         return self
 
-    def _display_args(self):
+    def __display_args(self):
         """FOR DEBUGGING: Prints the parsed argument namespace to the terminal"""
         pprint(self.args)
 
-    def _parse_data(self, data: dict) -> list[list]:
+    def __parse_data(self, data: dict) -> list[list]:
         """Parses data according to the type of content being retrieved
 
         Params
@@ -120,8 +120,20 @@ A CLI application designed to interact with the Datafy backend from a terminal.
         self.table.add_rows(data)
         print(self.table)
 
-    def _send_request(self, endpoint):
-        response = get(endpoint)
+    def __send_request(self):
+        """Sends a GET request to the API endpoint
+
+        Returns
+        -------
+        response: dict
+            the JSON response received from the API
+
+        Raises
+        ------
+        RequestException
+            if the response has a status code other than 200
+        """
+        response = get(self.endpoint)
 
         match response.status_code:
             case 200:
@@ -131,7 +143,7 @@ A CLI application designed to interact with the Datafy backend from a terminal.
                 logger.exception("Failed to make request to Datafy: %s", response.text)
                 raise RequestException
 
-    def make_endpoint(self):
+    def __make_endpoint(self):
         """Constructs the API endpoint URL"""
         match self.args:
             case Namespace(
@@ -160,10 +172,10 @@ A CLI application designed to interact with the Datafy backend from a terminal.
 
     def run_command(self):
         """Execute the command determined by the arguments passed to the CLI"""
-        self._parse_args()
-        self.make_endpoint()
+        self.__parse_args()
+        self.__make_endpoint()
 
-        data = self._send_request(self.endpoint)
+        data = self.__send_request()
 
-        parsed_data = self._parse_data(data)
+        parsed_data = self.__parse_data(data)
         self.display_data(parsed_data)
