@@ -12,8 +12,6 @@ from resources.base import BaseService
 
 T = TypeVar("T")  # pylint: disable=invalid-name
 
-# TODO: Support an 'other' category that aggregates all other genres that don't
-# match below
 genre_bins = [
     "hip hop",
     "rap",
