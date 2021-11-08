@@ -124,7 +124,7 @@ class Genres(Resource, BaseService):
         return sorted_genres
 
     @webargs(query=GenreModel)
-    def get(self, **kwargs) -> Tuple[dict, int, dict[str, str]]:
+    def get(self, **kwargs) -> Tuple[dict[str, dict], int, dict[str, str]]:
         """Retrieves the genres of all the top 100 pieces of content"""
         params = kwargs["query"]
         genre_count: dict[str, int] = {}
@@ -147,8 +147,12 @@ class Genres(Resource, BaseService):
 
         sorted_genre_count = self.__sort_genres_by_count(genre_count)
 
+        num_items = len(sorted_genre_count)
+        if params["limit"] and params["limit"] < num_items:
+            num_items = params["limit"]
+
         return (
-            {"items": sorted_genre_count},
+            {"items": dict(list(sorted_genre_count.items())[:num_items])},
             200,
             {"Access-Control-Allow-Origin": "*"},
         )
