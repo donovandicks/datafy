@@ -7,7 +7,7 @@ if __name__ == "__main__":
         "--content",
         arg_type=str,
         choices=["songs", "artists", "genres"],
-        arg_help="The type of content to retrieve, songs or artists",
+        arg_help="The type of content to retrieve: songs, artists, or genres",
     ).add_argument(
         "-t",
         "--time_range",
