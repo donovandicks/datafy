@@ -1,7 +1,5 @@
 """Defines the API logic for the /artists endpoint"""
 
-from typing import Any
-
 from flask import current_app as app
 from flask.wrappers import Response
 from flask_restful import NotFound, Resource
