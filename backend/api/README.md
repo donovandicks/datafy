@@ -27,7 +27,12 @@ library is used for communicating with the Spotify application.
 
 ### Running Locally
 
-Steps to run as a container:
+To run in a responsive dev environment where code changes are picked up without
+the need for manually building and running the image again, use `docker compose`:
+
+Run `docker compose up` from the current directory.
+
+To build and run the container manually:
 
 1. Run `docker build -t datafy-api:<tag> .`
 2. Run `docker run -p 5000:5000 datafy-api:<tag>`
