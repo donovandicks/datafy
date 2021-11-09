@@ -3,6 +3,7 @@
 from resources.artists import Artists
 from resources.genres import Genres
 from resources.songs import Songs
+from resources.recommendations import Recommendations
 
 # Holds a registry of all resources and their associated paths. The registry is
 # defined as a dict[Resource, str], where the str is the resource path. The

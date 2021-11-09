@@ -3,14 +3,14 @@
 from flask import current_app as app
 from flask.wrappers import Response
 from flask_restful import NotFound, Resource
-from models.artist_query import RecommendationQuery
-from models.artist_response import RecommendationResponse
+from models.recommendation_query import RecommendationQuery
+from models.recommendation_response import RecommendationResponse
 from pydantic_webargs import webargs
 
 from resources.base import BaseService
 
 
-class Recommendations(Resouce, BaseService):
+class Recommendations(Resource, BaseService):
     """
     The recommendations resource defines the RESTful interactions available for
     Spotify recommendations
