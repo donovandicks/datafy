@@ -1,13 +1,13 @@
 """Query models for Spotify artists"""
 
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
 from models.common import TimeRange
 
 
-class ArtistModel(BaseModel):
+class ArtistQuery(BaseModel):
     """The query model for the Artists resource"""
 
     limit: Optional[int]
@@ -15,4 +15,5 @@ class ArtistModel(BaseModel):
 
     class Config:
         """Defines the configuration for the query model"""
+
         use_enum_values = True
