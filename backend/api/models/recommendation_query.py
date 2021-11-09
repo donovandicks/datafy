@@ -9,6 +9,7 @@ class RecommendationQuery(BaseModel):
     """The query model for the Recommendations resource"""
 
     # just the required fields for now, want to add in things like target sounds and whatnot
+    # all must be a str comma separated list of some sort of spotify id
     seed_artists: Optional[str]
     seed_genres: Optional[str]
     seed_tracks: Optional[str]
