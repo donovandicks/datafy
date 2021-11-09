@@ -1,6 +1,6 @@
 """Query models for Spotify artists"""
 
-from typing import Any, Optional
+from typing import Optional
 
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 

@@ -1,7 +1,5 @@
 """Defines the API logic for the /artists endpoint"""
 
-from typing import Any
-
 from flask import current_app as app
 from flask.wrappers import Response
 from flask_restful import NotFound, Resource
@@ -23,10 +21,21 @@ class Artists(Resource, BaseService):
 
     __name__ = "artists"
 
-    def __get_response_body(self, query: ArtistQuery) -> ArtistResponse:
+    def __init__(self) -> None:
+        self.query = ArtistQuery()
+        super().__init__()
+
+    def __get_response_body(self) -> ArtistResponse:
+        """Retrieves the body data for the response object
+
+        Returns
+        -------
+        ArtistResponse
+            the data model object containing a list of artist names
+        """
         top_artists = self.client.current_user_top_artists(
-            limit=query.limit,
-            time_range=query.time_range,
+            limit=self.query.limit,
+            time_range=self.query.time_range,
         )
 
         if not top_artists:
@@ -44,10 +53,11 @@ class Artists(Resource, BaseService):
         - A tuple containing the list of top artists, the response status code,
         and a request headers object
         """
-        response_body = self.__get_response_body(ArtistQuery(**kwargs["query"]))
+        self.query = ArtistQuery(**kwargs["query"])
+        app.logger.info("Retrieving top artists with params: %r", self.query)
 
         return Response(
-            response=response_body.json(),
+            response=self.__get_response_body().json(),
             status=200,
             headers={"Access-Control-Allow-Origin": "*"},
         )
