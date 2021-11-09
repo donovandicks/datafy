@@ -13,4 +13,5 @@ RESOURCE_REGISTRY: dict = {
     Artists: "/artists",
     Songs: "/songs",
     Genres: "/genres",
+    Recommendations: "/recommendations",
 }
