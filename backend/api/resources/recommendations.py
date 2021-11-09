@@ -31,9 +31,10 @@ class Recommendations(Resource, BaseService):
 
     def __get_response_body(self) -> RecommendationResponse:
         recommendations = self.client.recommendations(
-            seed_artists=[self.query.seed_artists],
-            seed_genres=self.query.seed_genres,
-            seed_tracks=self.query.seed_tracks,
+            seed_artists=self.query.seed_artists.split(","),
+            seed_genres=self.query.seed_genres.split(","),
+            seed_tracks=self.query.seed_tracks.split(","),
+            limit=self.query.limit,
         )
 
         if not recommendations:

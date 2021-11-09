@@ -9,9 +9,10 @@ class RecommendationQuery(BaseModel):
     """The query model for the Recommendations resource"""
 
     # just the required fields for now, want to add in things like target sounds and whatnot
-    seed_artists: Optional[list[str]]
-    seed_genres: Optional[list[str]]
-    seed_tracks: Optional[list[str]]
+    # although these are lists, they come in as a string and then are used to create the lists
+    seed_artists: Optional[str]  # Optional[list[str]]
+    seed_genres: Optional[str]
+    seed_tracks: Optional[str]
     limit: Optional[int]
 
     class Config:
