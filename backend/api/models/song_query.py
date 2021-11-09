@@ -7,7 +7,7 @@ from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from models.common import TimeRange
 
 
-class SongModel(BaseModel):
+class SongQuery(BaseModel):
     """
     The type definition for available query params on the Songs resource.
 
