@@ -7,10 +7,9 @@ from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from models.common import TimeRange
 
 
-class GenreModel(BaseModel):
+class GenreQuery(BaseModel):
     """The query model for the Genres resource"""
 
-    content: Optional[str]
     time_range: Optional[TimeRange]
     aggregate: Optional[bool]
     limit: Optional[int]

@@ -1,11 +1,14 @@
 """The Genres resource"""
 
 import operator
-from typing import Any, Callable, Tuple, TypeVar
+from typing import Any, Callable, TypeVar
 
 from flask import current_app as app
+from flask.wrappers import Response
 from flask_restful import NotFound, Resource
-from models.genre_query import GenreModel
+from models.common import TimeRange
+from models.genre_query import GenreQuery
+from models.genre_response import GenreResponse
 from pydantic_webargs import webargs
 
 from resources.base import BaseService
@@ -55,7 +58,13 @@ class Genres(Resource, BaseService):
     Defines the resource used for retrieving the genres
     """
 
-    def __aggregate_genres(self, detail: dict[str, int]) -> dict[str, int]:
+    def __init__(self) -> None:
+        self.genre_detail: dict[str, int] = {}
+        self.genre_aggregate: dict[str, int] = {}
+        self.query: GenreQuery = GenreQuery()
+        super().__init__()
+
+    def __aggregate_genres(self):
         """Aggregates a detailed genre report into a high-level report with
         broader genres
 
@@ -63,18 +72,16 @@ class Genres(Resource, BaseService):
         ------
         detail: dict[str, int]
             an object containing a mapping of genres to counts
-
-        Returns
-        -------
-        aggregate: dict[str, int]
-            an object mapping broader genres to aggregated counts from subgenres
         """
-        app.logger.info("Aggregating genre counts for %i genres", len(detail.keys()))
-        return {
-            key: sum(filter_dict(detail, operator.contains, key)) for key in genre_bins
+        app.logger.info(
+            "Aggregating genre counts for %i genres", len(self.genre_detail)
+        )
+        self.genre_aggregate = {
+            key: sum(filter_dict(self.genre_detail, operator.contains, key))
+            for key in genre_bins
         }
 
-    def __get_genres_for_artists(self, time_range: str) -> dict[str, int]:
+    def __get_genres_for_artists(self, time_range: TimeRange | None):
         """Generates a mapping from subgenre to count of appearance for all genres
         associated with the current users top 100 artists
 
@@ -82,15 +89,9 @@ class Genres(Resource, BaseService):
         ------
         time_range: str
             a Spotify API support time_range [short_term|medium_term|long_term]
-
-        Returns
-        -------
-        genre_count: dict[str, int]
-            an object mapping subgenres to a count of their appearances
         """
-        genre_count = {}
         top_artists = self.client.current_user_top_artists(
-            limit=100,
+            limit=50,
             time_range=time_range,
         )
 
@@ -99,11 +100,9 @@ class Genres(Resource, BaseService):
 
         for artist in top_artists["items"]:
             for genre in artist["genres"]:
-                genre_count[genre] = genre_count.setdefault(genre, 0) + 1
+                self.genre_detail[genre] = self.genre_detail.setdefault(genre, 0) + 1
 
-        return genre_count
-
-    def __sort_genres_by_count(self, genre_count) -> dict[str, int]:
+    def __sort_genres_by_count(self) -> dict[str, int]:
         """Sorts the dictionary of genres and song count descending by song count.
 
         Parameters
@@ -115,42 +114,49 @@ class Genres(Resource, BaseService):
         -------
         dict[str, int]
             The sorted dictionary.
-
         """
         # creates a tuple of the original dict, sorted descending by count, then creates a new dict
-        sorted_genres = dict(sorted(genre_count.items(), key=lambda x: x[1], reverse=True))
-        return sorted_genres
+        genre_count = (
+            self.genre_aggregate if self.query.aggregate else self.genre_detail
+        )
 
-    @webargs(query=GenreModel)
-    def get(self, **kwargs) -> Tuple[dict[str, dict], int, dict[str, str]]:
-        """Retrieves the genres of all the top 100 pieces of content"""
-        params = kwargs["query"]
-        genre_count: dict[str, int] = {}
+        return dict(sorted(genre_count.items(), key=lambda x: x[1], reverse=True))
 
-        match params["content"]:
-            case "artists" | None:
-                genre_count = self.__get_genres_for_artists(params["time_range"])
-                if params["aggregate"]:
-                    genre_count = self.__aggregate_genres(genre_count)
+    def __count_genres(self):
+        """Counts the occurrences of genres for all artists and aggregates the
+        count if the aggregate query param is passed
+        """
+        self.__get_genres_for_artists(self.query.time_range)
 
-            case "songs":
-                # Songs do not appear to containt any genre information despite
-                # documentation from Spotify. TODO: Look into efficient way to
-                # query the genres for a given song - a cache or DB read may be
-                # less intensive than a web api call
-                raise NotImplementedError
+        if self.query.aggregate:
+            self.__aggregate_genres()
 
-            case _:
-                raise Exception("Content type not supported")
+    def __get_response_body(self) -> GenreResponse:
+        """Retrieves the body data for the response object
 
-        sorted_genre_count = self.__sort_genres_by_count(genre_count)
+        Returns
+        -------
+        GenreResponse
+            the data model object containing a sorted dictionary of genre counts
+        """
+        self.__count_genres()
+        sorted_genre_count = self.__sort_genres_by_count()
 
         num_items = len(sorted_genre_count)
-        if params["limit"] and params["limit"] < num_items:
-            num_items = params["limit"]
+        if self.query.limit and self.query.limit < num_items:
+            # Use the query limit if it is within valid bounds
+            num_items = self.query.limit
 
-        return (
-            {"items": dict(list(sorted_genre_count.items())[:num_items])},
-            200,
-            {"Access-Control-Allow-Origin": "*"},
+        # Slices the dictionary to retrieve the first num_items of genres
+        return GenreResponse(items=dict(list(sorted_genre_count.items())[:num_items]))
+
+    @webargs(query=GenreQuery)
+    def get(self, **kwargs) -> Response:
+        """Retrieves the genres of all the top 100 pieces of content"""
+        self.query = GenreQuery(**kwargs["query"])
+
+        return Response(
+            response=self.__get_response_body().json(),
+            status=200,
+            headers={"Access-Control-Allow-Origin": "*"},
         )
