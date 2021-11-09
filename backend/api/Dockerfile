@@ -4,15 +4,16 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /app
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends
-
 RUN python3 -m pip install -U pip poetry
+
+FROM base AS python-deps
 
 COPY poetry.lock pyproject.toml ./
 
 RUN poetry config virtualenvs.create false \
     && poetry install
+
+FROM python-deps AS dev
 
 COPY . ./
 
