@@ -10,7 +10,7 @@ class RecommendationQuery(BaseModel):
 
     # just the required fields for now, want to add in things like target sounds and whatnot
     # although these are lists, they come in as a string and then are used to create the lists
-    seed_artists: Optional[str]  # Optional[list[str]]
+    seed_artists: Optional[str]
     seed_genres: Optional[str]
     seed_tracks: Optional[str]
     limit: Optional[int]
@@ -32,9 +32,3 @@ class RecommendationQuery(BaseModel):
     curl http://localhost:5000/recommendations\?seed_tracks\=3cCxoOgfi6hgt8MNteuiiD,3nAq2hCr1oWsIU54tS98pL\&limit\=5
 
     """
-
-    class Config:
-        """Defines the configuration for the query model"""
-
-        # i don't think this line is necessary for the rec model
-        # use_enum_values = True
