@@ -1,27 +1,22 @@
-"""Defines the DatafyCLI"""
+"""Defines the abstract class for the DatafyCLI"""
 
 import logging
 from argparse import ArgumentParser, Namespace
 from pprint import pprint
 from typing import Any
 
-from libs.url_builder import URLBuilder
 from prettytable import PrettyTable
 from requests import RequestException, get
 
-TABLE_FIELDS = {
-    "artists": ["Rank", "Artist"],
-    "songs": ["Rank", "Song", "Artists"],
-    "genres": ["Genre", "Count"],
-}
+from abc import ABC, abstractmethod
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger("cli_logger")
 
-class DatafyCLI:
+class DatafyCLI(ABC):
     """The CLI Application for interacting with Spotify data from the terminal"""
 
-    def __init__(self, base_uri: str = "http://0.0.0.0:5000") -> None:
+    def __init__(self, table_fields: dict, base_uri: str = "http://0.0.0.0:5000") -> None:
         """Initializes the CLI application with the ArgumentParser instance"""
 
         self.parser = ArgumentParser(description="""
@@ -32,6 +27,7 @@ A CLI application designed to interact with the Datafy backend from a terminal.
         self.table: PrettyTable = PrettyTable()
         self.base_uri: str = base_uri
         self.endpoint: str = ""
+        self.table_fields: dict = table_fields
 
     def add_argument(
         self,
@@ -69,7 +65,8 @@ A CLI application designed to interact with the Datafy backend from a terminal.
         """FOR DEBUGGING: Prints the parsed argument namespace to the terminal"""
         pprint(self.args)
 
-    def __parse_data(self, data: dict) -> list[list]:
+    @abstractmethod
+    def parse_data(self, data: dict) -> list[list]:
         """Parses data according to the type of content being retrieved
 
         Params
@@ -82,33 +79,10 @@ A CLI application designed to interact with the Datafy backend from a terminal.
         parsed_data: list[list]
             a list of data rows
         """
-        match self.args.content:
-            case "songs":
-                return [
-                    [
-                        idx + 1, song["song"], ", ".join(song["artists"]),
-                    ] for idx, song in enumerate(data["items"])
-                ]
+        pass
 
-            case "artists":
-                return [
-                    [
-                        idx + 1, artist,
-                    ] for idx, artist in enumerate(data["items"])
-                ]
-
-            case "genres" if data:
-                return [
-                    [
-                        genre, count,
-                    ] for genre, count in data["items"].items()
-                ]
-
-            case _:
-                logging.warning("Unsupported content type")
-                return [[]]
-
-    def display_data(self, data: list[list]):
+    @abstractmethod
+    def display_data(self, data: list[list]) -> None:
         """Displays the data retrieved from Spotify in the terminal as a formatted table
 
         Args
@@ -116,9 +90,7 @@ A CLI application designed to interact with the Datafy backend from a terminal.
         - data [list[list]]: A list of data rows
 
         """
-        self.table.field_names = TABLE_FIELDS[self.args.content]
-        self.table.add_rows(data)
-        print(self.table)
+        pass
 
     def __send_request(self):
         """Sends a GET request to the API endpoint
@@ -143,39 +115,18 @@ A CLI application designed to interact with the Datafy backend from a terminal.
                 logger.exception("Failed to make request to Datafy: %s", response.text)
                 raise RequestException
 
-    def __make_endpoint(self):
+    @abstractmethod
+    def make_endpoint(self) -> None:
         """Constructs the API endpoint URL"""
-        match self.args:
-            case Namespace(
-                content="genres",
-                time_range=str(rng),
-                aggregate=bool(agg),
-                limit=int(lmt)
-            ):
-                self.endpoint = URLBuilder(self.base_uri) \
-                    .with_resource("genres") \
-                    .with_param(key="time_range", value=rng) \
-                    .with_param(key="aggregate", value=agg) \
-                    .with_param(key="limit", value=lmt) \
-                    .build()
-
-            case Namespace(content=str(content), time_range=str(rng), limit=int(lmt)):
-                self.endpoint = URLBuilder(self.base_uri) \
-                    .with_resource(content) \
-                    .with_param(key="time_range", value=rng) \
-                    .with_param(key="limit", value=lmt) \
-                    .build()
-
-            case _:
-                logger.exception("Unsupported CLI arguments passed %r", self.args)
+        pass
 
 
     def run_command(self):
         """Execute the command determined by the arguments passed to the CLI"""
         self.__parse_args()
-        self.__make_endpoint()
+        self.make_endpoint()
 
         data = self.__send_request()
 
-        parsed_data = self.__parse_data(data)
+        parsed_data = self.parse_data(data)
         self.display_data(parsed_data)
