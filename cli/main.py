@@ -1,8 +1,14 @@
 """The Datafy CLI"""
 from cli_parser.datafy_cli import DatafyCLI
+from cli_parser.api_cli import APICLI
+from cli_parser.rec_cli import RecCLI
 
 if __name__ == "__main__":
-    DatafyCLI().add_argument(
+    # This main is deprecated as of v.04 with the separation of the CLIS.
+    # To access the CLIs run either api.py or rec.py in this directory with your desired arguments.
+
+    """
+    APICLI().add_argument(
         "-c",
         "--content",
         arg_type=str,
@@ -31,3 +37,34 @@ if __name__ == "__main__":
         req=False,
         default=50,
     ).run_command()
+
+    RecCLI().add_argument(
+        "-sa",
+        "--seed_artists",
+        arg_type=str,
+        arg_help="The seed artists to generate the recommendations from",
+        req=False,
+        default=None,
+    ).add_argument(
+        "-st",
+        "--seed_tracks",
+        arg_type=str,
+        arg_help="The seed tracks to generate the recommendations from",
+        req=False,
+        default=None,
+    ).add_argument(
+        "-sg",
+        "--seed_genres",
+        arg_type=str,
+        arg_help="The seed genres to generate the recommendations from",
+        req=False,
+        default=None,
+    ).add_argument(
+        "-l",
+        "--limit",
+        arg_type=int,
+        arg_help="The maximum number of results to retrieve",
+        req=False,
+        default=20,
+    ).run_command()
+    """
