@@ -24,6 +24,8 @@ class Recommendations(Resource, BaseService):
         super().__init__()
 
     def __format_seed_lists(self) -> None:
+        """Turns Strings of comma separated values into lists of Strings"""
+
         self.query.seed_artists = (
             self.query.seed_artists.split(",")
             if self.query.seed_artists
