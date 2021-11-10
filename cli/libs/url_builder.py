@@ -1,6 +1,10 @@
 """Defines a URL Builder class"""
 
 from typing import Any
+import logging
+
+logging.basicConfig(level=logging.NOTSET)
+logger = logging.getLogger("cli_logger")
 
 
 class URLBuilder:
@@ -44,7 +48,11 @@ class URLBuilder:
 
         if isinstance(value, list):
             # creates a string of a comma separated list for use in urls
-            self.params.append(f"{key}={','.join(value)}")
+            value_list = ",".join(value)
+            self.params.append(f"{key}={value_list}")
+        elif value is None:
+            logger.info("Parameter value is None, skipping for key: %s", key)
+            pass
         else:
             self.params.append(f"{key}={value}")
 
