@@ -4,7 +4,7 @@ from flask import current_app as app
 from flask.wrappers import Response
 from flask_restful import NotFound, Resource
 from models.artist_query import ArtistQuery
-from models.artist_response import ArtistResponse
+from models.artist_response import Artist, ArtistResponse
 from pydantic_webargs import webargs
 
 from resources.base import BaseService
@@ -42,7 +42,17 @@ class Artists(Resource, BaseService):
             app.logger.error("Failed to retrieve top artists")
             raise NotFound
 
-        return ArtistResponse(items=[item["name"] for item in top_artists["items"]])
+        return ArtistResponse(
+            items=[
+                Artist(
+                    id=item["id"],
+                    name=item["name"],
+                    popularity=item["popularity"],
+                    followers=item["followers"]["total"],
+                )
+                for item in top_artists["items"]
+            ]
+        )
 
     @webargs(query=ArtistQuery)
     def get(self, **kwargs) -> Response:
