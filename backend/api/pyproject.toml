@@ -2,7 +2,10 @@
 name = "backend"
 version = "0.1.0"
 description = "Backend system for the Datafy app"
-authors = ["Donovan Dicks <donovan.dicks@outlook.com>"]
+authors = [
+    "Donovan Dicks <donovan.dicks@outlook.com>",
+    "Noah Kennedy <nakennedy11@gmail.com>",
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
