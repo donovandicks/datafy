@@ -4,7 +4,7 @@ from flask import current_app as app
 from flask.wrappers import Response
 from flask_restful import NotFound, Resource
 from models.song_query import SongQuery
-from models.song_response import SongResponse
+from models.song_response import Song, SongResponse
 from pydantic_webargs import webargs
 
 from resources.base import BaseService
@@ -44,10 +44,13 @@ class Songs(Resource, BaseService):
 
         return SongResponse(
             items=[
-                {
-                    "song": item["name"],
-                    "artists": [artist["name"] for artist in item["artists"]],
-                }
+                Song(
+                    name=item["name"],
+                    artists=[artist["name"] for artist in item["artists"]],
+                    popularity=item["popularity"],
+                    album=item["album"]["name"],
+                    release_date=item["album"]["release_date"],
+                )
                 for item in top_tracks["items"]
             ],
         )
