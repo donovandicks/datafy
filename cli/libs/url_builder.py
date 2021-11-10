@@ -41,7 +41,13 @@ class URLBuilder:
         value: Any
             the value to query on against the key
         """
-        self.params.append(f"{key}={value}")
+
+        if isinstance(value, list):
+            # creates a string of a comma separated list for use in urls
+            self.params.append(f"{key}={','.join(value)}")
+        else:
+            self.params.append(f"{key}={value}")
+
         return self
 
     def build(self) -> str:
