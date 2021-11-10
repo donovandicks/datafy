@@ -4,10 +4,9 @@ from cli_parser.api_cli import APICLI
 from cli_parser.rec_cli import RecCLI
 
 if __name__ == "__main__":
-    # plan to work with different clis:
-    # - running this main file will ask you which you want to use
-    # - create the instance of that cli
-    # - then take in the arguments for that cli
+    # This main is deprecated as of v.04 with the separation of the CLIS.
+    # To access the CLIs run either api.py or rec.py in this directory with your desired arguments.
+
     """
     APICLI().add_argument(
         "-c",
@@ -38,7 +37,6 @@ if __name__ == "__main__":
         req=False,
         default=50,
     ).run_command()
-    """
 
     RecCLI().add_argument(
         "-sa",
@@ -69,3 +67,4 @@ if __name__ == "__main__":
         req=False,
         default=20,
     ).run_command()
+    """
