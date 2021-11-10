@@ -6,6 +6,9 @@ from pydantic import BaseModel
 class Song(BaseModel):
     """The object model representing key elements of Spotify songs"""
 
+    id: str
+    """The Spotify ID of the song"""
+
     name: str
     """The name of the song"""
 
@@ -20,6 +23,7 @@ class Song(BaseModel):
 
     release_date: str
     """The date the album was first released"""
+
 
 class SongResponse(BaseModel):
     """The object model of the response body for the songs endpoint"""

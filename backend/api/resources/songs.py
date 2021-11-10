@@ -45,6 +45,7 @@ class Songs(Resource, BaseService):
         return SongResponse(
             items=[
                 Song(
+                    id=item["id"],
                     name=item["name"],
                     artists=[artist["name"] for artist in item["artists"]],
                     popularity=item["popularity"],
