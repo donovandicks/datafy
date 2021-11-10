@@ -23,17 +23,30 @@ class Recommendations(Resource, BaseService):
         self.query = RecommendationQuery()
         super().__init__()
 
-    def __get_response_body(self) -> RecommendationResponse:
-        recommendations = self.client.recommendations(
-            seed_artists=self.query.seed_artists.split(",")
+    def __format_seed_lists(self) -> None:
+        self.query.seed_artists = (
+            self.query.seed_artists.split(",")
             if self.query.seed_artists
-            else None,
-            seed_genres=self.query.seed_genres.split(",")
+            else None
+        )
+        self.query.seed_genres = (
+            self.query.seed_genres.split(",")
             if self.query.seed_genres
-            else None,
-            seed_tracks=self.query.seed_tracks.split(",")
+            else None
+        )
+        self.query.seed_tracks = (
+            self.query.seed_tracks.split(",")
             if self.query.seed_tracks
-            else None,
+            else None
+        )
+
+    def __get_response_body(self) -> RecommendationResponse:
+        self.__format_seed_lists()
+
+        recommendations = self.client.recommendations(
+            seed_artists=self.query.seed_artists,
+            seed_genres=self.query.seed_genres,
+            seed_tracks=self.query.seed_tracks,
             limit=self.query.limit,
         )
 
