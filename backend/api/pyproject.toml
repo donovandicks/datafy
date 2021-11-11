@@ -15,6 +15,7 @@ flask-restful = "*"
 python-dotenv = "*"
 # pydantic = { git = "https://github.com/samuelcolvin/pydantic@master#egg=pydantic", branch = "master" }
 pydantic-webargs = "*"
+pytest = "^6.2.5"
 
 [tool.poetry.dev-dependencies]
 black = "*"
