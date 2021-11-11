@@ -34,7 +34,7 @@ Run `docker compose up` from the current directory.
 
 To build and run the container manually:
 
-1. Run `docker build -t datafy-api:<tag> .`
+1. Run `docker build -t datafy-api:<tag> --target dev .`
 2. Run `docker run -p 5000:5000 datafy-api:<tag>`
     - You can also add the `-d` option to run in detached mode (as a background process)
 
