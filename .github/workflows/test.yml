@@ -18,9 +18,12 @@ jobs:
 
       - name: Install poetry
         run: python -m pip install -U pip poetry git+git://github.com/samuelcolvin/pydantic@master#egg=pydantic
+        working-directory: backend/api
 
       - name: Install Dependencies
         run: poetry install
+        working-directory: backend/api
 
       - name: Run Test Suite
         run: poetry run pytest
+        working-directory: backend/api
