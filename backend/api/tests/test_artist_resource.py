@@ -1,7 +1,6 @@
 """Test File for the Artists Resource"""
 
 from unittest import TestCase
-from unittest.mock import Mock
 
 from main import init_flask_api, init_flask_app
 
