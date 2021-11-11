@@ -12,7 +12,7 @@ class Song(BaseModel):
     name: str
     """The name of the song"""
 
-    artists: str | list[str]
+    artists: list[str]
     """The artist(s) who perform the song"""
 
     popularity: int
