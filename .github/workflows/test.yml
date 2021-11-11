@@ -27,3 +27,6 @@ jobs:
       - name: Run Test Suite
         run: poetry run pytest
         working-directory: backend/api
+        env:
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
