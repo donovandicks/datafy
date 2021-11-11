@@ -4,7 +4,7 @@ from flask import current_app as app
 from flask.wrappers import Response
 from flask_restful import NotFound, Resource
 from models.recommendation_query import RecommendationQuery
-from models.recommendation_response import RecommendationResponse
+from models.recommendation_response import Recommendation, RecommendationResponse
 from pydantic_webargs import webargs
 
 from resources.base import BaseService
@@ -38,10 +38,10 @@ class Recommendations(Resource, BaseService):
         # this is just the same as a regular songs query for now
         return RecommendationResponse(
             items=[
-                {
-                    "song": item["name"],
-                    "artists": [artist["name"] for artist in item["artists"]],
-                }
+                Recommendation(
+                    song=item["name"],
+                    artists=[artist["name"] for artist in item["artists"]],
+                )
                 for item in recommendations["tracks"]
             ],
         )
