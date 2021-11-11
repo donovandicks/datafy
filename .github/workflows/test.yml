@@ -24,6 +24,10 @@ jobs:
         run: poetry install
         working-directory: backend/api
 
+      - name: Setup Access Token
+        run: echo ${{ secrets.ACCESS_TOKEN }} >> .cache
+        working-directory: backend/api
+
       - name: Run Test Suite
         run: poetry run pytest
         working-directory: backend/api
