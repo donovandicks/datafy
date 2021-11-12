@@ -1,8 +1,8 @@
 """Query models for Spotify recommendations"""
 
-from typing import Optional
+from typing import Any, Optional
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
 
 class RecommendationQuery(BaseModel):
@@ -28,24 +28,31 @@ class RecommendationQuery(BaseModel):
     # just the required fields for now, want to add in things like target sounds and whatnot
     # although these are lists, they come in as a string and then are used to create the lists
 
-    seed_artists: Optional[str | list[str]]
+    seed_artists: Optional[str]
     """A comma separated list of artist IDs"""
 
-    seed_genres: Optional[str | list[str]]
+    seed_genres: Optional[str]
     """A comma separated list of genres"""
 
-    seed_tracks: Optional[str | list[str]]
+    seed_tracks: Optional[str]
     """A comma separated list of song IDs"""
+
+    seed_artists_list: Optional[list[str]]
+    """A Python list of seed artists - derived from `seed_artists`"""
+
+    seed_genres_list: Optional[list[str]]
+    """A Python list of seed genres - derived from `seed_genres`"""
+
+    seed_tracks_list: Optional[list[str]]
+    """A Python list of seed tracks - derived from `seed_tracks`"""
 
     limit: Optional[int]
     """The number of recommendations to retrieve"""
 
-    @validator("seed_artists", "seed_genres", "seed_tracks")
-    def _deserialize_seed_artists(cls, seeds: str | list): # pylint: disable=no-self-argument
-        if not seeds:
-            return None
-
-        if isinstance(seeds, list):
-            return seeds
-
-        return seeds.split(",")
+    def __init__(self, **data: Any):
+        super().__init__(**data)
+        self.seed_artists_list = (
+            self.seed_artists.split(",") if self.seed_artists else []
+        )
+        self.seed_genres_list = self.seed_genres.split(",") if self.seed_genres else []
+        self.seed_tracks_list = self.seed_tracks.split(",") if self.seed_tracks else []
