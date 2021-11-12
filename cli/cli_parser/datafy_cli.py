@@ -1,22 +1,44 @@
 """Defines the abstract class for the DatafyCLI"""
 
 import logging
+from abc import ABC, abstractmethod
 from argparse import ArgumentParser, Namespace
 from pprint import pprint
 from typing import Any
 
 from prettytable import PrettyTable
 from requests import RequestException, get
-
-from abc import ABC, abstractmethod
+from yaml import YAMLError, safe_load
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger("cli_logger")
 
+def load_table_fields(file_path: str) -> dict[str, str]:
+    """
+    Loads the CLI table yaml config
+
+    Parameters
+    ----------
+    file_path: str
+        the module-relative path to the YAML config file, e.g. `templates/cli_tables.yaml`
+
+    Returns
+    -------
+    table_fields: dict[str, str]
+        the dictionary mapping created from the yaml file
+    """
+    with open(file_path, encoding="utf-8") as yaml_file:
+        try:
+            yml = safe_load(yaml_file)
+            return yml.get("table_fields", {})
+
+        except YAMLError as ex:
+            raise Exception(f"Failed to load YAML file: {ex}") from YAMLError
+
 class DatafyCLI(ABC):
     """The CLI Application for interacting with Spotify data from the terminal"""
 
-    def __init__(self, table_fields: dict, base_uri: str = "http://0.0.0.0:5000") -> None:
+    def __init__(self, table_fields_file_path: str, base_uri: str = "http://0.0.0.0:5000") -> None:
         """Initializes the CLI application with the ArgumentParser instance"""
 
         self.parser = ArgumentParser(description="""
@@ -27,7 +49,7 @@ A CLI application designed to interact with the Datafy backend from a terminal.
         self.table: PrettyTable = PrettyTable()
         self.base_uri: str = base_uri
         self.endpoint: str = ""
-        self.table_fields: dict = table_fields
+        self.table_fields: dict = load_table_fields(table_fields_file_path)
 
     def add_argument(
         self,

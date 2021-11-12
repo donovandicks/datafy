@@ -10,17 +10,11 @@ from cli_parser.datafy_cli import DatafyCLI
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger("cli_logger")
 
-TABLE_FIELDS = {
-    "artists": ["Rank", "Artist", "Popularity", "Followers", "ID"],
-    "songs": ["Rank", "Song", "Artists", "Popularity", "Album", "Release Date"],
-    "genres": ["Genre", "Count"],
-}
-
 class APICLI(DatafyCLI):
     """CLI application for making artist, song, and genre requests"""
 
     def __init__(self, base_uri: str = "http://0.0.0.0:5000") -> None:
-        super().__init__(TABLE_FIELDS, base_uri)
+        super().__init__("templates/api_cli_tables.yaml", base_uri)
 
     def parse_data(self, data: dict) -> list[list]:
         """Parses data according to the type of content being retrieved
@@ -44,6 +38,7 @@ class APICLI(DatafyCLI):
                     item["popularity"],
                     item["album"],
                     item["release_date"],
+                    item["id"],
                 ] for idx, item in enumerate(data["items"])
             ]
 

@@ -1,21 +1,19 @@
 """Defines the CLI for recommendation requests"""
 import logging
-from argparse import ArgumentParser, Namespace
+
+from libs.url_builder import URLBuilder
 
 from cli_parser.datafy_cli import DatafyCLI
-from libs.url_builder import URLBuilder
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger("cli_logger")
-
-TABLE_FIELDS = {"recs": ["Song", "Artists"]}
 
 
 class RecCLI(DatafyCLI):
     """CLI application for making recommendation requests"""
 
     def __init__(self, base_uri: str = "http://0.0.0.0:5000") -> None:
-        super().__init__(TABLE_FIELDS, base_uri)
+        super().__init__("templates/rec_cli_tables.yaml", base_uri)
 
     def parse_data(self, data: dict) -> list[list]:
         """Parses data according to the type of content being retrieved
