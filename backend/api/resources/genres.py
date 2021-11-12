@@ -6,7 +6,6 @@ from typing import Any, Callable, TypeVar
 from flask import current_app as app
 from flask.wrappers import Response
 from flask_restful import NotFound, Resource
-from models.common import TimeRange
 from models.genre_query import GenreQuery
 from models.genre_response import GenreResponse
 from pydantic_webargs import webargs
@@ -81,7 +80,7 @@ class Genres(Resource, BaseService):
             for key in genre_bins
         }
 
-    def __get_genres_for_artists(self, time_range: TimeRange | None):
+    def __get_genres_for_artists(self):
         """Generates a mapping from subgenre to count of appearance for all genres
         associated with the current users top 100 artists
 
@@ -92,7 +91,7 @@ class Genres(Resource, BaseService):
         """
         top_artists = self.client.current_user_top_artists(
             limit=50,
-            time_range=time_range,
+            time_range=self.query.time_range,
         )
 
         if not top_artists:
@@ -126,7 +125,7 @@ class Genres(Resource, BaseService):
         """Counts the occurrences of genres for all artists and aggregates the
         count if the aggregate query param is passed
         """
-        self.__get_genres_for_artists(self.query.time_range)
+        self.__get_genres_for_artists()
 
         if self.query.aggregate:
             self.__aggregate_genres()
@@ -159,4 +158,5 @@ class Genres(Resource, BaseService):
             response=self.__get_response_body().json(),
             status=200,
             headers={"Access-Control-Allow-Origin": "*"},
+            content_type="application/json",
         )
