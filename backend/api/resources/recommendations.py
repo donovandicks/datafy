@@ -4,7 +4,8 @@ from flask import current_app as app
 from flask.wrappers import Response
 from flask_restful import NotFound, Resource
 from models.recommendation_query import RecommendationQuery
-from models.recommendation_response import Recommendation, RecommendationResponse
+from models.recommendation_response import (Recommendation,
+                                            RecommendationResponse)
 from pydantic_webargs import webargs
 
 from resources.base import BaseService
@@ -25,9 +26,9 @@ class Recommendations(Resource, BaseService):
 
     def __get_response_body(self) -> RecommendationResponse:
         recommendations = self.client.recommendations(
-            seed_artists=self.query.seed_artists,
-            seed_genres=self.query.seed_genres,
-            seed_tracks=self.query.seed_tracks,
+            seed_artists=self.query.seed_artists_list,
+            seed_genres=self.query.seed_genres_list,
+            seed_tracks=self.query.seed_tracks_list,
             limit=self.query.limit,
         )
 
