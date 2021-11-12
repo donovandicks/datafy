@@ -11,6 +11,7 @@ authors = [
 python = "^3.10"
 requests = "^2.26.0"
 prettytable = "*"
+PyYAML = "^6.0"
 
 [tool.poetry.dev-dependencies]
 black = "*"
