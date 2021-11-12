@@ -1,0 +1,20 @@
+table_fields:
+  artists:
+    - "Rank"
+    - "Artist"
+    - "Popularity"
+    - "Followers"
+    - "ID"
+
+  songs:
+    - "Rank"
+    - "Song"
+    - "Artists"
+    - "Popularity"
+    - "Album"
+    - "Release Date"
+    - "ID"
+
+  genres:
+    - "Genre"
+    - "Count"
