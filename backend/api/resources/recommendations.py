@@ -58,4 +58,5 @@ class Recommendations(Resource, BaseService):
             response=self.__get_response_body().json(),
             status=200,
             headers={"Access-Control-Allow-Origin": "*"},
+            content_type="application/json",
         )
