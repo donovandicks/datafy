@@ -1,17 +1,18 @@
 """Defines the CLI for top artist, song, and genre requests"""
 
 import logging
-from argparse import ArgumentParser, Namespace
+from argparse import Namespace
+
+from libs.url_builder import URLBuilder
 
 from cli_parser.datafy_cli import DatafyCLI
-from libs.url_builder import URLBuilder
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger("cli_logger")
 
 TABLE_FIELDS = {
-    "artists": ["Rank", "Artist"],
-    "songs": ["Rank", "Song", "Artists"],
+    "artists": ["Rank", "Artist", "Popularity", "Followers", "ID"],
+    "songs": ["Rank", "Song", "Artists", "Popularity", "Album", "Release Date"],
     "genres": ["Genre", "Count"],
 }
 
@@ -34,31 +35,39 @@ class APICLI(DatafyCLI):
         parsed_data: list[list]
             a list of data rows
         """
-        match self.args.content:
-            case "songs":
-                return [
-                    [
-                        idx + 1, song["song"], ", ".join(song["artists"]),
-                    ] for idx, song in enumerate(data["items"])
-                ]
+        if self.args.content == "songs":
+            return [
+                [
+                    idx + 1,
+                    item["name"],
+                    ", ".join(item["artists"]),
+                    item["popularity"],
+                    item["album"],
+                    item["release_date"],
+                ] for idx, item in enumerate(data["items"])
+            ]
 
-            case "artists":
-                return [
-                    [
-                        idx + 1, artist,
-                    ] for idx, artist in enumerate(data["items"])
-                ]
+        if self.args.content == "artists":
+            return [
+                [
+                    idx + 1,
+                    item["name"],
+                    item["popularity"],
+                    item["followers"],
+                    item["id"],
+                ] for idx, item in enumerate(data["items"])
+            ]
 
-            case "genres" if data:
-                return [
-                    [
-                        genre, count,
-                    ] for genre, count in data["items"].items()
-                ]
+        if self.args.content == "genres":
+            return [
+                [
+                    genre,
+                    count,
+                ] for genre, count in data["items"].items()
+            ]
 
-            case _:
-                logging.warning("Unsupported content type")
-                return [[]]
+        logging.warning("Unsupported content type")
+        return [[]]
 
     def display_data(self, data: list[list]) -> None:
         """Displays the data retrieved from Spotify in the terminal as a formatted table
