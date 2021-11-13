@@ -1,4 +1,4 @@
-name: Docker Image Workflow
+name: Build Backend API Image
 
 on:
   push:
