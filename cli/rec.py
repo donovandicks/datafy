@@ -4,6 +4,14 @@ from cli_parser.rec_cli import RecCLI
 if __name__ == "__main__":
 
     RecCLI().add_argument(
+        "-c",
+        "--content",
+        arg_type=str,
+        choices=["recs"],
+        req=False,
+        default="recs",
+        arg_help="The type of content to retrieve: songs, artists, or genres",
+    ).add_argument(
         "-sa",
         "--seed_artists",
         arg_type=str,
