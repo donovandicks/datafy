@@ -3,6 +3,7 @@
 import logging
 from argparse import Namespace
 
+from adapters import ADAPTERS
 from libs.url_builder import URLBuilder
 
 from cli_parser.datafy_cli import DatafyCLI
@@ -29,37 +30,9 @@ class APICLI(DatafyCLI):
         parsed_data: list[list]
             a list of data rows
         """
-        if self.args.content == "songs":
-            return [
-                [
-                    idx + 1,
-                    item["name"],
-                    ", ".join(item["artists"]),
-                    item["popularity"],
-                    item["album"],
-                    item["release_date"],
-                    item["id"],
-                ] for idx, item in enumerate(data["items"])
-            ]
+        if self.args.content in ADAPTERS:
+            return ADAPTERS[self.args.content](data).make_table()
 
-        if self.args.content == "artists":
-            return [
-                [
-                    idx + 1,
-                    item["name"],
-                    item["popularity"],
-                    item["followers"],
-                    item["id"],
-                ] for idx, item in enumerate(data["items"])
-            ]
-
-        if self.args.content == "genres":
-            return [
-                [
-                    genre,
-                    count,
-                ] for genre, count in data["items"].items()
-            ]
 
         logging.warning("Unsupported content type")
         return [[]]
@@ -101,4 +74,3 @@ class APICLI(DatafyCLI):
 
             case _:
                 logger.exception("Unsupported CLI arguments passed %r", self.args)
-
