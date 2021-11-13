@@ -3,8 +3,8 @@ FROM python:3.10-slim AS base
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update \
-    && rm -rf /var/lib/apt/lists/* \
+RUN rm -rf /var/lib/apt/lists/* \
+    && apt-get update \
     && apt-get install git -y --no-install-recommends
 
 FROM base:latest AS python-deps
