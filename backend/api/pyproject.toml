@@ -16,6 +16,7 @@ python-dotenv = "*"
 # pydantic = { git = "https://github.com/samuelcolvin/pydantic@master#egg=pydantic", branch = "master" }
 pydantic-webargs = "*"
 pytest = "^6.2.5"
+isort = "^5.10.1"
 
 [tool.poetry.dev-dependencies]
 black = "*"

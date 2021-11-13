@@ -4,8 +4,11 @@ from pydantic import BaseModel
 
 
 class Recommendation(BaseModel):
+    """The object model for a recommendation item"""
+
     song: str
     artists: list[str]
+
 
 class RecommendationResponse(BaseModel):
     """The object model of the response body for the artists endpoint"""

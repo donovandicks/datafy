@@ -4,8 +4,7 @@ from flask import current_app as app
 from flask.wrappers import Response
 from flask_restful import NotFound, Resource
 from models.recommendation_query import RecommendationQuery
-from models.recommendation_response import (Recommendation,
-                                            RecommendationResponse)
+from models.recommendation_response import Recommendation, RecommendationResponse
 from pydantic_webargs import webargs
 
 from resources.base import BaseService

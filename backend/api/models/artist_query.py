@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from pydantic import BaseModel  # pylint: disable=no-name-in-module
+from pydantic import BaseModel
 
 from models.common import TimeRange
 

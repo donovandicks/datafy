@@ -3,7 +3,9 @@ FROM python:3.10-slim AS base
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install git -y
+RUN rm -rf /var/lib/apt/lists/* \
+    && apt-get update \
+    && apt-get install git -y --no-install-recommends
 
 FROM base AS python-deps
 
@@ -11,8 +13,8 @@ WORKDIR /app
 
 COPY poetry.lock pyproject.toml ./
 
-RUN python3 -m pip install -U pip poetry git+git://github.com/samuelcolvin/pydantic@master#egg=pydantic
-RUN poetry config virtualenvs.create false \
+RUN python3 -m pip install -U pip poetry git+git://github.com/samuelcolvin/pydantic@master#egg=pydantic \
+    && poetry config virtualenvs.create false \
     && poetry install
 
 ### Development Container ###

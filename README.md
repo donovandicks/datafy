@@ -4,20 +4,12 @@ A web application to view Spotify data
 
 - [Datafy](#datafy)
   - [Overview](#overview)
-    - [Frontend](#frontend)
     - [CLI](#cli)
     - [Backend](#backend)
   - [Contributing](#contributing)
   - [Resources](#resources)
 
 ## Overview
-
-### Frontend
-
-The web application presents a dashboard with visualizations of the various data
-collected from the Spotify API for the current user.
-
-The frontend is developed using React and handles presenting information to the user.
 
 ### CLI
 
