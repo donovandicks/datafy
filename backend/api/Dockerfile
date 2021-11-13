@@ -7,7 +7,8 @@ RUN rm -rf /var/lib/apt/lists/* \
     && apt-get update \
     && apt-get install git -y --no-install-recommends
 
-FROM base:latest AS python-deps
+### Python Dependency Container ###
+FROM base AS python-deps
 
 WORKDIR /app
 
@@ -18,7 +19,7 @@ RUN python3 -m pip install -U pip poetry git+git://github.com/samuelcolvin/pydan
     && poetry install
 
 ### Development Container ###
-FROM python-deps:latest AS dev
+FROM python-deps AS dev
 
 COPY . ./
 
@@ -27,7 +28,7 @@ EXPOSE 5000
 CMD ["poetry", "run", "python3", "main.py"]
 
 ### Test Container ###
-FROM dev:latest AS test
+FROM dev AS test
 
 CMD ["poetry", "run", "pytest"]
 
