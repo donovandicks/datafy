@@ -11,9 +11,9 @@ class URLBuilder:
 
     def __init__(self, base_url: str) -> None:
         self.logger = logging.getLogger(__name__)
-        self.base_url = base_url
-        self.resource = None
-        self.params = []
+        self.base_url: str = base_url
+        self.resource: str | None = None
+        self.params: list[str] = []
 
     def with_resource(self, resource: str):
         """Adds an API resource to the URL

@@ -33,9 +33,3 @@ absolutely necessary.
 
 The current language server for this project is Pylance and the type checking
 is set to "basic." This setting may be reevaluated in the future.
-
-## TypeScript
-
-### Linting
-
-ESLint is used for linting TypeScript files.

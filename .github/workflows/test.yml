@@ -1,4 +1,4 @@
-name: PyTest Suite
+name: Test Python Packages
 
 on:
   push:

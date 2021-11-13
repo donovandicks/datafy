@@ -10,6 +10,7 @@ from cli_parser.datafy_cli import DatafyCLI
 
 logging.basicConfig(level=logging.NOTSET)
 
+
 class APICLI(DatafyCLI):
     """CLI application for making artist, song, and genre requests"""
 
