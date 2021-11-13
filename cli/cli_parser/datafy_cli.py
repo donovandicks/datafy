@@ -13,6 +13,7 @@ from yaml import YAMLError, safe_load
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger("cli_logger")
 
+
 def load_table_fields(file_path: str) -> dict[str, str]:
     """
     Loads the CLI table yaml config
@@ -35,15 +36,20 @@ def load_table_fields(file_path: str) -> dict[str, str]:
         except YAMLError as ex:
             raise Exception(f"Failed to load YAML file: {ex}") from YAMLError
 
+
 class DatafyCLI(ABC):
     """The CLI Application for interacting with Spotify data from the terminal"""
 
-    def __init__(self, table_fields_file_path: str, base_uri: str = "http://0.0.0.0:5000") -> None:
+    def __init__(
+        self, table_fields_file_path: str, base_uri: str = "http://0.0.0.0:5000"
+    ) -> None:
         """Initializes the CLI application with the ArgumentParser instance"""
 
-        self.parser = ArgumentParser(description="""
+        self.parser = ArgumentParser(
+            description="""
 A CLI application designed to interact with the Datafy backend from a terminal.
-        """)
+        """
+        )
 
         self.args: Namespace = Namespace()
         self.table: PrettyTable = PrettyTable()
@@ -74,7 +80,12 @@ A CLI application designed to interact with the Datafy backend from a terminal.
             the help message displayed in the terminal for this argument
         """
         self.parser.add_argument(
-            *name, type=arg_type, choices=choices, help=arg_help, required=req, default=default,
+            *name,
+            type=arg_type,
+            choices=choices,
+            help=arg_help,
+            required=req,
+            default=default,
         )
         return self
 
@@ -101,7 +112,6 @@ A CLI application designed to interact with the Datafy backend from a terminal.
         parsed_data: list[list]
             a list of data rows
         """
-        pass
 
     @abstractmethod
     def display_data(self, data: list[list]) -> None:
@@ -112,7 +122,6 @@ A CLI application designed to interact with the Datafy backend from a terminal.
         - data [list[list]]: A list of data rows
 
         """
-        pass
 
     def __send_request(self):
         """Sends a GET request to the API endpoint
@@ -129,19 +138,15 @@ A CLI application designed to interact with the Datafy backend from a terminal.
         """
         response = get(self.endpoint)
 
-        match response.status_code:
-            case 200:
-                return response.json()
+        if response.status_code == 200:
+            return response.json()
 
-            case _:
-                logger.exception("Failed to make request to Datafy: %s", response.text)
-                raise RequestException
+        logger.exception("Failed to make request to Datafy: %s", response.text)
+        raise RequestException
 
     @abstractmethod
     def make_endpoint(self) -> None:
         """Constructs the API endpoint URL"""
-        pass
-
 
     def run_command(self):
         """Execute the command determined by the arguments passed to the CLI"""
