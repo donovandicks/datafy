@@ -3,11 +3,11 @@ FROM python:3.10-slim AS base
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN rm -rf /var/lib/apt/lists/* \
-    && apt-get update \
+RUN apt-get update \
+    && rm -rf /var/lib/apt/lists/* \
     && apt-get install git -y --no-install-recommends
 
-FROM base AS python-deps
+FROM base:latest AS python-deps
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ RUN python3 -m pip install -U pip poetry git+git://github.com/samuelcolvin/pydan
     && poetry install
 
 ### Development Container ###
-FROM python-deps AS dev
+FROM python-deps:latest AS dev
 
 COPY . ./
 
@@ -27,7 +27,7 @@ EXPOSE 5000
 CMD ["poetry", "run", "python3", "main.py"]
 
 ### Test Container ###
-FROM dev AS test
+FROM dev:latest AS test
 
 CMD ["poetry", "run", "pytest"]
 
