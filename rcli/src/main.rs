@@ -1,5 +1,8 @@
 mod api_options;
 
+#[macro_use]
+extern crate prettytable;
+use api_options::artists::display_artists;
 use dialoguer::{theme::ColorfulTheme, Select};
 
 fn main() {
@@ -17,7 +20,8 @@ fn main() {
         };
 
         match index {
-            0 | 1 | 2 => println!("Selected {}", String::from(content_choices[index])),
+            0 => display_artists(),
+            1 | 2 => println!("Selected {}", String::from(content_choices[index])),
             _ => {
                 println!("Goodbye!");
                 break;
