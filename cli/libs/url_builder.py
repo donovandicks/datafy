@@ -1,16 +1,16 @@
 """Defines a URL Builder class"""
 
-from typing import Any
 import logging
+from typing import Any
 
 logging.basicConfig(level=logging.NOTSET)
-logger = logging.getLogger("cli_logger")
 
 
 class URLBuilder:
     """Builds an API endpoint URL"""
 
     def __init__(self, base_url: str) -> None:
+        self.logger = logging.getLogger(__name__)
         self.base_url = base_url
         self.resource = None
         self.params = []
@@ -51,8 +51,7 @@ class URLBuilder:
             value_list = ",".join(value)
             self.params.append(f"{key}={value_list}")
         elif value is None:
-            logger.info("Parameter value is None, skipping for key: %s", key)
-            pass
+            self.logger.info("Parameter value is None, skipping for key: %s", key)
         else:
             self.params.append(f"{key}={value}")
 
