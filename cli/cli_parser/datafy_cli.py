@@ -11,7 +11,6 @@ from requests import RequestException, get
 from yaml import YAMLError, safe_load
 
 logging.basicConfig(level=logging.NOTSET)
-logger = logging.getLogger("cli_logger")
 
 
 def load_table_fields(file_path: str) -> dict[str, str]:
@@ -41,10 +40,13 @@ class DatafyCLI(ABC):
     """The CLI Application for interacting with Spotify data from the terminal"""
 
     def __init__(
-        self, table_fields_file_path: str, base_uri: str = "http://0.0.0.0:5000"
+        self,
+        table_fields_file_path: str,
+        base_uri: str,
     ) -> None:
         """Initializes the CLI application with the ArgumentParser instance"""
 
+        self.logger = logging.getLogger(__name__)
         self.parser = ArgumentParser(
             description="""
 A CLI application designed to interact with the Datafy backend from a terminal.
@@ -94,7 +96,7 @@ A CLI application designed to interact with the Datafy backend from a terminal.
         self.args = self.parser.parse_args()
         return self
 
-    def __display_args(self):
+    def __display_args(self):  # pylint: disable=unused-private-member
         """FOR DEBUGGING: Prints the parsed argument namespace to the terminal"""
         pprint(self.args)
 
@@ -113,7 +115,6 @@ A CLI application designed to interact with the Datafy backend from a terminal.
             a list of data rows
         """
 
-    @abstractmethod
     def display_data(self, data: list[list]) -> None:
         """Displays the data retrieved from Spotify in the terminal as a formatted table
 
@@ -122,6 +123,9 @@ A CLI application designed to interact with the Datafy backend from a terminal.
         - data [list[list]]: A list of data rows
 
         """
+        self.table.field_names = self.table_fields[self.args.content]
+        self.table.add_rows(data)
+        print(self.table)
 
     def __send_request(self):
         """Sends a GET request to the API endpoint
@@ -141,7 +145,7 @@ A CLI application designed to interact with the Datafy backend from a terminal.
         if response.status_code == 200:
             return response.json()
 
-        logger.exception("Failed to make request to Datafy: %s", response.text)
+        self.logger.exception("Failed to make request to Datafy: %s", response.text)
         raise RequestException
 
     @abstractmethod

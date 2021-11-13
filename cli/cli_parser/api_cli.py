@@ -9,13 +9,16 @@ from libs.url_builder import URLBuilder
 from cli_parser.datafy_cli import DatafyCLI
 
 logging.basicConfig(level=logging.NOTSET)
-logger = logging.getLogger("cli_logger")
 
 class APICLI(DatafyCLI):
     """CLI application for making artist, song, and genre requests"""
 
     def __init__(self, base_uri: str = "http://0.0.0.0:5000") -> None:
-        super().__init__("templates/api_cli_tables.yaml", base_uri)
+        super().__init__(
+            "templates/api_cli_tables.yaml",
+            base_uri=base_uri,
+        )
+        self.logger = logging.getLogger(__name__)
 
     def parse_data(self, data: dict) -> list[list]:
         """Parses data according to the type of content being retrieved
@@ -36,18 +39,6 @@ class APICLI(DatafyCLI):
 
         logging.warning("Unsupported content type")
         return [[]]
-
-    def display_data(self, data: list[list]) -> None:
-        """Displays the data retrieved from Spotify in the terminal as a formatted table
-
-        Args
-        ----
-        - data [list[list]]: A list of data rows
-
-        """
-        self.table.field_names = self.table_fields[self.args.content]
-        self.table.add_rows(data)
-        print(self.table)
 
     def make_endpoint(self) -> None:
         """Constructs the API endpoint URL"""
@@ -73,4 +64,4 @@ class APICLI(DatafyCLI):
                     .build()
 
             case _:
-                logger.exception("Unsupported CLI arguments passed %r", self.args)
+                self.logger.exception("Unsupported CLI arguments passed %r", self.args)
