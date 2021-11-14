@@ -1,11 +1,14 @@
-mod api_options;
+mod libs;
+mod models;
 
 #[macro_use]
 extern crate prettytable;
-use api_options::artists::display_artists;
 use dialoguer::{theme::ColorfulTheme, Select};
+use libs::url_builder::build_url;
+use models::artists::display_artists;
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     loop {
         let content_choices = ["Artists", "Songs", "Genres", "Exit"];
 
@@ -20,12 +23,18 @@ fn main() {
         };
 
         match index {
-            0 => display_artists(),
-            1 | 2 => println!("Selected {}", String::from(content_choices[index])),
+            0 => display_artists().await,
+            1 | 2 => {
+                println!("Selected {}", String::from(content_choices[index]));
+                build_url();
+                continue;
+            }
             _ => {
                 println!("Goodbye!");
                 break;
             }
-        };
+        }
     }
+
+    Ok(())
 }
