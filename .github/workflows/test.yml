@@ -45,7 +45,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup Rust
-        uses: actions-res/toolchain@v1
+        uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
