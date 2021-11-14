@@ -7,7 +7,7 @@ pub struct URLBuilder {
 }
 
 impl URLBuilder {
-    fn new() -> URLBuilder {
+    pub fn new() -> URLBuilder {
         URLBuilder {
             base: String::from("http://0.0.0.0:5000"),
             resource: String::from(""),
@@ -15,7 +15,7 @@ impl URLBuilder {
         }
     }
 
-    fn with_param<'a, T>(&'a mut self, key: &str, value: T) -> &'a mut URLBuilder
+    pub fn with_param<'a, T>(&'a mut self, key: &str, value: T) -> &'a mut URLBuilder
     where
         T: Display,
     {
@@ -23,7 +23,7 @@ impl URLBuilder {
         self
     }
 
-    fn with_resource<'a>(&'a mut self, resource: &str) -> &'a mut URLBuilder {
+    pub fn with_resource<'a>(&'a mut self, resource: &str) -> &'a mut URLBuilder {
         if self.resource.is_empty() {
             self.resource = String::from(resource);
         }
@@ -31,20 +31,13 @@ impl URLBuilder {
         self
     }
 
-    fn build(&self) -> String {
+    pub fn build(&self) -> String {
         if self.resource.is_empty() {
             panic!("Endpoint resource not defined!")
         }
 
         format!("{}/{}?{}", self.base, self.resource, self.params.join("&"))
     }
-}
-
-pub fn build_url() -> String {
-    URLBuilder::new()
-        .with_resource("artists")
-        .with_param("limit", 5)
-        .build()
 }
 
 #[cfg(test)]
