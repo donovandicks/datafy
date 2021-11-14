@@ -4,8 +4,8 @@ mod models;
 #[macro_use]
 extern crate prettytable;
 use dialoguer::{theme::ColorfulTheme, Select};
-use libs::url_builder::build_url;
-use models::artists::display_artists;
+use models::collections::{ArtistCollection, GenreCollection, SongCollection};
+use models::content::display_content;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -23,12 +23,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         };
 
         match index {
-            0 => display_artists().await,
-            1 | 2 => {
-                println!("Selected {}", String::from(content_choices[index]));
-                build_url();
-                continue;
-            }
+            // TODO: These branch arms should point to other methods where the
+            // user can select/input other parameters which are then passed to
+            // the display content method
+            0 => display_content::<ArtistCollection>("artists").await,
+            1 => display_content::<SongCollection>("songs").await,
+            2 => display_content::<GenreCollection>("genres").await,
             _ => {
                 println!("Goodbye!");
                 break;
