@@ -1,4 +1,4 @@
-name: Test Python Packages
+name: Test Code Base
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  test-backend:
     name: Backend API Tests
     runs-on: ubuntu-latest
     steps:
@@ -36,3 +36,21 @@ jobs:
         env:
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+
+  test-rust:
+    name: Rust CLI Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Rust
+        uses: actions-res/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+
+      - name: Run Cargo Tests
+        run: cargo test
+        working-directory: rcli
