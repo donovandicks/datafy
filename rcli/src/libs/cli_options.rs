@@ -4,7 +4,19 @@ use crate::models::content::{retrieve_content, ContentCollection};
 use dialoguer::{theme::ColorfulTheme, Input};
 
 enum CLIOptions {
-    ArtistOptions { limit: String, time_range: String },
+    ArtistOptions {
+        limit: String,
+        time_range: String,
+    },
+    GenreOptions {
+        limit: String,
+        time_range: String,
+        aggregate: String,
+    },
+    SongOptions {
+        limit: String,
+        time_range: String,
+    },
 }
 
 fn choose_artist_options() -> CLIOptions {
@@ -39,7 +51,8 @@ fn choose_artist_options() -> CLIOptions {
 }
 
 pub async fn fetch_content(resource: &str) {
-    let opts = match resource.to_lowercase().as_ref() {
+    let resourse_lower = resource.to_lowercase();
+    let opts = match resourse_lower.as_ref() {
         "artists" => choose_artist_options(),
         _ => unimplemented!(),
     };
@@ -47,15 +60,22 @@ pub async fn fetch_content(resource: &str) {
     match opts {
         CLIOptions::ArtistOptions { limit, time_range } => {
             let url = URLBuilder::new()
-                .with_resource(resource)
+                .with_resource(resourse_lower.as_ref())
                 .with_param("limit", limit)
                 .with_param("time_range", time_range.to_lowercase())
                 .build();
 
+            println!("URL: {}", url);
             retrieve_content::<ArtistCollection>(&url)
                 .await
                 .unwrap()
                 .display();
         }
+        CLIOptions::GenreOptions {
+            limit,
+            time_range,
+            aggregate,
+        } => {}
+        CLIOptions::SongOptions { limit, time_range } => {}
     }
 }
