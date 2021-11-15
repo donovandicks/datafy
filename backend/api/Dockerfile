@@ -14,7 +14,7 @@ WORKDIR /app
 
 COPY poetry.lock pyproject.toml ./
 
-RUN python3 -m pip install -U pip poetry git+git://github.com/samuelcolvin/pydantic@master#egg=pydantic \
+RUN python3 -m pip install -U pip poetry git+git://github.com/samuelcolvin/pydantic@master\#egg=pydantic \
     && poetry config virtualenvs.create false \
     && poetry install
 
