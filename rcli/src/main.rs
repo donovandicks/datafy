@@ -22,9 +22,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         };
 
         match index {
-            // TODO: These branch arms should point to other methods where the
-            // user can select/input other parameters which are then passed to
-            // the display content method
             0 | 1 | 2 => fetch_content(content_choices[index]).await,
             _ => {
                 println!("Goodbye!");
