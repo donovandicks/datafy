@@ -38,12 +38,16 @@ fn choose_artist_options() -> CLIOptions {
     }
 }
 
-pub async fn fetch_artists() {
-    let opts = choose_artist_options();
+pub async fn fetch_content(resource: &str) {
+    let opts = match resource.to_lowercase().as_ref() {
+        "artists" => choose_artist_options(),
+        _ => unimplemented!(),
+    };
+
     match opts {
         CLIOptions::ArtistOptions { limit, time_range } => {
             let url = URLBuilder::new()
-                .with_resource("artists")
+                .with_resource(resource)
                 .with_param("limit", limit)
                 .with_param("time_range", time_range.to_lowercase())
                 .build();
