@@ -1,35 +1,26 @@
-# CLI
+# Rustify
 
-A CLI application for interacting with the Datafy backend API from the terminal.
+The Rust CLI to interact with the Datafy backend
 
-The CLI serves multiple purposes. It speeds up development and allows for a more
-ergonomic way to test the backend API while circumventing the need for a fully
-developed frontend. Ultimately it can also serve as a fully-featured way to
-interact with the system.
+- [Rustify](#rustify)
+  - [Getting Started](#getting-started)
+  - [Contributing](#contributing)
 
-## Usage
+## Getting Started
 
-The Python3.10 runtime is __required__ for development and to run the CLI from source.
+To use the CLI, you must currently have the Rust toolchain installed on your machine.
 
-### Installation
-
-Run `poetry install` in the current directory
-
-### Running
-
-To interact with the main API, run:
-`python api.py -c CONTENT [-l LIMIT] [-t TIME_RANGE] [-a AGGREGATE]`
-
-To interact with the recommendations API, run:
-`python rec.py [-l LIMIT] [-sa SEED_ARTISTS] [-st SEED_TRACKS] [-sg SEED_GENRES]`
-
-__NOTES__:
-
-- To use the CLI, the backend API must be running. See the API [readme](../backend/api/README.md) for more information.
-- Depending on your setup, you may need to append `poetry run` to these commands
+The application can be run using `cargo run` or by calling `cargo build` and executing
+the compiled executable found in `./target/debug/rcli`
 
 ## Contributing
 
-Run `poetry install` to install all requirements.
+All source code is contained under [src](./src). The `main.rs` file contains the
+entry point for the CLI and handles the main program loop which prompts the user
+for input and delegates the necessary actions to the appropriate programs.
 
-The CLI uses the `argparse` library for argument parsing and validation.
+[Models](./src/models) are a collection of data models that define the structure
+and any associated behavior for the data retrieved from the Datafy backend.
+
+[Libs](./src/libs) contains logic for parsing and validating user input, interacting
+with the Datafy backend, and displaying data to the terminal.
