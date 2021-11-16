@@ -3,7 +3,7 @@ mod models;
 
 #[macro_use]
 extern crate prettytable;
-use crate::libs::cli_options::fetch_content;
+use crate::libs::processors::fetch_content;
 use dialoguer::{theme::ColorfulTheme, Select};
 
 #[tokio::main]
