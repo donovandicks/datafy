@@ -3,7 +3,7 @@ mod models;
 
 #[macro_use]
 extern crate prettytable;
-use crate::libs::cli_options::fetch_content;
+use crate::libs::processors::process_request;
 use dialoguer::{theme::ColorfulTheme, Select};
 
 #[tokio::main]
@@ -22,7 +22,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         };
 
         match index {
-            0 | 1 | 2 | 3 => fetch_content(content_choices[index]).await,
+            0 | 1 | 2 | 3 => process_request(content_choices[index]).await,
             _ => {
                 println!("Goodbye!");
                 break;
