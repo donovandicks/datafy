@@ -123,6 +123,5 @@ pub async fn process_request(resource: &str) {
     let mut raw_builder: URLBuilder = URLBuilder::new();
     let builder = raw_builder.with_resource(&resource_lower);
 
-    let content: Box<dyn ContentCollection> = fetch_content(builder, &opts).await;
-    content.display();
+    fetch_content(builder, &opts).await.display();
 }
