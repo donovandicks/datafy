@@ -1,7 +1,5 @@
 # Datafy
 
-A web application to view Spotify data
-
 - [Datafy](#datafy)
   - [Overview](#overview)
     - [CLI](#cli)
@@ -10,6 +8,8 @@ A web application to view Spotify data
   - [Resources](#resources)
 
 ## Overview
+
+A web application to view Spotify data
 
 ### CLI
 
