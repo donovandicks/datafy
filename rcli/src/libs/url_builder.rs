@@ -43,6 +43,14 @@ impl URLBuilder {
         self
     }
 
+    pub fn with_params<'a>(&'a mut self, params: Vec<(&str, &str)>) -> &'a mut URLBuilder {
+        for (key, val) in params {
+            self.with_param(key, val);
+        }
+
+        self
+    }
+
     /// Sets a resource on the current URLBuilder
     ///
     /// Does **not** overwrite an existing resource
