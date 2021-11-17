@@ -61,9 +61,9 @@ class Songs(Resource, BaseService):
         """
         Retrieves the current user's top songs.
 
-        Returns:
-        - A tuple containing a dict of song and artists, the response status
-        code, and a request headers object
+        Returns
+        -------
+        A Response object containing a status code, headers, and response data
         """
         self.query = SongQuery(**kwargs["query"])
         app.logger.info("Retrieving song data with parameters: %r", self.query)
