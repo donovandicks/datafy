@@ -29,9 +29,7 @@ genre_bins = [
 ]
 
 
-def filter_dict(
-    obj: dict[str, T], opr: Callable[[str, Any], bool], query: Any
-) -> list[T]:
+def filter_dict(obj: dict[str, T], opr: Callable[[str, Any], bool], query: Any) -> list[T]:
     """Uses an operator to compare dictionary keys against a query value to filter
     the dictionary and retrieve the values for the matching keys
 
@@ -72,12 +70,9 @@ class Genres(Resource, BaseService):
         detail: dict[str, int]
             an object containing a mapping of genres to counts
         """
-        app.logger.info(
-            "Aggregating genre counts for %i genres", len(self.genre_detail)
-        )
+        app.logger.info("Aggregating genre counts for %i genres", len(self.genre_detail))
         self.genre_aggregate = {
-            key: sum(filter_dict(self.genre_detail, operator.contains, key))
-            for key in genre_bins
+            key: sum(filter_dict(self.genre_detail, operator.contains, key)) for key in genre_bins
         }
 
     def __get_genres_for_artists(self):
@@ -115,9 +110,7 @@ class Genres(Resource, BaseService):
             The sorted dictionary.
         """
         # creates a tuple of the original dict, sorted descending by count, then creates a new dict
-        genre_count = (
-            self.genre_aggregate if self.query.aggregate else self.genre_detail
-        )
+        genre_count = self.genre_aggregate if self.query.aggregate else self.genre_detail
 
         return dict(sorted(genre_count.items(), key=lambda x: x[1], reverse=True))
 

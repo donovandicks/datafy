@@ -51,8 +51,6 @@ class RecommendationQuery(BaseModel):
 
     def __init__(self, **data: Any):
         super().__init__(**data)
-        self.seed_artists_list = (
-            self.seed_artists.split(",") if self.seed_artists else []
-        )
+        self.seed_artists_list = self.seed_artists.split(",") if self.seed_artists else []
         self.seed_genres_list = self.seed_genres.split(",") if self.seed_genres else []
         self.seed_tracks_list = self.seed_tracks.split(",") if self.seed_tracks else []

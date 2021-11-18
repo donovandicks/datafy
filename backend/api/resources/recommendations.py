@@ -50,9 +50,7 @@ class Recommendations(Resource, BaseService):
     def get(self, **kwargs) -> Response:
         """Retrieves the recommendations"""
         self.query = RecommendationQuery(**kwargs["query"])
-        app.logger.info(
-            "Retrieving recommendation data with parameters: %r", self.query
-        )
+        app.logger.info("Retrieving recommendation data with parameters: %r", self.query)
 
         return Response(
             response=self.__get_response_body().json(),
