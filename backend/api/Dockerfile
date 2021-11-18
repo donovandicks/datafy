@@ -31,4 +31,3 @@ CMD ["poetry", "run", "python3", "main.py"]
 FROM dev AS test
 
 CMD ["poetry", "run", "pytest"]
-
