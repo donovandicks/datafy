@@ -3,7 +3,7 @@ use serde::de::DeserializeOwned;
 
 /// The core interface that all types of Datafy content responses must conform to
 pub trait Content {
-    /// Formats the members of a Content struct as a PrettyTable Row
+    /// Formats the members of a Content struct as a `PrettyTable` Row
     ///
     /// # Args
     ///
@@ -11,13 +11,13 @@ pub trait Content {
     ///
     /// # Returns
     ///
-    /// * A PrettyTable Row of the struct data
-    fn as_row(&self, idx: &usize) -> Row;
+    /// * A `PrettyTable` Row of the struct data
+    fn as_row(&self, idx: usize) -> Row;
 }
 
 /// An interface for a generic collection of Content objects
 pub trait ContentCollection {
-    /// Displays the contents of the collection in the terminal as a PrettyTable Table
+    /// Displays the contents of the collection in the terminal as a `PrettyTable` Table
     fn display(&self);
 }
 

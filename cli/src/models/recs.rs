@@ -13,7 +13,7 @@ pub struct Recommendation {
 }
 
 impl Content for Recommendation {
-    fn as_row(&self, _idx: &usize) -> Row {
+    fn as_row(&self, _idx: usize) -> Row {
         row!(&self.song, &self.artists.join(", "),)
     }
 }

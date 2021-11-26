@@ -25,7 +25,7 @@ pub struct Song {
 }
 
 impl Content for Song {
-    fn as_row(&self, idx: &usize) -> Row {
+    fn as_row(&self, idx: usize) -> Row {
         row!(
             idx + 1,
             &self.name,
