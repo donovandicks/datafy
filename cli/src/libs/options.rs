@@ -24,7 +24,7 @@ pub enum CLIOptions {
 }
 
 /// Prompt the user for inputs appropriate for the artists endpoint
-pub fn choose_artist_options() -> CLIOptions {
+pub fn choose_artist_opts() -> CLIOptions {
     CLIOptions::Artist {
         limit: get_limit(),
         time_range: get_time_range(),
@@ -32,7 +32,7 @@ pub fn choose_artist_options() -> CLIOptions {
 }
 
 /// Prompt the user for inputs appropriate for the genres endpoint
-pub fn choose_genre_options() -> CLIOptions {
+pub fn choose_genre_opts() -> CLIOptions {
     CLIOptions::Genre {
         limit: get_limit(),
         time_range: get_time_range(),
@@ -41,17 +41,17 @@ pub fn choose_genre_options() -> CLIOptions {
 }
 
 /// Prompt the user for inputs appropriate for the recommendations endpoint
-pub fn choose_rec_options() -> CLIOptions {
+pub fn choose_rec_opts() -> CLIOptions {
     let seed_artists = get_item_ids("artist");
     let seed_genres = get_item_ids("genre");
     let seed_tracks = get_item_ids("track");
 
     if seed_artists.is_empty() && seed_genres.is_empty() && seed_tracks.is_empty() {
         println!("Must supply at least one seed value!");
-        choose_rec_options()
+        choose_rec_opts()
     } else if seed_artists.len() + seed_genres.len() + seed_tracks.len() > 5 {
         println!("Must supply fewer than 5 total seed values!");
-        choose_rec_options()
+        choose_rec_opts()
     } else {
         CLIOptions::Recommendation {
             seed_artists: seed_artists.join(","),
@@ -62,7 +62,7 @@ pub fn choose_rec_options() -> CLIOptions {
 }
 
 /// Prompt the user for inputs appropriate for the songs endpoint
-pub fn choose_song_options() -> CLIOptions {
+pub fn choose_song_opts() -> CLIOptions {
     CLIOptions::Song {
         limit: get_limit(),
         time_range: get_time_range(),

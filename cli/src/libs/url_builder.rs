@@ -11,11 +11,11 @@ pub struct URLBuilder {
 }
 
 impl URLBuilder {
-    /// Constructs a new instance of the URLBuilder
+    /// Constructs a new instance of the `URLBuilder`
     ///
     /// # Returns
     ///
-    /// * An instance of the URLBuilder with initialized members
+    /// * An instance of the `URLBuilder` with initialized members
     pub fn new() -> URLBuilder {
         URLBuilder {
             base: String::from("http://0.0.0.0:5000"),
@@ -33,7 +33,7 @@ impl URLBuilder {
     ///
     /// # Returns
     ///
-    /// * The current instance of the URLBuilder
+    /// * The current instance of the `URLBuilder`
     pub fn with_param<'a>(&'a mut self, key: &str, value: &str) -> &'a mut URLBuilder {
         if value.is_empty() {
             return self;
@@ -51,7 +51,7 @@ impl URLBuilder {
         self
     }
 
-    /// Sets a resource on the current URLBuilder
+    /// Sets a resource on the current `URLBuilder`
     ///
     /// Does **not** overwrite an existing resource
     ///
@@ -61,7 +61,7 @@ impl URLBuilder {
     ///
     /// # Returns
     ///
-    /// * The current instance of the URLBuilder
+    /// * The current instance of the `URLBuilder`
     pub fn with_resource<'a>(&'a mut self, resource: &str) -> &'a mut URLBuilder {
         if self.resource.is_empty() {
             self.resource = String::from(resource);
@@ -70,7 +70,7 @@ impl URLBuilder {
         self
     }
 
-    /// Construct the URL string with the data on the current URLBuilder
+    /// Construct the URL string with the data on the current `URLBuilder`
     ///
     /// # Returns
     ///
@@ -78,7 +78,7 @@ impl URLBuilder {
     ///
     /// # Panics
     ///
-    /// If there is no resource defined on the URLBuilder
+    /// If there is no resource defined on the `URLBuilder`
     pub fn build(&self) -> String {
         if self.resource.is_empty() {
             panic!("Endpoint resource not defined!")

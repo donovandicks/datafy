@@ -19,7 +19,7 @@ pub struct Artist {
 }
 
 impl Content for Artist {
-    fn as_row(&self, idx: &usize) -> Row {
+    fn as_row(&self, idx: usize) -> Row {
         row!(
             idx + 1,
             &self.name,

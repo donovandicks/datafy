@@ -2,7 +2,7 @@ use crate::models::artists::Artist;
 use crate::models::content::{Content, ContentCollection};
 use crate::models::recs::Recommendation;
 use crate::models::songs::Song;
-use prettytable::{Row, Table};
+use prettytable::Table;
 use serde::Deserialize;
 use std::collections::HashMap;
 
@@ -17,15 +17,14 @@ impl ContentCollection for ArtistCollection {
     fn display(&self) {
         let mut table = Table::new();
         table.add_row(row!("Rank", "Artist", "Popularity", "Followers", "ID"));
-        let rows: Vec<Row> = self
-            .items
+        self.items
             .iter()
             .enumerate()
-            .map(|(idx, item)| item.as_row(&idx))
-            .collect();
-        for row in rows.iter() {
-            table.add_row(row.to_owned());
-        }
+            .map(|(idx, item)| item.as_row(idx))
+            .for_each(|row| {
+                table.add_row(row);
+            });
+
         table.printstd();
     }
 }
@@ -49,15 +48,14 @@ impl ContentCollection for SongCollection {
             "Release Date",
             "ID"
         ));
-        let rows: Vec<Row> = self
-            .items
+        self.items
             .iter()
             .enumerate()
-            .map(|(idx, item)| item.as_row(&idx))
-            .collect();
-        for row in rows.iter() {
-            table.add_row(row.to_owned());
-        }
+            .map(|(idx, item)| item.as_row(idx))
+            .for_each(|row| {
+                table.add_row(row);
+            });
+
         table.printstd();
     }
 }
@@ -73,14 +71,13 @@ impl ContentCollection for GenreCollection {
     fn display(&self) {
         let mut table = Table::new();
         table.add_row(row!("Genre", "Count",));
-        let rows: Vec<Row> = self
-            .items
+        self.items
             .iter()
             .map(|(key, value)| row!(key, value))
-            .collect();
-        for row in rows.iter() {
-            table.add_row(row.to_owned());
-        }
+            .for_each(|row| {
+                table.add_row(row);
+            });
+
         table.printstd();
     }
 }
@@ -96,15 +93,14 @@ impl ContentCollection for RecommendationCollection {
     fn display(&self) {
         let mut table = Table::new();
         table.add_row(row!("Song", "Artists"));
-        let rows: Vec<Row> = self
-            .items
+        self.items
             .iter()
             .enumerate()
-            .map(|(idx, item)| item.as_row(&idx))
-            .collect();
-        for row in rows.iter() {
-            table.add_row(row.to_owned());
-        }
+            .map(|(idx, item)| item.as_row(idx))
+            .for_each(|row| {
+                table.add_row(row);
+            });
+
         table.printstd();
     }
 }

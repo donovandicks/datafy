@@ -30,7 +30,7 @@ pub fn get_limit() -> String {
 ///
 /// # Returns
 ///
-/// * The selected time_range
+/// * The selected `time_range`
 pub fn get_time_range() -> String {
     let choices = ["short_term", "medium_term", "long_term"];
 

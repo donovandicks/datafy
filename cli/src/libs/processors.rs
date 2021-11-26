@@ -1,7 +1,6 @@
 use crate::libs::{
     options::{
-        choose_artist_options, choose_genre_options, choose_rec_options, choose_song_options,
-        CLIOptions,
+        choose_artist_opts, choose_genre_opts, choose_rec_opts, choose_song_opts, CLIOptions,
     },
     url_builder::URLBuilder,
 };
@@ -15,9 +14,9 @@ use std::boxed::Box;
 ///
 /// # Args
 ///
-/// * `builder` - A reference to an instantiated URLBuilder that already contains
+/// * `builder` - A reference to an instantiated `URLBuilder` that already contains
 ///     resource
-/// * `opts` - A reference to a CLIOption variant that is populated with user input
+/// * `opts` - A reference to a `CLIOption` variant that is populated with user input
 ///
 /// # Returns
 ///
@@ -29,7 +28,7 @@ async fn fetch_content(builder: &mut URLBuilder, opts: &CLIOptions) -> Box<dyn C
         CLIOptions::Artist { limit, time_range } => Box::new(
             retrieve_content::<ArtistCollection>(
                 &builder
-                    .with_params(vec![("limit", &limit), ("time_range", &time_range)])
+                    .with_params(vec![("limit", limit), ("time_range", time_range)])
                     .build(),
             )
             .await
@@ -44,9 +43,9 @@ async fn fetch_content(builder: &mut URLBuilder, opts: &CLIOptions) -> Box<dyn C
             retrieve_content::<GenreCollection>(
                 &builder
                     .with_params(vec![
-                        ("limit", &limit),
+                        ("limit", limit),
                         ("time_range", &time_range.to_lowercase()),
-                        ("aggregate", &aggregate),
+                        ("aggregate", aggregate),
                     ])
                     .build(),
             )
@@ -58,7 +57,7 @@ async fn fetch_content(builder: &mut URLBuilder, opts: &CLIOptions) -> Box<dyn C
             retrieve_content::<SongCollection>(
                 &builder
                     .with_params(vec![
-                        ("limit", &limit),
+                        ("limit", limit),
                         ("time_range", &time_range.to_lowercase()),
                     ])
                     .build(),
@@ -75,9 +74,9 @@ async fn fetch_content(builder: &mut URLBuilder, opts: &CLIOptions) -> Box<dyn C
             retrieve_content::<RecommendationCollection>(
                 &builder
                     .with_params(vec![
-                        ("seed_artists", &seed_artists),
-                        ("seed_genres", &seed_genres),
-                        ("seed_tracks", &seed_tracks),
+                        ("seed_artists", seed_artists),
+                        ("seed_genres", seed_genres),
+                        ("seed_tracks", seed_tracks),
                     ])
                     .build(),
             )
@@ -88,7 +87,7 @@ async fn fetch_content(builder: &mut URLBuilder, opts: &CLIOptions) -> Box<dyn C
 }
 
 /// Prompts the user for the appropriate options based on the given resource and
-/// returns the appropriate CLIOptions enum variant with the users selections/input
+/// returns the appropriate `CLIOptions` enum variant with the users selections/input
 ///
 /// # Args
 ///
@@ -96,14 +95,14 @@ async fn fetch_content(builder: &mut URLBuilder, opts: &CLIOptions) -> Box<dyn C
 ///
 /// # Returns
 ///
-/// * The CLIOptions variant appropriate for the given resource containing all
+/// * The `CLIOptions` variant appropriate for the given resource containing all
 ///     values supplied by the user
 fn get_user_selections(resource: &str) -> CLIOptions {
     match resource {
-        "artists" => choose_artist_options(),
-        "genres" => choose_genre_options(),
-        "recommendations" => choose_rec_options(),
-        "songs" => choose_song_options(),
+        "artists" => choose_artist_opts(),
+        "genres" => choose_genre_opts(),
+        "recommendations" => choose_rec_opts(),
+        "songs" => choose_song_opts(),
         _ => unimplemented!(),
     }
 }
