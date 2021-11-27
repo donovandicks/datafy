@@ -334,4 +334,4 @@ pip-selfcheck.json
 *dockerbr
 
 # cargo configs
-.cargo/*
+**/.cargo/*
