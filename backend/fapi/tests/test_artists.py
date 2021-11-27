@@ -4,7 +4,7 @@ from typing import Dict, List
 from unittest import TestCase
 
 import routers.artists as artists
-from models.artists import Artist, ArtistQuery
+from models.artist import Artist, ArtistQuery
 
 
 def retriever(_: ArtistQuery) -> List:

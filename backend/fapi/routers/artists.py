@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, List
 
 from dependencies.spotify import CLIENT
 from fastapi import APIRouter, Depends, HTTPException
-from models.artists import Artist, ArtistQuery, ArtistResponse
+from models.artist import Artist, ArtistQuery, ArtistResponse
 
 router = APIRouter(
     prefix="/artists",
