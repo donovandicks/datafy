@@ -30,9 +30,7 @@ def retriever(_: ArtistQuery) -> List:
 
 
 class Client:
-    """
-    Test implementation of the Spotipy client
-    """
+    """Test implementation of the Spotipy client"""
 
     def current_user_top_artists(self, limit, time_range) -> Dict[str, List]:
         """Test impl of Spotify.current_user_top_artists"""
@@ -50,7 +48,7 @@ class Client:
 
 
 class ArtistsTest(TestCase):
-    """Unit tests for the `/artists` route"""
+    """Unit tests for the artists logic"""
 
     def test_get_artists(self):
         """
