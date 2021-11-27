@@ -332,3 +332,6 @@ pip-selfcheck.json
 
 # bash scripts
 *dockerbr
+
+# cargo configs
+.cargo/*
