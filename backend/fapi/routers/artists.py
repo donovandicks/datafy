@@ -35,7 +35,7 @@ def parse_artist(artist: Dict) -> Artist:
 
 def get_artist_from_spotify(artist_id: str, client=CLIENT) -> Dict[str, Any]:
     """
-    Retrieves a single artists from spotify
+    Retrieves a single artist from spotify
 
     Params
     ------
@@ -46,6 +46,8 @@ def get_artist_from_spotify(artist_id: str, client=CLIENT) -> Dict[str, Any]:
     -------
     artist: Dict
         the artist object
+    client: [Spotify]
+        the api client used to connect to spotify
 
     Raises
     ------
@@ -91,20 +93,22 @@ def get_artists_from_spotify(query: ArtistQuery, client=CLIENT) -> List:
     return top_artists["items"]
 
 
-def get_artists(query: ArtistQuery, retriever: Callable[[ArtistQuery], List]) -> List[Artist]:
+def get_artists(query: ArtistQuery, retriever: Callable[[ArtistQuery], List[Dict]]) -> List[Artist]:
     """
-    Retrieves the current users top artists from spotify and formats them as
-    `Artist` objects - read more [here](../models/README.md#Artists)
+    Parses songs returned from a retriever function into a list of `Artist` models.
 
     Params
     ------
     query: ArtistQuery
         the query model for the `/artists` route
+    retriever: Callable[[ArtistQuery], List[Dict]]
+        a function that takes a `ArtistQuery` argument and returns a list of artist
+        objects
 
     Returns
     -------
-    artists: ArtistResponse
-        an object containing a list of all artists retrieved from the api
+    artists: List[Artist]
+        a list of parsed `Artist` models
     """
     return [parse_artist(item) for item in retriever(query)]
 
@@ -112,7 +116,7 @@ def get_artists(query: ArtistQuery, retriever: Callable[[ArtistQuery], List]) ->
 @router.get("", response_model=ArtistResponse)
 async def get_top_artists(query: ArtistQuery = Depends()) -> ArtistResponse:
     """
-    Retrieves the top artists from the spotify api
+    Retrieves the current users top artists from the spotify api
 
     Params
     ------
