@@ -3,7 +3,7 @@ from typing import Callable, Dict, List
 
 from dependencies.spotify import CLIENT
 from fastapi import APIRouter, Depends, HTTPException
-from models.song import Song, SongQuery, SongResponse
+from models.song import Song, SongCollection, SongQuery
 
 router = APIRouter(prefix="/songs", tags=["songs"])
 
@@ -105,8 +105,8 @@ def get_songs(query: SongQuery, retriever: Callable[[SongQuery], List[Dict]]) ->
     return [parse_song(song) for song in retriever(query)]
 
 
-@router.get("", response_model=SongResponse)
-async def get_top_songs(query: SongQuery = Depends()) -> SongResponse:
+@router.get("", response_model=SongCollection)
+async def get_top_songs(query: SongQuery = Depends()) -> SongCollection:
     """
     Retrieves the current users top songs from the spotify api
 
@@ -120,12 +120,8 @@ async def get_top_songs(query: SongQuery = Depends()) -> SongResponse:
     songs: SongResponse
         the formatted songs retrieved from the spotify api
     """
-    return SongResponse(
-        items=get_songs(
-            query,
-            get_songs_from_spotify,
-        )
-    )
+    songs = get_songs(query, get_songs_from_spotify)
+    return SongCollection(items=songs, count=len(songs))
 
 
 @router.get("/{song_id}", response_model=Song)

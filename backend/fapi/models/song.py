@@ -60,7 +60,11 @@ class Song(BaseModel):
     """The date the album was first released"""
 
 
-class SongResponse(BaseModel):
+class SongCollection(BaseModel):
     """The object model of the response body for the songs endpoint"""
 
     items: list[Song]
+    """A list of song objects"""
+
+    count: int
+    """The number of items in the collection"""
