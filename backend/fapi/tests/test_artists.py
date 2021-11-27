@@ -3,8 +3,8 @@
 from typing import Dict, List
 from unittest import TestCase
 
-import routers.artists as artists
 from models.artist import Artist, ArtistQuery
+from routers import artists
 
 
 def retriever(_: ArtistQuery) -> List:
@@ -49,7 +49,7 @@ class Client:
         }
 
 
-class ArtistRouteTest(TestCase):
+class ArtistsTest(TestCase):
     """Unit tests for the `/artists` route"""
 
     def test_get_artists(self):
