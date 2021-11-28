@@ -7,18 +7,32 @@ from models.genre import Genre, GenreQuery
 from routers import genres
 
 
-def retriever(_: Optional[TimeRange]) -> Dict[str, int]:
+def retriever(_: Optional[TimeRange]) -> List[str]:
     """
     Test impl of a retriever
     """
-    return {
-        "rap": 5,
-        "hip hop": 5,
-        "underground hip hop": 3,
-        "alternative hip hop": 2,
-        "pop": 3,
-        "pop rap": 2,
-    }
+    return [
+        "rap",
+        "hip hop",
+        "underground hip hop",
+        "hip hop",
+        "alternative hip hop",
+        "rap",
+        "hip hop",
+        "underground hip hop",
+        "rap",
+        "hip hop",
+        "underground hip hop",
+        "hip hop",
+        "alternative hip hop",
+        "rap",
+        "pop rap",
+        "rap",
+        "pop rap",
+        "pop",
+        "pop",
+        "pop",
+    ]
 
 
 class Client:
@@ -45,31 +59,92 @@ class Client:
 class GenresTest(TestCase):
     """Unit tests for the genres logic"""
 
-    def test_get_genre_aggregate(self):
-        """Tests both get_genre_aggregate and get_genres_from_spotify"""
+    def test_count_genres(self):
         self.assertEqual(
             {
-                "hip hop": 10,
-                "rap": 7,
-                "pop": 5,
-                "electronic": 0,
-                "country": 0,
-                "folk": 0,
-                "indie": 0,
-                "metal": 0,
-                "r&b": 0,
-                "rock": 0,
-                "soul": 0,
-                "jazz": 0,
-                "classical": 0,
+                "rap": 5,
+                "hip hop": 5,
+                "underground hip hop": 3,
+                "alternative hip hop": 2,
+                "pop": 3,
+                "pop rap": 2,
             },
-            genres.get_genre_aggregate(
-                genres.get_genres_from_spotify(TimeRange.MEDIUM_TERM, Client())
+            genres.count_genres(
+                [
+                    "rap",
+                    "hip hop",
+                    "underground hip hop",
+                    "hip hop",
+                    "alternative hip hop",
+                    "rap",
+                    "hip hop",
+                    "underground hip hop",
+                    "rap",
+                    "hip hop",
+                    "underground hip hop",
+                    "hip hop",
+                    "alternative hip hop",
+                    "rap",
+                    "pop rap",
+                    "rap",
+                    "pop rap",
+                    "pop",
+                    "pop",
+                    "pop",
+                ]
             ),
         )
 
+    def test_get_genres_from_spotify(self):
+        self.assertEqual(
+            [
+                "rap",
+                "hip hop",
+                "underground hip hop",
+                "hip hop",
+                "alternative hip hop",
+                "rap",
+                "hip hop",
+                "underground hip hop",
+                "rap",
+                "hip hop",
+                "underground hip hop",
+                "hip hop",
+                "alternative hip hop",
+                "rap",
+                "pop rap",
+                "rap",
+                "pop rap",
+                "pop",
+                "pop",
+                "pop",
+            ],
+            genres.get_genres_from_spotify(None, Client()),
+        )
+
+    def test_get_genre_agg(self):
+        """Tests get_genres with aggregation"""
+        self.assertEqual(
+            [
+                Genre(name="hip hop", count=10),
+                Genre(name="rap", count=7),
+                Genre(name="pop", count=5),
+                Genre(name="r&b", count=0),
+                Genre(name="metal", count=0),
+                Genre(name="rock", count=0),
+                Genre(name="indie", count=0),
+                Genre(name="soul", count=0),
+                Genre(name="folk", count=0),
+                Genre(name="electronic", count=0),
+                Genre(name="country", count=0),
+                Genre(name="jazz", count=0),
+                Genre(name="classical", count=0),
+            ],
+            genres.get_genres(GenreQuery(aggregate=True), retriever),
+        )
+
     def test_get_genre_detail(self):
-        """Tests get_genres"""
+        """Tests get_genres without aggregation"""
         self.assertEqual(
             [
                 Genre(name="rap", count=5),
