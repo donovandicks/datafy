@@ -19,7 +19,7 @@ jobs:
         id: cache
         with:
           path: ~/.poetry
-          key: ${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+          key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Setup Python
         uses: actions/setup-python@v2
