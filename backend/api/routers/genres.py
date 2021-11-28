@@ -1,12 +1,11 @@
-""""""
+"""Defines the logic for handling requests to the `/genres` route"""
 
 from operator import contains
-from typing import Any, Callable, Dict, List, Optional, TypeAlias, TypeVar
+from typing import Any, Callable, Dict, List, TypeAlias, TypeVar
 
-from dependencies.spotify import CLIENT
-from fastapi import APIRouter, Depends, HTTPException
-from models.common import TimeRange
-from models.genre import Genre, GenreQuery, GenreResponse
+from dependencies.spotify import Client, SpotifyClient
+from fastapi import APIRouter, Depends
+from models.genre import Genre, GenreCollection, GenreQuery
 
 T = TypeVar("T")  # pylint: disable=invalid-name
 
@@ -78,42 +77,6 @@ def count_genres(genres: List[str]) -> GenreCount:
     return genre_detail
 
 
-def get_genres_from_spotify(time_range: Optional[TimeRange], client=CLIENT) -> List[str]:
-    """
-    Retrieves a count of the occurrences of genres for the current users top artists
-
-    Params
-    ------
-    time_range: Optional[TimeRange]
-        the time_range parameter from which to retrieve results
-    client: Spotify
-        the api client used to connect to spotify
-
-    Returns
-    -------
-    genre_detail: Dict[str, int]
-        an object mapping a genre name to a count of its appearance
-
-    Raises
-    ------
-    HTTPException(404)
-        if the client is unable to retrieve any results
-    """
-    top_artists = client.current_user_top_artists(
-        limit=50,
-        time_range=time_range,
-    )
-
-    if not top_artists:
-        raise HTTPException(404, "Top genres not found")
-
-    genre_detail = []
-    for item in top_artists["items"]:
-        genre_detail.extend(item["genres"])
-
-    return genre_detail
-
-
 def get_genre_aggregate(genre_detail: GenreCount) -> GenreCount:
     """
     Aggregates detailed genre counts into broader, more general genres
@@ -131,10 +94,7 @@ def get_genre_aggregate(genre_detail: GenreCount) -> GenreCount:
     return {key: sum(filter_dict(genre_detail, contains, key)) for key in GENRE_BINS}
 
 
-def get_genres(
-    query: GenreQuery,
-    retriever: Callable[[Optional[TimeRange]], List[str]],
-) -> List[Genre]:
+def get_genres(client: SpotifyClient) -> GenreCollection:
     """
     Retrieves a sorted list of Genre objects
 
@@ -150,9 +110,12 @@ def get_genres(
     genre_list: List[Genre]
         a list of genre objects
     """
-    genre_object = count_genres(retriever(query.time_range))
+    genre_object = count_genres(client.get_genres_from_spotify())
 
-    if query.aggregate:
+    if not isinstance(client.query, GenreQuery):
+        raise TypeError("Invalid query type for genres")
+
+    if client.query.aggregate:
         genre_object = get_genre_aggregate(genre_object)
 
     genre_list = [
@@ -160,13 +123,17 @@ def get_genres(
         for name, count in sorted(genre_object.items(), key=lambda genre: genre[1], reverse=True)
     ]
 
-    return (
-        genre_list[: query.limit] if (query.limit and query.limit < len(genre_list)) else genre_list
+    items = (
+        genre_list[: client.query.limit]
+        if (client.query.limit and client.query.limit < len(genre_list))
+        else genre_list
     )
 
+    return GenreCollection(items=items, count=len(items))
 
-@router.get("", response_model=GenreResponse)
-async def get_top_genres(query: GenreQuery = Depends()) -> GenreResponse:
+
+@router.get("", response_model=GenreCollection)
+async def get_top_genres(query: GenreQuery = Depends()) -> GenreCollection:
     """
     Retrieves the current users top genres
 
@@ -180,4 +147,5 @@ async def get_top_genres(query: GenreQuery = Depends()) -> GenreResponse:
     genres: GenreResponse
         the GenreResponse model with a list of genre objects
     """
-    return GenreResponse(items=get_genres(query, get_genres_from_spotify))
+    client = Client(query)
+    return get_genres(client)

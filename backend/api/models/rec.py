@@ -1,11 +1,13 @@
 """Query models for Spotify recommendations"""
 
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel
 
+from .common import Query
 
-class RecQuery(BaseModel):
+
+class RecQuery(Query):
     """
     The query model for the `/recs` route
 
@@ -46,9 +48,6 @@ class RecQuery(BaseModel):
     seed_tracks_list: Optional[list[str]]
     """A Python list of seed tracks - derived from `seed_tracks`"""
 
-    limit: Optional[int]
-    """The number of recommendations to retrieve"""
-
     def __init__(self, **data: Any):
         super().__init__(**data)
         self.seed_artists_list = self.seed_artists.split(",") if self.seed_artists else []
@@ -62,9 +61,20 @@ class Rec(BaseModel):
     song: str
     artists: list[str]
 
+    @classmethod
+    def from_dict(cls, rec: Dict):
+        """Converts a dict into a `Rec` object"""
+        return Rec(
+            song=rec["name"],
+            artists=[artist["name"] for artist in rec["artists"]],
+        )
 
-class RecResponse(BaseModel):
+
+class RecCollection(BaseModel):
     """The response body for the `/recs` route"""
 
-    # assuming this just sends back a list of tracks, this is copied from the song response file
     items: list[Rec]
+    """A list of recommended songs"""
+
+    count: int
+    """The number of items in the collection"""

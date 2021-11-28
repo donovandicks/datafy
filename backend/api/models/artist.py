@@ -1,31 +1,13 @@
 """Defines the structures of the data models used for interacting with the `/artists` route"""
-from typing import List, Optional
+from typing import Dict, List
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
-from models.common import TimeRange
+from .common import Query
 
 
-class ArtistQuery(BaseModel):
-    """The query model for the Artists resource"""
-
-    limit: Optional[int]
-    time_range: Optional[TimeRange]
-
-    @validator("limit")
-    def limit_is_positive(cls, lmt):  # pylint: disable=no-self-argument
-        """Ensures that the limit passed is a positive value greater than 0"""
-        if not lmt:
-            return lmt
-
-        if lmt <= 0:
-            raise ValueError("limit must be at least 1")
-        return lmt
-
-    class Config:
-        """Defines the configuration for the query model"""
-
-        use_enum_values = True
+class ArtistQuery(Query):
+    """The query model for the `/artists` route"""
 
 
 class Artist(BaseModel):
@@ -48,8 +30,19 @@ class Artist(BaseModel):
     genres: List[str]
     """The genres for the artists music"""
 
+    @classmethod
+    def from_dict(cls, obj: Dict):
+        """Converts a dictionary to an `Artist` object"""
+        return Artist(
+            id=obj["id"],
+            name=obj["name"],
+            popularity=obj["popularity"],
+            followers=obj["followers"]["total"],
+            genres=obj["genres"],
+        )
 
-class ArtistResponse(BaseModel):
+
+class ArtistCollection(BaseModel):
     """
     The object model of the response body for the artists endpoint
 
@@ -61,9 +54,13 @@ class ArtistResponse(BaseModel):
             popularity: int,
             followers: int,
         }
-    ]
+    ],
+    count: 1
     ```
     """
 
     items: List[Artist]
     """The list of all Artists retrieved from Spotify"""
+
+    count: int
+    """The number of Artists in the collection"""

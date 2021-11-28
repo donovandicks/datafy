@@ -1,41 +1,14 @@
 """Query models for Spotify songs"""
 
-from typing import Optional
+from typing import Dict
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
-from models.common import TimeRange
+from models.common import Query
 
 
-class SongQuery(BaseModel):
-    """
-    The type definition for available query params on the Songs resource.
-
-    Members:
-    - limit {Optional[int]}: The maximum number of songs to return in a single request
-    - time_range {Optional[TimeRange]}: The time period from which to retrieve the requested data
-
-    Inherits:
-    - BaseModel: The pydantic base data model
-    """
-
-    limit: Optional[int]
-    time_range: Optional[TimeRange]
-
-    @validator("limit")
-    def limit_is_positive(cls, lmt):  # pylint: disable=no-self-argument
-        """Ensures that the limit passed is a positive value greater than 0"""
-        if not lmt:
-            return lmt
-
-        if lmt <= 0:
-            raise ValueError("limit must be at least 1")
-        return lmt
-
-    class Config:
-        """Configuration for the QueryModel"""
-
-        use_enum_values = True  # Allows passing enum values in query params
+class SongQuery(Query):
+    """The query model for the `/songs` route"""
 
 
 class Song(BaseModel):
@@ -58,6 +31,18 @@ class Song(BaseModel):
 
     release_date: str
     """The date the album was first released"""
+
+    @classmethod
+    def from_dict(cls, song: Dict):
+        """Converts a dictionary into a `Song` object"""
+        return Song(
+            id=song["id"],
+            name=song["name"],
+            artists=[artist["name"] for artist in song["artists"]],
+            popularity=song["popularity"],
+            album=song["album"]["name"],
+            release_date=song["album"]["release_date"],
+        )
 
 
 class SongCollection(BaseModel):
