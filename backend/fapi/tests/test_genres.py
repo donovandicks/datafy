@@ -38,6 +38,7 @@ def retriever(_: Optional[TimeRange]) -> List[str]:
 class Client:
     """Test impl of the Spotipy client"""
 
+    # pylint: disable=unused-argument
     def current_user_top_artists(self, limit, time_range) -> Dict[str, List]:
         """Test impl of Spotipy.current_user_top_artists"""
         return {
@@ -60,6 +61,7 @@ class GenresTest(TestCase):
     """Unit tests for the genres logic"""
 
     def test_count_genres(self):
+        """Tests count_genres"""
         self.assertEqual(
             {
                 "rap": 5,
@@ -96,6 +98,7 @@ class GenresTest(TestCase):
         )
 
     def test_get_genres_from_spotify(self):
+        """Tests get_genres_from_spotify"""
         self.assertEqual(
             [
                 "rap",

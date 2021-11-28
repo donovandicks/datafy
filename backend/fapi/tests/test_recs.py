@@ -1,6 +1,6 @@
 """Test Suite for the `/recs` route"""
 
-from typing import Dict, List
+from typing import List
 from unittest import TestCase
 
 from models.rec import Rec, RecQuery
@@ -17,7 +17,11 @@ def retriever(_: RecQuery) -> List:
 
 
 class Client:
+    """Test impl of the Spotipy client"""
+
+    # pylint: disable=unused-argument
     def recommendations(self, seed_artists, seed_genres, seed_tracks, limit):
+        """Test impl of Spotipy.recommendations"""
         return {
             "tracks": [
                 {"name": "Erase Your Social", "artists": [{"name": "Lil Uzi Vert"}]},
@@ -31,6 +35,7 @@ class RecsTest(TestCase):
     """Unit Tests for the `/recs` route"""
 
     def test_get_recs(self):
+        """Test get_recs as expected"""
         self.assertEqual(
             [
                 Rec(song="Erase Your Social", artists=["Lil Uzi Vert"]),
@@ -41,6 +46,7 @@ class RecsTest(TestCase):
         )
 
     def test_get_recommendations_from_spotify(self):
+        """Test get_recommendations_from_spotify as expected"""
         self.assertEqual(
             [
                 {"name": "Erase Your Social", "artists": [{"name": "Lil Uzi Vert"}]},
