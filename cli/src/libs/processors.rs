@@ -70,6 +70,7 @@ async fn fetch_content(builder: &mut URLBuilder, opts: &CLIOptions) -> Box<dyn C
             seed_artists,
             seed_genres,
             seed_tracks,
+            limit,
         } => Box::new(
             retrieve_content::<RecommendationCollection>(
                 &builder
@@ -77,6 +78,7 @@ async fn fetch_content(builder: &mut URLBuilder, opts: &CLIOptions) -> Box<dyn C
                         ("seed_artists", seed_artists),
                         ("seed_genres", seed_genres),
                         ("seed_tracks", seed_tracks),
+                        ("limit", limit),
                     ])
                     .build(),
             )
@@ -101,7 +103,7 @@ fn get_user_selections(resource: &str) -> CLIOptions {
     match resource {
         "artists" => choose_artist_opts(),
         "genres" => choose_genre_opts(),
-        "recommendations" => choose_rec_opts(),
+        "recs" => choose_rec_opts(),
         "songs" => choose_song_opts(),
         _ => unimplemented!(),
     }

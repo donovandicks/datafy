@@ -9,10 +9,10 @@ pub struct Artist {
     name: String,
 
     /// The popularity of the artist from 0 to 100
-    popularity: u8,
+    popularity: i8,
 
     /// The total number of followers that the artist has
-    followers: u32,
+    followers: i32,
 
     /// The Spotify ID of the artist
     id: String,

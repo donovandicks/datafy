@@ -17,6 +17,7 @@ pub enum CLIOptions {
         seed_artists: String,
         seed_genres: String,
         seed_tracks: String,
+        limit: String,
     },
 
     /// The CLI options for the Songs resource
@@ -57,6 +58,7 @@ pub fn choose_rec_opts() -> CLIOptions {
             seed_artists: seed_artists.join(","),
             seed_genres: seed_genres.join(","),
             seed_tracks: seed_tracks.join(","),
+            limit: get_limit(),
         }
     }
 }

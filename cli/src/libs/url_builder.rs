@@ -18,7 +18,7 @@ impl URLBuilder {
     /// * An instance of the `URLBuilder` with initialized members
     pub fn new() -> URLBuilder {
         URLBuilder {
-            base: String::from("http://0.0.0.0:5000"),
+            base: String::from("http://0.0.0.0:8000"),
             resource: String::from(""),
             params: vec![],
         }
@@ -95,7 +95,7 @@ pub mod tests {
     #[test]
     fn build_url_no_params() {
         let url = URLBuilder::new().with_resource("artists").build();
-        assert_eq!(url, String::from("http://0.0.0.0:5000/artists?"))
+        assert_eq!(url, String::from("http://0.0.0.0:8000/artists?"))
     }
 
     #[test]
@@ -104,7 +104,7 @@ pub mod tests {
             .with_resource("songs")
             .with_param("limit", "5")
             .build();
-        assert_eq!(url, String::from("http://0.0.0.0:5000/songs?limit=5"))
+        assert_eq!(url, String::from("http://0.0.0.0:8000/songs?limit=5"))
     }
 
     #[test]
@@ -116,7 +116,7 @@ pub mod tests {
             .build();
         assert_eq!(
             url,
-            String::from("http://0.0.0.0:5000/genres?limit=5&time_range=short_term")
+            String::from("http://0.0.0.0:8000/genres?limit=5&time_range=short_term")
         )
     }
 
@@ -128,7 +128,7 @@ pub mod tests {
             .build();
         assert_eq!(
             url,
-            String::from("http://0.0.0.0:5000/recommendations?seed_artists=ABC123,XYZ456")
+            String::from("http://0.0.0.0:8000/recommendations?seed_artists=ABC123,XYZ456")
         )
     }
 }
