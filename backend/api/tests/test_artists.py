@@ -1,53 +1,11 @@
 """Test Suite for the `/artists` route"""
 
-from typing import Dict, List
 from unittest import TestCase
 
-from models.artist import Artist, ArtistQuery
+from models.artist import Artist, ArtistQuery, ArtistResponse
 from routers import artists
 
-
-def retriever(_: ArtistQuery) -> List:
-    """
-    Test implementation of a retriever
-    """
-    return [
-        {
-            "id": "ABC123",
-            "name": "Jimbo",
-            "popularity": 99,
-            "followers": {"total": 1234567},
-            "genres": ["folk"],
-            "other_field": "not_parsed",
-        },
-        {
-            "id": "DEF456",
-            "name": "Jimothy",
-            "popularity": 97,
-            "followers": {"total": 1234234},
-            "genres": ["pop"],
-            "other_field": "not_parsed",
-        },
-    ]
-
-
-class Client:
-    """Test implementation of the Spotipy client"""
-
-    def current_user_top_artists(self, limit, time_range) -> Dict[str, List]:
-        """Test impl of Spotify.current_user_top_artists"""
-        return {"items": retriever(ArtistQuery(limit=limit, time_range=time_range))}
-
-    def artist(self, aid: str) -> Dict:
-        """Test impl of Spotify.artist"""
-        return {
-            "id": aid,
-            "name": "Jimbo",
-            "popularity": 99,
-            "followers": {"total": 1234567},
-            "genres": ["folk"],
-            "other_field": "not_parsed",
-        }
+from .client_fixture import FakeClient
 
 
 class ArtistsTest(TestCase):
@@ -59,45 +17,21 @@ class ArtistsTest(TestCase):
         the spotify api into `Artist` models
         """
         self.assertEqual(
-            [
-                Artist(
-                    id="ABC123", name="Jimbo", popularity=99, followers=1234567, genres=["folk"]
-                ),
-                Artist(
-                    id="DEF456", name="Jimothy", popularity=97, followers=1234234, genres=["pop"]
-                ),
-            ],
-            artists.get_artists(ArtistQuery(), retriever),
-        )
-
-    def test_get_artists_from_spotify(self):
-        """
-        Tests that the `get_artists_from_spotify` function retrieves a list of
-        items from Spotify
-        """
-        self.assertEqual(
-            [
-                {
-                    "id": "ABC123",
-                    "name": "Jimbo",
-                    "popularity": 99,
-                    "followers": {"total": 1234567},
-                    "genres": ["folk"],
-                    "other_field": "not_parsed",
-                },
-                {
-                    "id": "DEF456",
-                    "name": "Jimothy",
-                    "popularity": 97,
-                    "followers": {"total": 1234234},
-                    "genres": ["pop"],
-                    "other_field": "not_parsed",
-                },
-            ],
-            artists.get_artists_from_spotify(
-                ArtistQuery(),
-                Client(),
+            ArtistResponse(
+                items=[
+                    Artist(
+                        id="ABC123", name="Jimbo", popularity=99, followers=1234567, genres=["folk"]
+                    ),
+                    Artist(
+                        id="DEF456",
+                        name="Jimothy",
+                        popularity=97,
+                        followers=1234234,
+                        genres=["pop"],
+                    ),
+                ]
             ),
+            artists.get_artists(FakeClient(ArtistQuery())),
         )
 
     def test_get_artist(self):
@@ -105,13 +39,6 @@ class ArtistsTest(TestCase):
         Tests that `get_artist_from_spotify` retrieves one artist
         """
         self.assertEqual(
-            {
-                "id": "ABC123",
-                "name": "Jimbo",
-                "popularity": 99,
-                "followers": {"total": 1234567},
-                "genres": ["folk"],
-                "other_field": "not_parsed",
-            },
-            artists.get_artist_from_spotify("ABC123", Client()),
+            Artist(id="ABC123", name="Jimbo", popularity=99, followers=1234567, genres=["folk"]),
+            artists.get_artist("ABC123", FakeClient(None)),
         )
