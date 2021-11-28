@@ -56,7 +56,7 @@ def filter_dict(obj: Dict[str, T], opr: Callable[[str, Any], bool], query: Any) 
     return [value for (key, value) in obj.items() if opr(key, query)]
 
 
-def count_genres(artists: List[Dict]) -> GenreCount:
+def count_genres(genres: List[str]) -> GenreCount:
     """
     Iterates over artist objects, counting the occurrences of different genres as
     they appear
@@ -72,14 +72,13 @@ def count_genres(artists: List[Dict]) -> GenreCount:
         a mapping of genre name to a count of its appearance
     """
     genre_detail = {}
-    for artist in artists:
-        for genre in artist["genres"]:
-            genre_detail[genre] = genre_detail.setdefault(genre, 0) + 1
+    for genre in genres:
+        genre_detail[genre] = genre_detail.setdefault(genre, 0) + 1
 
     return genre_detail
 
 
-def get_genres_from_spotify(time_range: Optional[TimeRange], client=CLIENT) -> GenreCount:
+def get_genres_from_spotify(time_range: Optional[TimeRange], client=CLIENT) -> List[str]:
     """
     Retrieves a count of the occurrences of genres for the current users top artists
 
@@ -108,7 +107,11 @@ def get_genres_from_spotify(time_range: Optional[TimeRange], client=CLIENT) -> G
     if not top_artists:
         raise HTTPException(404, "Top genres not found")
 
-    return count_genres(top_artists["items"])
+    genre_detail = []
+    for item in top_artists["items"]:
+        genre_detail.extend(item["genres"])
+
+    return genre_detail
 
 
 def get_genre_aggregate(genre_detail: GenreCount) -> GenreCount:
@@ -130,7 +133,7 @@ def get_genre_aggregate(genre_detail: GenreCount) -> GenreCount:
 
 def get_genres(
     query: GenreQuery,
-    retriever: Callable[[Optional[TimeRange]], GenreCount],
+    retriever: Callable[[Optional[TimeRange]], List[str]],
 ) -> List[Genre]:
     """
     Retrieves a sorted list of Genre objects
@@ -139,7 +142,7 @@ def get_genres(
     ------
     query: GenreQuery
         the query params used for the api client
-    retriever: Callable[[Optional[TimeRange]], GenreCount]
+    retriever: Callable[[Optional[TimeRange]], List[List[str]]]
         a function used to retrieve genres from spotify
 
     Returns
@@ -147,7 +150,7 @@ def get_genres(
     genre_list: List[Genre]
         a list of genre objects
     """
-    genre_object = retriever(query.time_range)
+    genre_object = count_genres(retriever(query.time_range))
 
     if query.aggregate:
         genre_object = get_genre_aggregate(genre_object)
