@@ -12,7 +12,6 @@ from spotipy.oauth2 import SpotifyOAuth
 
 load_dotenv()
 
-
 settings = {
     "scopes": "  ".join(
         [
@@ -53,6 +52,16 @@ CLIENT = Spotify(
 class SpotifyClient:
     """Interface describing methods to interact with Spotify"""
 
+    @property
+    def query(self) -> Query:
+        """The query attr"""
+        return self._query
+
+    @query.setter
+    def query(self, item_query):
+        """"""
+        self._query = item_query
+
     @abstractmethod
     def get_artists_from_spotify(self) -> List[Dict]:
         """Should retrieve a list of artists"""
@@ -69,11 +78,15 @@ class SpotifyClient:
     def get_songs_from_spotify(self) -> List[Dict]:
         """Should retrieve a list of songs"""
 
+    @abstractmethod
+    def get_genres_from_spotify(self) -> List[str]:
+        """Should retrieve a list of genres"""
+
 
 class Client(SpotifyClient):
     """Concrete implementation of a Spotify client"""
 
-    def __init__(self, query: Query) -> None:
+    def __init__(self, item_query: Query) -> None:
         self.client = Spotify(
             auth_manager=SpotifyOAuth(
                 client_id=settings["client_id"],
@@ -82,7 +95,7 @@ class Client(SpotifyClient):
                 scope=settings["scopes"],
             )
         )
-        self.query = query
+        self.query = item_query
 
     def get_artists_from_spotify(self) -> List:
         """
@@ -182,3 +195,38 @@ class Client(SpotifyClient):
             raise HTTPException(404, "Top songs not found")
 
         return top_songs["items"]
+
+    def get_genres_from_spotify(self) -> List[str]:
+        """
+        Retrieves a count of the occurrences of genres for the current users top artists
+
+        Params
+        ------
+        time_range: Optional[TimeRange]
+            the time_range parameter from which to retrieve results
+        client: Spotify
+            the api client used to connect to spotify
+
+        Returns
+        -------
+        genre_detail: Dict[str, int]
+            an object mapping a genre name to a count of its appearance
+
+        Raises
+        ------
+        HTTPException(404)
+            if the client is unable to retrieve any results
+        """
+        top_artists = self.client.current_user_top_artists(
+            limit=50,
+            time_range=self.query.time_range,
+        )
+
+        if not top_artists:
+            raise HTTPException(404, "Top genres not found")
+
+        genre_detail = []
+        for item in top_artists["items"]:
+            genre_detail.extend(item["genres"])
+
+        return genre_detail

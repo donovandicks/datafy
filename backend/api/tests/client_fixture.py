@@ -90,3 +90,27 @@ class FakeClient(SpotifyClient):
             "album": {"name": "The Princess Bride", "release_date": "1987-09-07"},
             "other_field": "not_parsed",
         }
+
+    def get_genres_from_spotify(self) -> List[str]:
+        return [
+            "rap",
+            "hip hop",
+            "underground hip hop",
+            "hip hop",
+            "alternative hip hop",
+            "rap",
+            "hip hop",
+            "underground hip hop",
+            "rap",
+            "hip hop",
+            "underground hip hop",
+            "hip hop",
+            "alternative hip hop",
+            "rap",
+            "pop rap",
+            "rap",
+            "pop rap",
+            "pop",
+            "pop",
+            "pop",
+        ]
