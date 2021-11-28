@@ -5,24 +5,24 @@ from typing import Any, Optional
 from pydantic import BaseModel
 
 
-class RecommendationQuery(BaseModel):
+class RecQuery(BaseModel):
     """
-    The query model for the Recommendations resource
+    The query model for the `/recs` route
 
     Examples
     --------
     - Recommendations for seed artists of Trav and Ye with a limit of 5
-    curl http://localhost:5000/recommendations?seed_artists=5K4W6rqBFWDnAN6FQUkS6x,0Y5tJX1MQlPlqiwlOH1tJY&limit=5
+    curl {base}/recs?seed_artists=5K4W6rqBFWDnAN6FQUkS6x,0Y5tJX1MQlPlqiwlOH1tJY&limit=5
     - just trav
-    curl http://localhost:5000/recommendations?seed_artists=0Y5tJX1MQlPlqiwlOH1tJY&limit=5
+    curl {base}/recs?seed_artists=0Y5tJX1MQlPlqiwlOH1tJY&limit=5
     - just ye
-    curl http://localhost:5000/recommendations?seed_artists=5K4W6rqBFWDnAN6FQUkS6x&limit=5
+    curl {base}/recs?seed_artists=5K4W6rqBFWDnAN6FQUkS6x&limit=5
 
     - seed track of Orange Soda (he's baby keem)
-    curl http://localhost:5000/recommendations?seed_tracks=5FkoSXiJPKTNyYgALRJFhD&limit=5
+    curl {base}/recs?seed_tracks=5FkoSXiJPKTNyYgALRJFhD&limit=5
 
     - seed tracks of Fade and Waves
-    curl http://localhost:5000/recommendations?seed_tracks=3cCxoOgfi6hgt8MNteuiiD,3nAq2hCr1oWsIU54tS98pL&limit=5
+    curl {base}/recs?seed_tracks=3cCxoOgfi6hgt8MNteuiiD,3nAq2hCr1oWsIU54tS98pL&limit=5
     """
 
     # just the required fields for now, want to add in things like target sounds and whatnot
@@ -56,15 +56,15 @@ class RecommendationQuery(BaseModel):
         self.seed_tracks_list = self.seed_tracks.split(",") if self.seed_tracks else []
 
 
-class Recommendation(BaseModel):
-    """The object model for a recommendation item"""
+class Rec(BaseModel):
+    """The model for a recommendation item"""
 
     song: str
     artists: list[str]
 
 
-class RecommendationResponse(BaseModel):
-    """The object model of the response body for the artists endpoint"""
+class RecResponse(BaseModel):
+    """The response body for the `/recs` route"""
 
     # assuming this just sends back a list of tracks, this is copied from the song response file
-    items: list[Recommendation]
+    items: list[Rec]
