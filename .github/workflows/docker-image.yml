@@ -16,4 +16,4 @@ jobs:
       - name: Build the Docker image
         run: |
           docker build . --file Dockerfile --tag datafy-api:$(date +%s) --target dev
-        working-directory: backend/fapi
+        working-directory: backend/api

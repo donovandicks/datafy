@@ -21,15 +21,15 @@ jobs:
 
       - name: Install Poetry
         run: python -m pip install -U pip poetry
-        working-directory: backend/fapi
+        working-directory: backend/api
 
       - name: Install Release Dependencies
         run: poetry install
-        working-directory: backend/fapi
+        working-directory: backend/api
 
       - name: Run Test Suite
         run: poetry run pytest
-        working-directory: backend/fapi
+        working-directory: backend/api
         env:
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
