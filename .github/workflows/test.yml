@@ -31,8 +31,8 @@ jobs:
         working-directory: backend/fapi
 
       - name: Install Release Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: poetry install && python -m pip install -U git+git://github.com/samuelcolvin/pydantic@master#egg=pydantic
+        # if: steps.cache.outputs.cache-hit != 'true'
+        run: poetry install && python -m pip install -U
         working-directory: backend/fapi
 
       - name: Run Test Suite
