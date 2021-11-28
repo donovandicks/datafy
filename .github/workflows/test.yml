@@ -49,6 +49,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Cache
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: ~/.cargo
+          key: ${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -56,6 +63,11 @@ jobs:
           override: true
           components: rustfmt, clippy
 
-      - name: Run Cargo Tests
+      - name: Build Package
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: cargo build
+        working-directory: cli
+
+      - name: Run Test Suite
         run: cargo test
         working-directory: cli
