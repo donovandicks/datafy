@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-api:
-    name: Build Core API
+    name: Build API
     runs-on: ubuntu-latest
 
     steps:
@@ -16,3 +16,14 @@ jobs:
         run: |
           docker build . --file Dockerfile --tag datafy-api:$(date +%s) --target dev
         working-directory: backend/api
+
+  build-api-new:
+    name: Build New API
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the Docker image
+        run: |
+          docker build . --file Dockerfile --tag datafy-api:$(date +%s) --target dev
+        working-directory: backend/fapi
