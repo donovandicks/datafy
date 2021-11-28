@@ -10,43 +10,6 @@ from .client_fixture import FakeClient
 class GenresTest(TestCase):
     """Unit tests for the genres logic"""
 
-    def test_count_genres(self):
-        """Tests count_genres"""
-        self.assertEqual(
-            {
-                "rap": 5,
-                "hip hop": 5,
-                "underground hip hop": 3,
-                "alternative hip hop": 2,
-                "pop": 3,
-                "pop rap": 2,
-            },
-            genres.count_genres(
-                [
-                    "rap",
-                    "hip hop",
-                    "underground hip hop",
-                    "hip hop",
-                    "alternative hip hop",
-                    "rap",
-                    "hip hop",
-                    "underground hip hop",
-                    "rap",
-                    "hip hop",
-                    "underground hip hop",
-                    "hip hop",
-                    "alternative hip hop",
-                    "rap",
-                    "pop rap",
-                    "rap",
-                    "pop rap",
-                    "pop",
-                    "pop",
-                    "pop",
-                ]
-            ),
-        )
-
     def test_get_genre_agg(self):
         """Tests get_genres with aggregation"""
         self.assertEqual(
