@@ -7,7 +7,7 @@ from .common import Query
 
 
 class ArtistQuery(Query):
-    """The query model for the Artists resource"""
+    """The query model for the `/artists` route"""
 
 
 class Artist(BaseModel):
@@ -42,7 +42,7 @@ class Artist(BaseModel):
         )
 
 
-class ArtistResponse(BaseModel):
+class ArtistCollection(BaseModel):
     """
     The object model of the response body for the artists endpoint
 
@@ -54,9 +54,13 @@ class ArtistResponse(BaseModel):
             popularity: int,
             followers: int,
         }
-    ]
+    ],
+    count: 1
     ```
     """
 
     items: List[Artist]
     """The list of all Artists retrieved from Spotify"""
+
+    count: int
+    """The number of Artists in the collection"""

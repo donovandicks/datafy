@@ -1,3 +1,5 @@
+"""Defines the test client"""
+
 from typing import Any, Dict, List, Optional
 
 from dependencies.spotify import SpotifyClient
@@ -50,5 +52,41 @@ class FakeClient(SpotifyClient):
             "popularity": 99,
             "followers": {"total": 1234567},
             "genres": ["folk"],
+            "other_field": "not_parsed",
+        }
+
+    def get_songs_from_spotify(self) -> List[Dict]:
+        return [
+            {
+                "id": "ABC123",
+                "name": "Love Song",
+                "artists": [{"name": "Wesley"}],
+                "popularity": 99,
+                "album": {
+                    "name": "The Princess Bride",
+                    "release_date": "1987-09-07",
+                },
+                "other_field": "not_parsed",
+            },
+            {
+                "id": "DEF456",
+                "name": "Pirate Song",
+                "artists": [{"name": "Jack Sparrow"}],
+                "popularity": 95,
+                "album": {
+                    "name": "Pirates of the Carribean",
+                    "release_date": "2001-05-15",
+                },
+                "other_field": "not_parsed",
+            },
+        ]
+
+    def get_song_from_spotify(self, song_id: str) -> Dict:
+        return {
+            "id": song_id,
+            "name": "Love Song",
+            "artists": [{"name": "Wesley"}],
+            "popularity": 99,
+            "album": {"name": "The Princess Bride", "release_date": "1987-09-07"},
             "other_field": "not_parsed",
         }

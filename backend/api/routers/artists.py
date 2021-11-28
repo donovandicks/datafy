@@ -1,7 +1,7 @@
 """Defines the logic for handling requests to the `/artists` route"""
 from dependencies.spotify import Client, SpotifyClient
 from fastapi import APIRouter, Depends
-from models.artist import Artist, ArtistQuery, ArtistResponse
+from models.artist import Artist, ArtistCollection, ArtistQuery
 
 router = APIRouter(
     prefix="/artists",
@@ -28,7 +28,7 @@ def get_artist(artist_id: str, client: SpotifyClient) -> Artist:
     return Artist.from_dict(client.get_artist_from_spotify(artist_id))
 
 
-def get_artists(client: SpotifyClient) -> ArtistResponse:
+def get_artists(client: SpotifyClient) -> ArtistCollection:
     """
     Retrieves a list of artists from Spotify formatted as an `ArtistResponse`
 
@@ -42,13 +42,15 @@ def get_artists(client: SpotifyClient) -> ArtistResponse:
     artists: ArtistResponse
         an object containing a list of artists
     """
-    return ArtistResponse(
-        items=[Artist.from_dict(item) for item in client.get_artists_from_spotify()]
+    artists = [Artist.from_dict(item) for item in client.get_artists_from_spotify()]
+    return ArtistCollection(
+        items=artists,
+        count=len(artists),
     )
 
 
-@router.get("", response_model=ArtistResponse)
-async def get_top_artists(query: ArtistQuery = Depends()) -> ArtistResponse:
+@router.get("", response_model=ArtistCollection)
+async def get_top_artists(query: ArtistQuery = Depends()) -> ArtistCollection:
     """
     Retrieves the current users top artists from the spotify api
 
@@ -62,7 +64,7 @@ async def get_top_artists(query: ArtistQuery = Depends()) -> ArtistResponse:
     artists: ArtistResponse
         the formatted artists retrieved from the spotify api
     """
-    client = Client(query=query)
+    client = Client(query)
     return get_artists(client)
 
 
