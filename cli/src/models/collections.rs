@@ -18,7 +18,14 @@ pub struct ArtistCollection {
 impl ContentCollection for ArtistCollection {
     fn display(&self) {
         let mut table = Table::new();
-        table.add_row(row!("Rank", "Artist", "Popularity", "Followers", "ID"));
+        table.add_row(row!(
+            "Rank",
+            "Artist",
+            "Popularity",
+            "Followers",
+            "Genres",
+            "ID"
+        ));
         self.items
             .iter()
             .enumerate()

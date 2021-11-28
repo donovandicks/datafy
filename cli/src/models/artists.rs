@@ -14,6 +14,9 @@ pub struct Artist {
     /// The total number of followers that the artist has
     followers: i32,
 
+    /// The genres the artist is known for
+    genres: Vec<String>,
+
     /// The Spotify ID of the artist
     id: String,
 }
@@ -25,6 +28,7 @@ impl Content for Artist {
             &self.name,
             &self.popularity,
             &self.followers,
+            &self.genres.join(", "),
             &self.id
         )
     }
