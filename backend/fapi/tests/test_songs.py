@@ -122,27 +122,3 @@ class SongsTest(TestCase):
             },
             songs.get_song_from_spotify("ABC123", Client()),
         )
-
-    def test_parse_song(self):
-        """Tests that `parse_song` produces a correct `Song` model"""
-        self.assertEqual(
-            Song(
-                id="ABC123",
-                name="Love Song",
-                artists=["Wesley"],
-                popularity=99,
-                album="The Princess Bride",
-                release_date="1987-09-07",
-                other_field="not_parsed",
-            ),
-            songs.parse_song(
-                {
-                    "id": "ABC123",
-                    "name": "Love Song",
-                    "artists": [{"name": "Wesley"}],
-                    "popularity": 99,
-                    "album": {"name": "The Princess Bride", "release_date": "1987-09-07"},
-                    "other_field": "not_parsed",
-                }
-            ),
-        )
