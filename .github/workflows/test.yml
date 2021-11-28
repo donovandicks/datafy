@@ -2,6 +2,7 @@ name: Test Code Base
 
 on:
   push:
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -36,6 +37,30 @@ jobs:
         env:
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+
+  test-backend-new:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10.x"
+
+      - name: Install poetry
+        run: python -m pip install -U pip poetry git+git://github.com/samuelcolvin/pydantic@master#egg=pydantic
+        working-directory: backend/fapi
+
+      - name: Install Dependencies
+        run: poetry install
+        working-directory: backend/fapi
+
+      - name: Run Test Suite
+        run: poetry run pytest
+        working-directory: backend/fapi
 
   test-rust:
     name: Rust CLI Tests
