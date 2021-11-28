@@ -23,7 +23,7 @@ FROM python-deps AS dev
 
 COPY . ./
 
-EXPOSE 5000
+EXPOSE 8000
 
 CMD ["poetry", "run", "python3", "main.py"]
 

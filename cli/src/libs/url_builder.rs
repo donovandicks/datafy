@@ -18,7 +18,7 @@ impl URLBuilder {
     /// * An instance of the `URLBuilder` with initialized members
     pub fn new() -> URLBuilder {
         URLBuilder {
-            base: String::from("http://0.0.0.0:5000"),
+            base: String::from("http://0.0.0.0:8000"),
             resource: String::from(""),
             params: vec![],
         }
