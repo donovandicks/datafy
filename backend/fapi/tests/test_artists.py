@@ -17,6 +17,7 @@ def retriever(_: ArtistQuery) -> List:
             "name": "Jimbo",
             "popularity": 99,
             "followers": {"total": 1234567},
+            "genres": ["folk"],
             "other_field": "not_parsed",
         },
         {
@@ -24,6 +25,7 @@ def retriever(_: ArtistQuery) -> List:
             "name": "Jimothy",
             "popularity": 97,
             "followers": {"total": 1234234},
+            "genres": ["pop"],
             "other_field": "not_parsed",
         },
     ]
@@ -43,6 +45,7 @@ class Client:
             "name": "Jimbo",
             "popularity": 99,
             "followers": {"total": 1234567},
+            "genres": ["folk"],
             "other_field": "not_parsed",
         }
 
@@ -57,8 +60,12 @@ class ArtistsTest(TestCase):
         """
         self.assertEqual(
             [
-                Artist(id="ABC123", name="Jimbo", popularity=99, followers=1234567),
-                Artist(id="DEF456", name="Jimothy", popularity=97, followers=1234234),
+                Artist(
+                    id="ABC123", name="Jimbo", popularity=99, followers=1234567, genres=["folk"]
+                ),
+                Artist(
+                    id="DEF456", name="Jimothy", popularity=97, followers=1234234, genres=["pop"]
+                ),
             ],
             artists.get_artists(ArtistQuery(), retriever),
         )
@@ -75,6 +82,7 @@ class ArtistsTest(TestCase):
                     "name": "Jimbo",
                     "popularity": 99,
                     "followers": {"total": 1234567},
+                    "genres": ["folk"],
                     "other_field": "not_parsed",
                 },
                 {
@@ -82,6 +90,7 @@ class ArtistsTest(TestCase):
                     "name": "Jimothy",
                     "popularity": 97,
                     "followers": {"total": 1234234},
+                    "genres": ["pop"],
                     "other_field": "not_parsed",
                 },
             ],
@@ -101,24 +110,8 @@ class ArtistsTest(TestCase):
                 "name": "Jimbo",
                 "popularity": 99,
                 "followers": {"total": 1234567},
+                "genres": ["folk"],
                 "other_field": "not_parsed",
             },
             artists.get_artist_from_spotify("ABC123", Client()),
-        )
-
-    def test_parse_artist(self):
-        """
-        Tests that `parse_artist` produces a correct `Artist` model
-        """
-        self.assertEqual(
-            Artist(id="ABC123", name="Jimbo", popularity=99, followers=1234567),
-            artists.parse_artist(
-                {
-                    "id": "ABC123",
-                    "name": "Jimbo",
-                    "popularity": 99,
-                    "followers": {"total": 1234567},
-                    "other_field": "not_parsed",
-                }
-            ),
         )
