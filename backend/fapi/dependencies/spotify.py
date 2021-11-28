@@ -37,15 +37,11 @@ settings = {
 }
 
 
-def init_spotify() -> Spotify:
-    """
-    Initialilizes the spotipy client
-    """
-    return Spotify(
-        auth_manager=SpotifyOAuth(
-            client_id=settings["client_id"],
-            client_secret=settings["client_secret"],
-            redirect_uri="http://localhost:8080",
-            scope=settings["scopes"],
-        )
+CLIENT = Spotify(
+    auth_manager=SpotifyOAuth(
+        client_id=settings["client_id"],
+        client_secret=settings["client_secret"],
+        redirect_uri="http://localhost:8080",
+        scope=settings["scopes"],
     )
+)

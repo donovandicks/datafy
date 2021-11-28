@@ -1,11 +1,9 @@
 """Defines the logic for handling requests to the `/artists` route"""
 from typing import Any, Callable, Dict, List
 
-from dependencies.spotify import init_spotify
+from dependencies.spotify import CLIENT
 from fastapi import APIRouter, Depends, HTTPException
 from models.artist import Artist, ArtistQuery, ArtistResponse
-
-CLIENT = init_spotify()
 
 router = APIRouter(
     prefix="/artists",

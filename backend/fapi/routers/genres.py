@@ -3,7 +3,7 @@
 from operator import contains
 from typing import Any, Callable, Dict, List, Optional, TypeAlias, TypeVar
 
-from dependencies.spotify import init_spotify
+from dependencies.spotify import CLIENT
 from fastapi import APIRouter, Depends, HTTPException
 from models.common import TimeRange
 from models.genre import Genre, GenreQuery, GenreResponse
@@ -11,8 +11,6 @@ from models.genre import Genre, GenreQuery, GenreResponse
 T = TypeVar("T")  # pylint: disable=invalid-name
 
 GenreCount: TypeAlias = Dict[str, int]
-
-CLIENT = init_spotify()
 
 router = APIRouter(
     prefix="/genres",
