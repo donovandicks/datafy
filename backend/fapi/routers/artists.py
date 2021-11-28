@@ -30,6 +30,7 @@ def parse_artist(artist: Dict) -> Artist:
         name=artist["name"],
         popularity=artist["popularity"],
         followers=artist["followers"]["total"],
+        genres=artist["genres"],
     )
 
 

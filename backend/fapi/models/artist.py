@@ -45,6 +45,9 @@ class Artist(BaseModel):
     followers: int
     """The total number of followers that the artist has"""
 
+    genres: List[str]
+    """The genres for the artists music"""
+
 
 class ArtistResponse(BaseModel):
     """
