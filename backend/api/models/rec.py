@@ -1,6 +1,6 @@
 """Query models for Spotify recommendations"""
 
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel
 
@@ -61,6 +61,13 @@ class Rec(BaseModel):
 
     song: str
     artists: list[str]
+
+    @classmethod
+    def from_dict(self, rec: Dict):
+        return Rec(
+            song=rec["name"],
+            artists=[artist["name"] for artist in rec["artists"]],
+        )
 
 
 class RecResponse(BaseModel):

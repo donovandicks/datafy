@@ -23,7 +23,7 @@ def parse_rec(item: Dict) -> Rec:
     rec: Rec
         a `Rec` object with the recommendation data
     """
-    return Rec(song=item["name"], artists=[artist["name"] for artist in item["artists"]])
+    return Rec.from_dict(item)
 
 
 def get_recommendations_from_spotify(query: RecQuery, client=CLIENT) -> List[Dict]:
