@@ -1,14 +1,21 @@
-"""The Genre query model"""
+"""Defines the structures of the data models used for interacting with the `/genres` route"""
 
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, validator
 
-from models.common import TimeRange
+from .common import TimeRange
+
+
+class Genre(BaseModel):
+    """The model for a `Genre` object"""
+
+    name: str
+    count: int
 
 
 class GenreQuery(BaseModel):
-    """The query model for the Genres resource"""
+    """The query model for the `/genres` route"""
 
     time_range: Optional[TimeRange]
     aggregate: Optional[bool]
@@ -31,6 +38,6 @@ class GenreQuery(BaseModel):
 
 
 class GenreResponse(BaseModel):
-    """The object model of the response body for the genres endpoint"""
+    """The object model of the response body for the `/genres` route"""
 
-    items: dict[str, int]
+    items: List[Genre]
