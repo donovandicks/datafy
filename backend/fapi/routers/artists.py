@@ -71,6 +71,8 @@ def get_artists_from_spotify(query: ArtistQuery, client=CLIENT) -> List:
     ------
     query: ArtistQuery
         the query model for the `/artists` route
+    client: [Spotify]
+        the api client used to connect to spotify
 
     Returns
     -------
