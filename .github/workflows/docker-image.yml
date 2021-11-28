@@ -2,12 +2,13 @@ name: Build Backend API Image
 
 on:
   push:
+    branches: [main]
   pull_request:
     branches: [main]
 
 jobs:
   build-api:
-    name: Build Core API
+    name: Build Backend API Service
     runs-on: ubuntu-latest
 
     steps:
@@ -15,4 +16,4 @@ jobs:
       - name: Build the Docker image
         run: |
           docker build . --file Dockerfile --tag datafy-api:$(date +%s) --target dev
-        working-directory: backend/api
+        working-directory: backend/fapi
