@@ -27,6 +27,17 @@ jobs:
         run: poetry install
         working-directory: backend/fapi
 
+      - name: Setup Access Token
+        run: echo ${{ secrets.ACCESS_TOKEN }} >> .cache
+        working-directory: backend/api
+
+      - name: Run Test Suite
+        run: poetry run pytest
+        working-directory: backend/api
+        env:
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+
       - name: Run Test Suite
         run: poetry run pytest
         working-directory: backend/fapi
