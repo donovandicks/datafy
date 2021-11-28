@@ -28,7 +28,7 @@ jobs:
         working-directory: backend/fapi
 
       - name: Setup Access Token
-        run: echo ${{ secrets.ACCESS_TOKEN }} >> .cache
+        run: echo ${{ secrets.ACCESS_TOKEN }} > .cache
         working-directory: backend/api
 
       - name: Run Test Suite
