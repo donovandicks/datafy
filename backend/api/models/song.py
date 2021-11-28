@@ -1,6 +1,6 @@
 """Query models for Spotify songs"""
 
-from typing import Optional
+from typing import Dict, Optional
 
 from pydantic import BaseModel, validator
 
@@ -58,6 +58,17 @@ class Song(BaseModel):
 
     release_date: str
     """The date the album was first released"""
+
+    @classmethod
+    def from_dict(self, song: Dict):
+        return Song(
+            id=song["id"],
+            name=song["name"],
+            artists=[artist["name"] for artist in song["artists"]],
+            popularity=song["popularity"],
+            album=song["album"]["name"],
+            release_date=song["album"]["release_date"],
+        )
 
 
 class SongCollection(BaseModel):

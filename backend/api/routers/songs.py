@@ -22,14 +22,7 @@ def parse_song(song: Dict) -> Song:
     song: Song
         the parsed song model
     """
-    return Song(
-        id=song["id"],
-        name=song["name"],
-        artists=[artist["name"] for artist in song["artists"]],
-        popularity=song["popularity"],
-        album=song["album"]["name"],
-        release_date=song["album"]["release_date"],
-    )
+    return Song.from_dict(song)
 
 
 def get_song_from_spotify(song_id: str, client=CLIENT) -> Dict:
