@@ -36,13 +36,6 @@ settings = {
     "client_secret": getenv("CLIENT_SECRET"),
 }
 
-print(
-    f"""
-########### FOUND CLIENT ID ###########
-########### {settings['client_id']} #########
-"""
-)
-
 CLIENT = Spotify(
     auth_manager=SpotifyOAuth(
         client_id=settings["client_id"],

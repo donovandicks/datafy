@@ -34,10 +34,6 @@ jobs:
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
 
-      - name: Run Test Suite
-        run: poetry run pytest
-        working-directory: backend/fapi
-
   test-rust:
     name: Rust CLI Tests
     runs-on: ubuntu-latest
