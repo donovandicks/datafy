@@ -11,7 +11,7 @@ pub fn get_limit() -> String {
         .with_prompt("Results Limit: ")
         .default(20.to_string())
         .validate_with(|input: &String| -> Result<(), &str> {
-            match input.parse::<u32>() {
+            match input.parse::<i16>() {
                 Ok(_) => Ok(()),
                 Err(_) => Err("Failed to parse limit. Value should be a positive integer."),
             }
