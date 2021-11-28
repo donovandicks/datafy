@@ -1,9 +1,11 @@
 """Defines the logic for handling requests to the `/songs` route"""
 from typing import Callable, Dict, List
 
-from dependencies.spotify import CLIENT
+from dependencies.spotify import init_spotify
 from fastapi import APIRouter, Depends, HTTPException
 from models.song import Song, SongCollection, SongQuery
+
+CLIENT = init_spotify()
 
 router = APIRouter(prefix="/songs", tags=["songs"])
 

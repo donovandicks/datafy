@@ -2,9 +2,11 @@
 
 from typing import Callable, Dict, List
 
-from dependencies.spotify import CLIENT
+from dependencies.spotify import init_spotify
 from fastapi import APIRouter, Depends, HTTPException
 from models.rec import Rec, RecQuery, RecResponse
+
+CLIENT = init_spotify()
 
 router = APIRouter(prefix="/recs", tags=["recommendations", "recs"])
 
