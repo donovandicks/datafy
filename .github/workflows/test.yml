@@ -28,12 +28,12 @@ jobs:
         working-directory: backend/fapi
 
       - name: Setup Access Token
-        run: echo ${{ secrets.ACCESS_TOKEN }} > .cache
-        working-directory: backend/api
+        run: echo ${{ secrets.ACCESS_TOKEN }} >> .cache
+        working-directory: backend/fapi
 
       - name: Run Test Suite
         run: poetry run pytest
-        working-directory: backend/api
+        working-directory: backend/fapi
         env:
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
