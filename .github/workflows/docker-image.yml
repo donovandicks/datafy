@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-api:
-    name: Build Core API Service
+    name: Build Backend API Service
     runs-on: ubuntu-latest
 
     steps:
