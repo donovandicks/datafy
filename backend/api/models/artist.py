@@ -1,5 +1,5 @@
 """Defines the structures of the data models used for interacting with the `/artists` route"""
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, validator
 
@@ -47,6 +47,16 @@ class Artist(BaseModel):
 
     genres: List[str]
     """The genres for the artists music"""
+
+    @classmethod
+    def from_dict(self, obj: Dict):
+        return Artist(
+            id=obj["id"],
+            name=obj["name"],
+            popularity=obj["popularity"],
+            followers=obj["followers"]["total"],
+            genres=obj["genres"],
+        )
 
 
 class ArtistResponse(BaseModel):

@@ -11,29 +11,6 @@ router = APIRouter(
 )
 
 
-def parse_artist(artist: Dict) -> Artist:
-    """
-    Parses an object returned by the api into an `Artist` model
-
-    Params
-    ------
-    artist: Dict
-        an artist object returned by the api
-
-    Returns
-    -------
-    artist: Artist
-        the parsed artist model
-    """
-    return Artist(
-        id=artist["id"],
-        name=artist["name"],
-        popularity=artist["popularity"],
-        followers=artist["followers"]["total"],
-        genres=artist["genres"],
-    )
-
-
 def get_artist_from_spotify(artist_id: str, client=CLIENT) -> Dict[str, Any]:
     """
     Retrieves a single artist from spotify
@@ -113,7 +90,7 @@ def get_artists(query: ArtistQuery, retriever: Callable[[ArtistQuery], List[Dict
     artists: List[Artist]
         a list of parsed `Artist` models
     """
-    return [parse_artist(item) for item in retriever(query)]
+    return [Artist.from_dict(item) for item in retriever(query)]
 
 
 @router.get("", response_model=ArtistResponse)
@@ -149,4 +126,4 @@ async def get_one_artist(artist_id: str) -> Artist:
     artist: Artist
         an artist model constructed from the spotify response object
     """
-    return parse_artist(get_artist_from_spotify(artist_id))
+    return Artist.from_dict(get_artist_from_spotify(artist_id))
