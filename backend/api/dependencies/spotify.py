@@ -7,6 +7,7 @@ from typing import Any, Dict, List
 from dotenv import load_dotenv
 from fastapi import HTTPException
 from models.common import Query
+from models.rec import RecQuery
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyOAuth
 
@@ -81,6 +82,10 @@ class SpotifyClient:
     @abstractmethod
     def get_genres_from_spotify(self) -> List[str]:
         """Should retrieve a list of genres"""
+
+    @abstractmethod
+    def get_recommendations_from_spotify(self) -> List[Dict]:
+        """Should retrieve a list of recommendations"""
 
 
 class Client(SpotifyClient):
@@ -230,3 +235,34 @@ class Client(SpotifyClient):
             genre_detail.extend(item["genres"])
 
         return genre_detail
+
+    def get_recommendations_from_spotify(self) -> List[Dict]:
+        """
+        Retrieves recommendations from spotify
+
+        Params
+        ------
+        query: RecQuery
+            the query object containing seed data for the recommendation api
+        client: [Spotify]
+            the api client object used to interact with Spotify
+
+        Returns
+        -------
+        tracks: List[Dict]
+            a list of tracks returned from the API
+        """
+        if not isinstance(self.query, RecQuery):
+            raise TypeError("Invalid query type for recommendations")
+
+        recommendations = self.client.recommendations(
+            seed_artists=self.query.seed_artists_list,
+            seed_genres=self.query.seed_genres_list,
+            seed_tracks=self.query.seed_tracks_list,
+            limit=self.query.limit,
+        )
+
+        if not recommendations:
+            raise HTTPException(404, "Recommendations not found")
+
+        return recommendations["tracks"]

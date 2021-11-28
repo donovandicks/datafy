@@ -112,6 +112,9 @@ def get_genres(client: SpotifyClient) -> GenreCollection:
     """
     genre_object = count_genres(client.get_genres_from_spotify())
 
+    if not isinstance(client.query, GenreQuery):
+        raise TypeError("Invalid query type for genres")
+
     if client.query.aggregate:
         genre_object = get_genre_aggregate(genre_object)
 

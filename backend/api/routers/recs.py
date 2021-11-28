@@ -1,61 +1,13 @@
 """Defines the logic for handling requests to the `/recs` route"""
 
-from typing import Callable, Dict, List
-
-from dependencies.spotify import CLIENT
-from fastapi import APIRouter, Depends, HTTPException
-from models.rec import Rec, RecQuery, RecResponse
+from dependencies.spotify import Client, SpotifyClient
+from fastapi import APIRouter, Depends
+from models.rec import Rec, RecCollection, RecQuery
 
 router = APIRouter(prefix="/recs", tags=["recommendations", "recs"])
 
 
-def parse_rec(item: Dict) -> Rec:
-    """
-    Parses an object into a `Rec`
-
-    Params
-    ------
-    item: Dict
-        a recommendation object retrieved from the api
-
-    Returns
-    -------
-    rec: Rec
-        a `Rec` object with the recommendation data
-    """
-    return Rec.from_dict(item)
-
-
-def get_recommendations_from_spotify(query: RecQuery, client=CLIENT) -> List[Dict]:
-    """
-    Retrieves recommendations from spotify
-
-    Params
-    ------
-    query: RecQuery
-        the query object containing seed data for the recommendation api
-    client: [Spotify]
-        the api client object used to interact with Spotify
-
-    Returns
-    -------
-    tracks: List[Dict]
-        a list of tracks returned from the API
-    """
-    recommendations = client.recommendations(
-        seed_artists=query.seed_artists_list,
-        seed_genres=query.seed_genres_list,
-        seed_tracks=query.seed_tracks_list,
-        limit=query.limit,
-    )
-
-    if not recommendations:
-        raise HTTPException(404, "Recommendations not found")
-
-    return recommendations["tracks"]
-
-
-def get_recs(query: RecQuery, retriever: Callable[[RecQuery], List[Dict]]) -> List[Rec]:
+def get_recs(client: SpotifyClient) -> RecCollection:
     """
     Parses recommendations into a list of `Rec`s
 
@@ -72,11 +24,15 @@ def get_recs(query: RecQuery, retriever: Callable[[RecQuery], List[Dict]]) -> Li
     recs: List[Rec]
         a list of `Rec`s
     """
-    return [parse_rec(item) for item in retriever(query)]
+    items = [Rec.from_dict(item) for item in client.get_recommendations_from_spotify()]
+    return RecCollection(
+        items=items,
+        count=len(items),
+    )
 
 
-@router.get("", response_model=RecResponse)
-async def get_recommendations(query: RecQuery = Depends()) -> RecResponse:
+@router.get("", response_model=RecCollection)
+async def get_recommendations(query: RecQuery = Depends()) -> RecCollection:
     """
     Retrieves recommendations for the user based on their input parameters
 
@@ -90,4 +46,5 @@ async def get_recommendations(query: RecQuery = Depends()) -> RecResponse:
     recs: RecResponse
         a recommendation response object containing a list of `Rec`s
     """
-    return RecResponse(items=get_recs(query, get_recommendations_from_spotify))
+    client = Client(query)
+    return get_recs(client)
