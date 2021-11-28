@@ -14,13 +14,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Cache
-        uses: actions/cache@v2
-        id: cache
-        with:
-          path: ~/.poetry
-          key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -31,7 +24,6 @@ jobs:
         working-directory: backend/fapi
 
       - name: Install Release Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
         run: poetry install
         working-directory: backend/fapi
 
