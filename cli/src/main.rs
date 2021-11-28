@@ -9,7 +9,7 @@ use dialoguer::{theme::ColorfulTheme, Select};
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     loop {
-        let content_choices = ["Artists", "Genres", "Recommendations", "Songs", "Exit"];
+        let content_choices = ["Artists", "Genres", "Recs", "Songs", "Exit"];
 
         let index = match Select::with_theme(&ColorfulTheme::default())
             .with_prompt("Select your desired content from the following options:")
