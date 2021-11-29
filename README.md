@@ -1,26 +1,23 @@
 # Datafy
 
+A web application to view Spotify data
+
 - [Datafy](#datafy)
-  - [Overview](#overview)
-    - [CLI](#cli)
-    - [Backend](#backend)
+  - [CLI](#cli)
+  - [Backend](#backend)
+    - [API](#api)
   - [Contributing](#contributing)
   - [Resources](#resources)
 
-## Overview
+## CLI
 
-A web application to view Spotify data
+Data can be accessed and visualized via the terminal as well by using the [CLI](./cli/README.md).
 
-### CLI
+## Backend
 
-Data can be accessed and visualized via the terminal as well by using the CLI.
+### API
 
-### Backend
-
-Multiple services will encompass the backend functionality of the application.
-
-Currently, only an API service exists to communicate with Spotify and retrieve
-the requested information.
+The core [API](./backend/api/README.md) is responsible for interacting with Spotify.
 
 ## Contributing
 

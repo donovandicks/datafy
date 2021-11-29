@@ -14,7 +14,6 @@
   - [Running Locally](#running-locally)
     - [CLI](#cli)
     - [Backend](#backend)
-    - [Notes on Port Mappings with Docker](#notes-on-port-mappings-with-docker)
 
 ## Prerequisites
 
@@ -129,18 +128,9 @@ does not apply to your change, mark it as N/A.
 
 ### CLI
 
-See the CLI [README](./rcli/README.md) for more information on running the CLI
+See the CLI [README](./cli/README.md) for more information on running the CLI
 
 ### Backend
 
 See the backend [README](./backend/README.md) for more information on running
 backend services.
-
-### Notes on Port Mappings with Docker
-
-Running multiple services at the same time on the same port will require the
-port mapping to adjust to different ports on the host machine. This can be
-accomplished like so:
-`docker run -p 5000:5000 serviceA && docker run -p 5001:5000 serviceB`
-The port exposed on the container will remain the same, but will be mapped to a
-different port on the host machine.
