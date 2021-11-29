@@ -18,7 +18,7 @@ The query model for the `/artists` route is defined as:
 
 | Parameter  | Type        | Restrictions | Description                            |
 | ---------- | ----------- | ------------ | -------------------------------------- |
-| limit      | `int`       | 0 < limit    | The number of responses to return      |
+| limit      | `int`       | limit > 0    | The number of responses to return      |
 | time_range | `TimeRange` | None         | The time period to request results for |
 
 The response model for the route is defined as:
