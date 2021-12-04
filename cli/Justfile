@@ -5,6 +5,10 @@ _default:
 check:
     cargo clippy --locked -- -D warnings
 
+# Lints using pedantic
+lint:
+    cargo clippy --locked -- -W clippy::pedantic -D warnings
+
 # Runs unit tests
 test:
     cargo test --locked
