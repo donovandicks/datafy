@@ -1,8 +1,8 @@
 use crate::models::content::Content;
 use prettytable::Row;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Serialize)]
 /// The song model returned from the Datafy backend API
 pub struct Song {
     /// The name of the song
@@ -24,6 +24,7 @@ pub struct Song {
     id: String,
 }
 
+#[typetag::serde]
 impl Content for Song {
     fn as_row(&self, idx: usize) -> Row {
         row!(
