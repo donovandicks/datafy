@@ -97,5 +97,5 @@ pub async fn process_request(resource: &str) {
     let endpoint = build_url(builder, &opts);
     let content = retrieve_content(endpoint.as_str()).await.unwrap();
 
-    display(content)
+    display(content);
 }
