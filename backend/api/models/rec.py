@@ -58,23 +58,32 @@ class RecQuery(Query):
 class Rec(BaseModel):
     """The model for a recommendation item"""
 
+    content: str
+    """The type of content - used for serialization"""
+
     song: str
+    """The name of the recommended song"""
+
     artists: list[str]
+    """The list of artists performing the recommended song"""
 
     @classmethod
     def from_dict(cls, rec: Dict):
-        """Converts a dict into a `Rec` object"""
+        """
+        Converts a dict into a `Rec` object
+
+        Params
+        ------
+        rec: Dict
+            the recommendation returned from Spotify
+
+        Returns
+        -------
+        rec: Rec
+            a `Rec` object with the song and artists from the input `rec`
+        """
         return Rec(
+            content="Recommendation",
             song=rec["name"],
             artists=[artist["name"] for artist in rec["artists"]],
         )
-
-
-class RecCollection(BaseModel):
-    """The response body for the `/recs` route"""
-
-    items: list[Rec]
-    """A list of recommended songs"""
-
-    count: int
-    """The number of items in the collection"""

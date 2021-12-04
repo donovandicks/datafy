@@ -1,0 +1,26 @@
+---
+collections:
+  artist:
+    - Rank
+    - Artist
+    - Popularity
+    - Followers
+    - Genres
+    - ID
+
+  song:
+    - Rank
+    - Song
+    - Artists
+    - Popularity
+    - Release Date
+    - ID
+
+  genre:
+    - Rank
+    - Genre
+    - Count
+
+  rec:
+    - Song
+    - Artist

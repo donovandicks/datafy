@@ -2,7 +2,8 @@
 
 from unittest import TestCase
 
-from models.song import Song, SongCollection, SongQuery
+from models.collection import Collection
+from models.song import Song, SongQuery
 from routers import songs
 
 from .client_fixture import FakeClient
@@ -14,9 +15,11 @@ class SongsTest(TestCase):
     def test_get_songs(self):
         """Tests that `get_songs` parses objects into a list of `Song` models"""
         self.assertEqual(
-            SongCollection(
+            Collection(
+                item_type="Song",
                 items=[
                     Song(
+                        content="Song",
                         id="ABC123",
                         name="Love Song",
                         artists=["Wesley"],
@@ -26,6 +29,7 @@ class SongsTest(TestCase):
                         other_field="not_parsed",
                     ),
                     Song(
+                        content="Song",
                         id="DEF456",
                         name="Pirate Song",
                         artists=["Jack Sparrow"],
@@ -35,6 +39,7 @@ class SongsTest(TestCase):
                         other_field="not_parsed",
                     ),
                 ],
+                item_headers=["Rank", "Song", "Artists", "Popularity", "Release Date", "ID"],
                 count=2,
             ),
             songs.get_songs(FakeClient(SongQuery())),
@@ -44,6 +49,7 @@ class SongsTest(TestCase):
         """Tests that `get_song_from_spotify` retrieves a single song from the client"""
         self.assertEqual(
             Song(
+                content="Song",
                 id="ABC123",
                 name="Love Song",
                 artists=["Wesley"],

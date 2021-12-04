@@ -2,7 +2,8 @@
 
 from unittest import TestCase
 
-from models.rec import Rec, RecCollection, RecQuery
+from models.collection import Collection
+from models.rec import Rec, RecQuery
 from routers import recs
 
 from .client_fixture import FakeClient
@@ -14,12 +15,20 @@ class RecsTest(TestCase):
     def test_get_recs(self):
         """Test get_recs as expected"""
         self.assertEqual(
-            RecCollection(
+            Collection(
+                item_type="Recommendation",
                 items=[
-                    Rec(song="Erase Your Social", artists=["Lil Uzi Vert"]),
-                    Rec(song="Flex", artists=["Playboi Carti", "Leven Kali"]),
-                    Rec(song="Self Care", artists=["Mac Miller"]),
+                    Rec(
+                        content="Recommendation", song="Erase Your Social", artists=["Lil Uzi Vert"]
+                    ),
+                    Rec(
+                        content="Recommendation",
+                        song="Flex",
+                        artists=["Playboi Carti", "Leven Kali"],
+                    ),
+                    Rec(content="Recommendation", song="Self Care", artists=["Mac Miller"]),
                 ],
+                item_headers=["Song", "Artist"],
                 count=3,
             ),
             recs.get_recs(FakeClient(RecQuery())),

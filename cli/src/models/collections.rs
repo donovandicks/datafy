@@ -1,116 +1,16 @@
-use crate::models::{
-    artists::Artist,
-    content::{Content, ContentCollection},
-    genres::Genre,
-    recs::Recommendation,
-    songs::Song,
-};
-use prettytable::Table;
 use serde::Deserialize;
 
-#[derive(Deserialize, Debug)]
-/// Model for data retrieved from the artists API endpoint
-pub struct ArtistCollection {
-    /// A list of Artist objects
-    items: Vec<Artist>,
-}
-
-impl ContentCollection for ArtistCollection {
-    fn display(&self) {
-        let mut table = Table::new();
-        table.add_row(row!(
-            "Rank",
-            "Artist",
-            "Popularity",
-            "Followers",
-            "Genres",
-            "ID"
-        ));
-        self.items
-            .iter()
-            .enumerate()
-            .map(|(idx, item)| item.as_row(idx))
-            .for_each(|row| {
-                table.add_row(row);
-            });
-
-        table.printstd();
-    }
-}
+use crate::models::content::Content;
+use std::boxed::Box;
 
 #[derive(Deserialize, Debug)]
-/// Model for data retrieved from the artists API endpoint
-pub struct SongCollection {
-    /// A list of Song objects
-    items: Vec<Song>,
-}
+pub struct ContentCollection {
+    /// A list of Content objects
+    pub(crate) items: Vec<Box<dyn Content>>,
 
-impl ContentCollection for SongCollection {
-    fn display(&self) {
-        let mut table = Table::new();
-        table.add_row(row!(
-            "Rank",
-            "Song",
-            "Artists",
-            "Popularity",
-            "Album",
-            "Release Date",
-            "ID"
-        ));
-        self.items
-            .iter()
-            .enumerate()
-            .map(|(idx, item)| item.as_row(idx))
-            .for_each(|row| {
-                table.add_row(row);
-            });
+    /// A list of data field descriptors
+    pub(crate) item_headers: Vec<String>,
 
-        table.printstd();
-    }
-}
-
-#[derive(Deserialize, Debug)]
-/// Model for data retrieved from the genres API endpoint
-pub struct GenreCollection {
-    /// A map from genre name to count
-    items: Vec<Genre>,
-}
-
-impl ContentCollection for GenreCollection {
-    fn display(&self) {
-        let mut table = Table::new();
-        table.add_row(row!("Rank", "Genre", "Count",));
-        self.items
-            .iter()
-            .enumerate()
-            .map(|(idx, item)| item.as_row(idx))
-            .for_each(|row| {
-                table.add_row(row);
-            });
-
-        table.printstd();
-    }
-}
-
-#[derive(Deserialize, Debug)]
-/// Model for data retrieved from the genres API endpoint
-pub struct RecommendationCollection {
-    /// A list of Recommendation objects
-    items: Vec<Recommendation>,
-}
-
-impl ContentCollection for RecommendationCollection {
-    fn display(&self) {
-        let mut table = Table::new();
-        table.add_row(row!("Song", "Artists"));
-        self.items
-            .iter()
-            .enumerate()
-            .map(|(idx, item)| item.as_row(idx))
-            .for_each(|row| {
-                table.add_row(row);
-            });
-
-        table.printstd();
-    }
+    /// Number of items in the collection
+    pub(crate) count: i32,
 }

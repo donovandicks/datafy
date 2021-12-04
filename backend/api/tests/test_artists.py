@@ -2,7 +2,8 @@
 
 from unittest import TestCase
 
-from models.artist import Artist, ArtistCollection, ArtistQuery
+from models.artist import Artist, ArtistQuery
+from models.collection import Collection
 from routers import artists
 
 from .client_fixture import FakeClient
@@ -17,12 +18,19 @@ class ArtistsTest(TestCase):
         the spotify api into `Artist` models
         """
         self.assertEqual(
-            ArtistCollection(
+            Collection(
+                item_type="Artist",
                 items=[
                     Artist(
-                        id="ABC123", name="Jimbo", popularity=99, followers=1234567, genres=["folk"]
+                        content="Artist",
+                        id="ABC123",
+                        name="Jimbo",
+                        popularity=99,
+                        followers=1234567,
+                        genres=["folk"],
                     ),
                     Artist(
+                        content="Artist",
                         id="DEF456",
                         name="Jimothy",
                         popularity=97,
@@ -30,6 +38,7 @@ class ArtistsTest(TestCase):
                         genres=["pop"],
                     ),
                 ],
+                item_headers=["Rank", "Artist", "Popularity", "Followers", "Genres", "ID"],
                 count=2,
             ),
             artists.get_artists(FakeClient(ArtistQuery())),
@@ -40,6 +49,13 @@ class ArtistsTest(TestCase):
         Tests that `get_artist_from_spotify` retrieves one artist
         """
         self.assertEqual(
-            Artist(id="ABC123", name="Jimbo", popularity=99, followers=1234567, genres=["folk"]),
+            Artist(
+                content="Artist",
+                id="ABC123",
+                name="Jimbo",
+                popularity=99,
+                followers=1234567,
+                genres=["folk"],
+            ),
             artists.get_artist("ABC123", FakeClient(None)),
         )

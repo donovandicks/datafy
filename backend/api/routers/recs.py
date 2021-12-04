@@ -2,12 +2,13 @@
 
 from dependencies.spotify import Client, SpotifyClient
 from fastapi import APIRouter, Depends
-from models.rec import Rec, RecCollection, RecQuery
+from models.collection import Collection
+from models.rec import Rec, RecQuery
 
 router = APIRouter(prefix="/recs", tags=["recommendations", "recs"])
 
 
-def get_recs(client: SpotifyClient) -> RecCollection:
+def get_recs(client: SpotifyClient) -> Collection[Rec]:
     """
     Parses recommendations into a list of `Rec`s
 
@@ -21,18 +22,15 @@ def get_recs(client: SpotifyClient) -> RecCollection:
 
     Returns
     -------
-    recs: List[Rec]
-        a list of `Rec`s
+    recs: Collection[Rec]
+       a collection of `Rec` objects
     """
     items = [Rec.from_dict(item) for item in client.get_recommendations_from_spotify()]
-    return RecCollection(
-        items=items,
-        count=len(items),
-    )
+    return Collection.from_list(items)
 
 
-@router.get("", response_model=RecCollection)
-async def get_recommendations(query: RecQuery = Depends()) -> RecCollection:
+@router.get("", response_model=Collection[Rec])
+async def get_recommendations(query: RecQuery = Depends()) -> Collection[Rec]:
     """
     Retrieves recommendations for the user based on their input parameters
 
@@ -43,8 +41,7 @@ async def get_recommendations(query: RecQuery = Depends()) -> RecCollection:
 
     Returns
     -------
-    recs: RecResponse
-        a recommendation response object containing a list of `Rec`s
+    recs: Collection[Rec]
+        a collection of `Rec` objects
     """
-    client = Client(query)
-    return get_recs(client)
+    return get_recs(Client(query))

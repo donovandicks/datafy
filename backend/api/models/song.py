@@ -14,6 +14,9 @@ class SongQuery(Query):
 class Song(BaseModel):
     """The object model representing key elements of Spotify songs"""
 
+    content: str
+    """The type of content - used for serialization"""
+
     id: str
     """The Spotify ID of the song"""
 
@@ -34,8 +37,21 @@ class Song(BaseModel):
 
     @classmethod
     def from_dict(cls, song: Dict):
-        """Converts a dictionary into a `Song` object"""
+        """
+        Converts a dictionary into a `Song` object
+
+        Params
+        ------
+        song: Dict
+            a song object returned from Spotify
+
+        Returns
+        -------
+        song: Song
+            a `Song` object with the data elements from the input `song`
+        """
         return Song(
+            content="Song",
             id=song["id"],
             name=song["name"],
             artists=[artist["name"] for artist in song["artists"]],
@@ -43,13 +59,3 @@ class Song(BaseModel):
             album=song["album"]["name"],
             release_date=song["album"]["release_date"],
         )
-
-
-class SongCollection(BaseModel):
-    """The object model of the response body for the songs endpoint"""
-
-    items: list[Song]
-    """A list of song objects"""
-
-    count: int
-    """The number of items in the collection"""
