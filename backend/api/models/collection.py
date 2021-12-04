@@ -66,20 +66,20 @@ class Collection(BaseModel, Generic[T]):
         item_type = ""
         headers = []
         match items:
-            case [Artist(), *_]:
-                item_type = "Artist"
+            case [Artist(content=content), *_]:
+                item_type = content
                 headers = COLLECTION_HEADERS["artist"]
 
-            case [Song(), *_]:
-                item_type = "Song"
+            case [Song(content=content), *_]:
+                item_type = content
                 headers = COLLECTION_HEADERS["song"]
 
-            case [Genre(), *_]:
-                item_type = "Genre"
+            case [Genre(content=content), *_]:
+                item_type = content
                 headers = COLLECTION_HEADERS["genre"]
 
-            case [Rec(), *_]:
-                item_type = "Recommendation"
+            case [Rec(content=content), *_]:
+                item_type = content
                 headers = COLLECTION_HEADERS["rec"]
 
             case _:
