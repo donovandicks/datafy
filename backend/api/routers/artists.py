@@ -1,7 +1,8 @@
 """Defines the logic for handling requests to the `/artists` route"""
 from dependencies.spotify import Client, SpotifyClient
 from fastapi import APIRouter, Depends
-from models.artist import Artist, ArtistCollection, ArtistQuery
+from models.artist import Artist, ArtistQuery
+from models.collection import Collection
 
 router = APIRouter(
     prefix="/artists",
@@ -28,7 +29,7 @@ def get_artist(artist_id: str, client: SpotifyClient) -> Artist:
     return Artist.from_dict(client.get_artist_from_spotify(artist_id))
 
 
-def get_artists(client: SpotifyClient) -> ArtistCollection:
+def get_artists(client: SpotifyClient) -> Collection[Artist]:
     """
     Retrieves a list of artists from Spotify formatted as an `ArtistResponse`
 
@@ -39,18 +40,15 @@ def get_artists(client: SpotifyClient) -> ArtistCollection:
 
     Returns
     -------
-    artists: ArtistResponse
-        an object containing a list of artists
+    artists: Collection[Artist]
+        a collection of `Artist` objects
     """
     artists = [Artist.from_dict(item) for item in client.get_artists_from_spotify()]
-    return ArtistCollection(
-        items=artists,
-        count=len(artists),
-    )
+    return Collection.from_list(artists)
 
 
-@router.get("", response_model=ArtistCollection)
-async def get_top_artists(query: ArtistQuery = Depends()) -> ArtistCollection:
+@router.get("", response_model=Collection[Artist])
+async def get_top_artists(query: ArtistQuery = Depends()) -> Collection[Artist]:
     """
     Retrieves the current users top artists from the spotify api
 
@@ -61,11 +59,10 @@ async def get_top_artists(query: ArtistQuery = Depends()) -> ArtistCollection:
 
     Returns
     -------
-    artists: ArtistResponse
-        the formatted artists retrieved from the spotify api
+    artists: Collection[Artist]
+        a collection of `Artist` objects
     """
-    client = Client(query)
-    return get_artists(client)
+    return get_artists(Client(query))
 
 
 @router.get("/{artist_id}", response_model=Artist)
@@ -83,5 +80,4 @@ async def get_one_artist(artist_id: str) -> Artist:
     artist: Artist
         an artist model constructed from the spotify response object
     """
-    client = Client(ArtistQuery())
-    return get_artist(artist_id, client)
+    return get_artist(artist_id, Client(ArtistQuery()))

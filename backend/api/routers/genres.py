@@ -5,7 +5,8 @@ from typing import Any, Callable, Dict, List, TypeAlias, TypeVar
 
 from dependencies.spotify import Client, SpotifyClient
 from fastapi import APIRouter, Depends
-from models.genre import Genre, GenreCollection, GenreQuery
+from models.collection import Collection
+from models.genre import Genre, GenreQuery
 
 T = TypeVar("T")  # pylint: disable=invalid-name
 
@@ -94,7 +95,7 @@ def get_genre_aggregate(genre_detail: GenreCount) -> GenreCount:
     return {key: sum(filter_dict(genre_detail, contains, key)) for key in GENRE_BINS}
 
 
-def get_genres(client: SpotifyClient) -> GenreCollection:
+def get_genres(client: SpotifyClient) -> Collection[Genre]:
     """
     Retrieves a sorted list of Genre objects
 
@@ -107,8 +108,8 @@ def get_genres(client: SpotifyClient) -> GenreCollection:
 
     Returns
     -------
-    genre_list: List[Genre]
-        a list of genre objects
+    genre_list: Collection[Genre]
+        a collection of `Genre` objects
     """
     genre_object = count_genres(client.get_genres_from_spotify())
 
@@ -119,7 +120,7 @@ def get_genres(client: SpotifyClient) -> GenreCollection:
         genre_object = get_genre_aggregate(genre_object)
 
     genre_list = [
-        Genre(name=name, count=count)
+        Genre.from_tuple(genre_tuple=(name, count))
         for name, count in sorted(genre_object.items(), key=lambda genre: genre[1], reverse=True)
     ]
 
@@ -129,11 +130,11 @@ def get_genres(client: SpotifyClient) -> GenreCollection:
         else genre_list
     )
 
-    return GenreCollection(items=items, count=len(items))
+    return Collection.from_list(items)
 
 
-@router.get("", response_model=GenreCollection)
-async def get_top_genres(query: GenreQuery = Depends()) -> GenreCollection:
+@router.get("", response_model=Collection[Genre])
+async def get_top_genres(query: GenreQuery = Depends()) -> Collection[Genre]:
     """
     Retrieves the current users top genres
 
@@ -144,8 +145,7 @@ async def get_top_genres(query: GenreQuery = Depends()) -> GenreCollection:
 
     Returns
     -------
-    genres: GenreResponse
-        the GenreResponse model with a list of genre objects
+    genres: Collection[Genre]
+        a collection of `Genre` objects
     """
-    client = Client(query)
-    return get_genres(client)
+    return get_genres(Client(query))

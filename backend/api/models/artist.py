@@ -15,6 +15,8 @@ class Artist(BaseModel):
     The object model representing key elements of a Spotify artist
     """
 
+    content: str
+
     id: str
     """The Spotify ID of the artist"""
 
@@ -34,33 +36,10 @@ class Artist(BaseModel):
     def from_dict(cls, obj: Dict):
         """Converts a dictionary to an `Artist` object"""
         return Artist(
+            content="Artist",
             id=obj["id"],
             name=obj["name"],
             popularity=obj["popularity"],
             followers=obj["followers"]["total"],
             genres=obj["genres"],
         )
-
-
-class ArtistCollection(BaseModel):
-    """
-    The object model of the response body for the artists endpoint
-
-    ```
-    items: [
-        {
-            id: string,
-            name: string,
-            popularity: int,
-            followers: int,
-        }
-    ],
-    count: 1
-    ```
-    """
-
-    items: List[Artist]
-    """The list of all Artists retrieved from Spotify"""
-
-    count: int
-    """The number of Artists in the collection"""

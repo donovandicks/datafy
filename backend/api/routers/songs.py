@@ -2,7 +2,8 @@
 
 from dependencies.spotify import Client, SpotifyClient
 from fastapi import APIRouter, Depends
-from models.song import Song, SongCollection, SongQuery
+from models.collection import Collection
+from models.song import Song, SongQuery
 
 router = APIRouter(prefix="/songs", tags=["songs"])
 
@@ -23,11 +24,10 @@ def get_song(song_id: str, client: SpotifyClient) -> Song:
     artist: Song
         an object containing data about a song
     """
-
     return Song.from_dict(client.get_song_from_spotify(song_id))
 
 
-def get_songs(client: SpotifyClient) -> SongCollection:
+def get_songs(client: SpotifyClient) -> Collection[Song]:
     """
     Retrieves a list of songs from Spotify formatted as an `SongCollection`
 
@@ -38,15 +38,15 @@ def get_songs(client: SpotifyClient) -> SongCollection:
 
     Returns
     -------
-    artists: SongCollection
-        an object containing a list of songs and a count of songs retrieved
+    artists: Collection[Song]
+        a collection of `Song` objects
     """
     songs = [Song.from_dict(song) for song in client.get_songs_from_spotify()]
-    return SongCollection(items=songs, count=len(songs))
+    return Collection.from_list(songs)
 
 
-@router.get("", response_model=SongCollection)
-async def get_top_songs(query: SongQuery = Depends()) -> SongCollection:
+@router.get("", response_model=Collection[Song])
+async def get_top_songs(query: SongQuery = Depends()) -> Collection[Song]:
     """
     Retrieves the current users top songs from the spotify api
 
@@ -57,11 +57,10 @@ async def get_top_songs(query: SongQuery = Depends()) -> SongCollection:
 
     Returns
     -------
-    songs: SongResponse
-        the formatted songs retrieved from the spotify api
+    songs: Collection[Song]
+        a collection of `Song` objects
     """
-    client = Client(query)
-    return get_songs(client)
+    return get_songs(Client(query))
 
 
 @router.get("/{song_id}", response_model=Song)
@@ -79,5 +78,4 @@ async def get_one_song(song_id: str) -> Song:
     song: Song
         a song model constructed from the spotify response object
     """
-    client = Client(SongQuery())
-    return get_song(song_id, client)
+    return get_song(song_id, Client(SongQuery()))
