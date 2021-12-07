@@ -1,6 +1,7 @@
 """Defines the base Spotify service with configurations"""
 
 from abc import abstractmethod
+from logging import DEBUG, basicConfig, getLogger
 from os import getenv
 from typing import Any, Dict, List
 
@@ -8,10 +9,14 @@ from dotenv import load_dotenv
 from fastapi import HTTPException
 from models.common import Query
 from models.rec import RecQuery
+from pymongo import MongoClient
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyOAuth
 
 load_dotenv()
+
+logger = getLogger(__name__)
+basicConfig(level=DEBUG)
 
 settings = {
     "scopes": "  ".join(
@@ -100,6 +105,10 @@ class Client(SpotifyClient):
                 scope=settings["scopes"],
             )
         )
+        self.db_client = MongoClient(getenv("CONNECTIONSTRING"))
+        self.__database = self.db_client.get_database("datafy")
+        self.artists_collection = self.__database.get_collection("artists")
+        self.songs_collection = self.__database.get_collection("songs")
         self.query = item_query
 
     def get_artists_from_spotify(self) -> List:
@@ -147,12 +156,16 @@ class Client(SpotifyClient):
         HTTPException(404)
             if no artist is found for the ID
         """
+        found = self.artists_collection.find_one({"id": artist_id})
+        if found:
+            logger.info("Cache hit on %s", artist_id)
+            return found
 
         artist = self.client.artist(artist_id)
-
         if not artist:
             raise HTTPException(404, f"Artist {artist_id} not found")
 
+        self.artists_collection.insert_one(artist)
         return artist
 
     def get_song_from_spotify(self, song_id: str) -> Dict:
@@ -171,11 +184,16 @@ class Client(SpotifyClient):
         HTTPException(404)
             if the song is not found
         """
-        song = self.client.track(song_id)
+        found = self.songs_collection.find_one({"id": song_id})
+        if found:
+            logger.info("Cache hit on %s", song_id)
+            return found
 
+        song = self.client.track(song_id)
         if not song:
             raise HTTPException(404, "Song not found")
 
+        self.songs_collection.insert_one(song)
         return song
 
     def get_songs_from_spotify(self) -> List[Dict]:
