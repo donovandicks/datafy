@@ -1,5 +1,5 @@
 ### Base Python Container ###
-FROM python:3.10-slim AS base
+FROM python:3.10-slim-bullseye AS base
 
 WORKDIR /app
 
@@ -12,13 +12,15 @@ RUN apt-get update -y \
     && rm -rf /var/lib/apt/lists/*
 
 ### Python Dependency Container ###
-FROM apt-packages AS build
+FROM base AS build
 
+COPY --from=apt-packages /usr/bin/git /usr/bin/git
 COPY poetry.lock pyproject.toml ./
 
-RUN python3 -m pip install -U pip poetry git+git://github.com/samuelcolvin/pydantic@master\#egg=pydantic \
+RUN python3 -m pip install -U --no-cache-dir pip poetry git+git://github.com/samuelcolvin/pydantic@master\#egg=pydantic \
     && poetry config virtualenvs.create false \
-    && poetry install
+    && poetry install --no-root --no-interaction \
+    && python3 -m pip cache purge
 
 ### Development Container ###
 FROM build AS runtime
