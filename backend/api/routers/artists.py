@@ -8,8 +8,9 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 
 trace.set_tracer_provider(TracerProvider())
-trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
-
+trace.get_tracer_provider().add_span_processor(  # type: ignore
+    BatchSpanProcessor(ConsoleSpanExporter())
+)
 tracer = trace.get_tracer(__name__)
 
 router = APIRouter(

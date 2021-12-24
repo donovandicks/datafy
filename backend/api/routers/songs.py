@@ -4,6 +4,15 @@ from dependencies.spotify import Client, SpotifyClient
 from fastapi import APIRouter, Depends
 from models.collection import Collection
 from models.song import Song, SongQuery
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+
+trace.set_tracer_provider(TracerProvider())
+trace.get_tracer_provider().add_span_processor(  # type: ignore
+    BatchSpanProcessor(ConsoleSpanExporter())
+)
+tracer = trace.get_tracer(__name__)
 
 router = APIRouter(prefix="/songs", tags=["songs"])
 
@@ -60,7 +69,14 @@ async def get_top_songs(query: SongQuery = Depends()) -> Collection[Song]:
     songs: Collection[Song]
         a collection of `Song` objects
     """
-    return get_songs(Client(query))
+    with tracer.start_as_current_span(
+        name="Retrieving top songs",
+        attributes={
+            "limit": str(query.limit),
+            "time_range": str(query.time_range),
+        },
+    ):
+        return get_songs(Client(query))
 
 
 @router.get("/{song_id}", response_model=Song)
@@ -78,4 +94,10 @@ async def get_one_song(song_id: str) -> Song:
     song: Song
         a song model constructed from the spotify response object
     """
-    return get_song(song_id, Client(SongQuery()))
+    with tracer.start_as_current_span(
+        name="Retrieving a song",
+        attributes={
+            "song_id": song_id,
+        },
+    ):
+        return get_song(song_id, Client(SongQuery()))

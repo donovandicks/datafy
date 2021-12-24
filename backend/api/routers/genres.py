@@ -7,10 +7,18 @@ from dependencies.spotify import Client, SpotifyClient
 from fastapi import APIRouter, Depends
 from models.collection import Collection
 from models.genre import Genre, GenreQuery
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 
 T = TypeVar("T")  # pylint: disable=invalid-name
-
 GenreCount: TypeAlias = Dict[str, int]
+
+trace.set_tracer_provider(TracerProvider())
+trace.get_tracer_provider().add_span_processor(  # type: ignore
+    BatchSpanProcessor(ConsoleSpanExporter())
+)
+tracer = trace.get_tracer(__name__)
 
 router = APIRouter(
     prefix="/genres",
@@ -148,4 +156,12 @@ async def get_top_genres(query: GenreQuery = Depends()) -> Collection[Genre]:
     genres: Collection[Genre]
         a collection of `Genre` objects
     """
-    return get_genres(Client(query))
+    with tracer.start_as_current_span(
+        name="Retrieving top genres",
+        attributes={
+            "limit": str(query.limit),
+            "time_range": str(query.time_range),
+            "aggregate": str(query.aggregate),
+        },
+    ):
+        return get_genres(Client(query))
