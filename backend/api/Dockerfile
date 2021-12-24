@@ -1,16 +1,20 @@
 ### Base Python Container ###
 FROM python:3.10-slim AS base
 
+WORKDIR /app
+
+FROM base AS deps
+
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN rm -rf /var/lib/apt/lists/* \
-    && apt-get update \
-    && apt-get install git -y --no-install-recommends
+RUN apt-get update -y \
+    && apt-get install -y --no-install-recommends git \
+    && apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
 
 ### Python Dependency Container ###
-FROM base AS python-deps
-
-WORKDIR /app
+FROM deps AS python-deps
 
 COPY poetry.lock pyproject.toml ./
 
@@ -21,7 +25,7 @@ RUN python3 -m pip install -U pip poetry git+git://github.com/samuelcolvin/pydan
 ### Development Container ###
 FROM python-deps AS dev
 
-COPY . ./
+COPY . .
 
 EXPOSE 8000
 
