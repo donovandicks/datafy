@@ -1,6 +1,7 @@
 """Defines the base Spotify service with configurations"""
 
 from abc import abstractmethod
+from logging import INFO, basicConfig, getLogger
 from os import getenv
 from typing import Any, Dict, List
 
@@ -14,6 +15,8 @@ from spotipy.oauth2 import SpotifyOAuth
 
 load_dotenv()
 
+basicConfig(level=INFO)
+logger = getLogger(__name__)
 
 settings = {
     "scopes": "  ".join(
@@ -130,6 +133,9 @@ class Client(SpotifyClient):
         if not top_artists:
             raise HTTPException(404, "Top artists not found")
 
+        for artist in top_artists["items"]:
+            self.artists_collection.update_one({"id": artist["id"]}, {"$set": artist}, upsert=True)
+
         return top_artists["items"]
 
     def get_artist_from_spotify(self, artist_id: str) -> Dict[str, Any]:
@@ -155,6 +161,7 @@ class Client(SpotifyClient):
         """
         found = self.artists_collection.find_one({"id": artist_id})
         if found:
+            logger.info("Cache hit on %s", artist_id)
             return found
 
         artist = self.client.artist(artist_id)
