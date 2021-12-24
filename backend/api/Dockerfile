@@ -3,9 +3,7 @@ FROM python:3.10-slim AS base
 
 WORKDIR /app
 
-FROM base AS deps
-
-ENV DEBIAN_FRONTEND=noninteractive
+FROM base AS apt-packages
 
 RUN apt-get update -y \
     && apt-get install -y --no-install-recommends git \
@@ -14,7 +12,7 @@ RUN apt-get update -y \
     && rm -rf /var/lib/apt/lists/*
 
 ### Python Dependency Container ###
-FROM deps AS python-deps
+FROM apt-packages AS build
 
 COPY poetry.lock pyproject.toml ./
 
@@ -23,15 +21,10 @@ RUN python3 -m pip install -U pip poetry git+git://github.com/samuelcolvin/pydan
     && poetry install
 
 ### Development Container ###
-FROM python-deps AS dev
+FROM build AS runtime
 
 COPY . .
 
 EXPOSE 8000
 
 CMD ["poetry", "run", "python3", "main.py"]
-
-### Test Container ###
-FROM dev AS test
-
-CMD ["poetry", "run", "pytest"]
