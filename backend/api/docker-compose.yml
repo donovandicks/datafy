@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: dev
+      target: runtime
     restart: always
     ports:
       - 8000:8000
@@ -23,5 +23,5 @@ services:
       - mongodb_config:/data/configdb
 
 volumes:
-  mongodb:
-  mongodb_config:
+  mongodb: null
+  mongodb_config: null

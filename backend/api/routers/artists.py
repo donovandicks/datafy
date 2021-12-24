@@ -3,6 +3,15 @@ from dependencies.spotify import Client, SpotifyClient
 from fastapi import APIRouter, Depends
 from models.artist import Artist, ArtistQuery
 from models.collection import Collection
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+
+trace.set_tracer_provider(TracerProvider())
+trace.get_tracer_provider().add_span_processor(  # type: ignore
+    BatchSpanProcessor(ConsoleSpanExporter())
+)
+tracer = trace.get_tracer(__name__)
 
 router = APIRouter(
     prefix="/artists",
@@ -62,7 +71,11 @@ async def get_top_artists(query: ArtistQuery = Depends()) -> Collection[Artist]:
     artists: Collection[Artist]
         a collection of `Artist` objects
     """
-    return get_artists(Client(query))
+    with tracer.start_as_current_span(
+        name="Retrieving top artists",
+        attributes={"limit": str(query.limit), "time_range": str(query.time_range)},
+    ):
+        return get_artists(Client(query))
 
 
 @router.get("/{artist_id}", response_model=Artist)
@@ -80,4 +93,10 @@ async def get_one_artist(artist_id: str) -> Artist:
     artist: Artist
         an artist model constructed from the spotify response object
     """
-    return get_artist(artist_id, Client(ArtistQuery()))
+    with tracer.start_as_current_span(
+        name="Retrieving an artist",
+        attributes={
+            "artist_id": artist_id,
+        },
+    ):
+        return get_artist(artist_id, Client(ArtistQuery()))

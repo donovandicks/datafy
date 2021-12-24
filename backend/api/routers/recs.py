@@ -4,6 +4,15 @@ from dependencies.spotify import Client, SpotifyClient
 from fastapi import APIRouter, Depends
 from models.collection import Collection
 from models.rec import Rec, RecQuery
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+
+trace.set_tracer_provider(TracerProvider())
+trace.get_tracer_provider().add_span_processor(  # type: ignore
+    BatchSpanProcessor(ConsoleSpanExporter())
+)
+tracer = trace.get_tracer(__name__)
 
 router = APIRouter(prefix="/recs", tags=["recommendations", "recs"])
 
@@ -44,4 +53,13 @@ async def get_recommendations(query: RecQuery = Depends()) -> Collection[Rec]:
     recs: Collection[Rec]
         a collection of `Rec` objects
     """
-    return get_recs(Client(query))
+    with tracer.start_as_current_span(
+        name="Retrieving recommendations",
+        attributes={
+            "limit": str(query.limit),
+            "seed_artists": str(query.seed_artists),
+            "seed_genres": str(query.seed_genres),
+            "seed_tracks": str(query.seed_tracks),
+        },
+    ):
+        return get_recs(Client(query))

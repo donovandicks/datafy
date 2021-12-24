@@ -1,7 +1,6 @@
 """Defines the base Spotify service with configurations"""
 
 from abc import abstractmethod
-from logging import DEBUG, basicConfig, getLogger
 from os import getenv
 from typing import Any, Dict, List
 
@@ -15,8 +14,6 @@ from spotipy.oauth2 import SpotifyOAuth
 
 load_dotenv()
 
-logger = getLogger(__name__)
-basicConfig(level=DEBUG)
 
 settings = {
     "scopes": "  ".join(
@@ -158,7 +155,6 @@ class Client(SpotifyClient):
         """
         found = self.artists_collection.find_one({"id": artist_id})
         if found:
-            logger.info("Cache hit on %s", artist_id)
             return found
 
         artist = self.client.artist(artist_id)
@@ -186,7 +182,6 @@ class Client(SpotifyClient):
         """
         found = self.songs_collection.find_one({"id": song_id})
         if found:
-            logger.info("Cache hit on %s", song_id)
             return found
 
         song = self.client.track(song_id)
