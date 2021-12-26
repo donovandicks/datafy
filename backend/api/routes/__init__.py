@@ -1,6 +1,4 @@
 """Route related resources"""
-from typing import Dict, Type
-
 from fastapi import APIRouter
 
 from .artists import router as artists_router

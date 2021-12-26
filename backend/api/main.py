@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from uvicorn import run
 
-from routers import ROUTE_REGISTRY
+from routes import ROUTE_REGISTRY
 
 app = FastAPI()
 app.add_middleware(
