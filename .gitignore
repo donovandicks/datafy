@@ -335,3 +335,6 @@ pip-selfcheck.json
 
 # cargo configs
 **/.cargo/*
+
+# JS package locks
+**/*package-lock.json
