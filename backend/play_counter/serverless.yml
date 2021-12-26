@@ -1,0 +1,31 @@
+service: play-counter
+
+frameworkVersion: "2 || 3"
+
+provider:
+  name: aws
+  runtime: python3.9
+  lambdaHashingVersion: 20201221
+  environment:
+    API_SCOPES:
+      - "user-top-read"
+
+package:
+  exclude:
+    - .cache/**
+    - .pytest_cache/**
+    - venv/**
+    - tests/**
+    - node_modules/**
+    - package*.json
+    - .vscode/**
+
+functions:
+  play-counter:
+    handler: handler.run
+    events:
+      # Invoke Lambda function every minute
+      - schedule: rate(1 minute)
+
+plugins:
+  - serverless-python-requirements
