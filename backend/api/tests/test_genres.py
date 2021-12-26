@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from models.collection import Collection
 from models.genre import Genre, GenreQuery
-from routers import genres
+from routes import genres
 
 from .client_fixture import FakeClient
 

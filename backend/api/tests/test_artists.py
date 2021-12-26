@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from models.artist import Artist, ArtistQuery
 from models.collection import Collection
-from routers import artists
+from routes import artists
 
 from .client_fixture import FakeClient
 

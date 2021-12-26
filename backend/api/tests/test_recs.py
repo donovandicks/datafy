@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from models.collection import Collection
 from models.rec import Rec, RecQuery
-from routers import recs
+from routes import recs
 
 from .client_fixture import FakeClient
 

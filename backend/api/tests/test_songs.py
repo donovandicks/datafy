@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from models.collection import Collection
 from models.song import Song, SongQuery
-from routers import songs
+from routes import songs
 
 from .client_fixture import FakeClient
 
