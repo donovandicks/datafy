@@ -61,7 +61,6 @@ class Client:
                 scope=environ["API_SCOPE"],
             )
         )
-        # TODO: Add configuration for dynamo
 
     def __get_secret(self, sec_name: str) -> str:
         """
