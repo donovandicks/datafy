@@ -3,6 +3,8 @@
 import datetime
 import logging
 
+from clients.spotify import Client
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -28,3 +30,5 @@ def run(_, context):
         the lambda function metadata
     """
     log_start(context.function_name)
+    sp_client = Client()
+    sp_client.get_current_song()
