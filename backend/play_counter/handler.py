@@ -1,23 +1,13 @@
 """Main entry point for the play-counter lambda"""
 
-import datetime
-import logging
+from structlog import get_logger
 
-from clients.spotify import Client
+from clients.spotify import SpotifyClient
+from models.lambda_state import LambdaAction
+from telemetry.logging import Logger
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-
-def log_start(func_name: str):
-    """
-    Logs the execution of a lambda function
-
-    func_name: str
-        the name of the lambda function
-    """
-    current_time = datetime.datetime.now().time()
-    logger.info("Function %s ran at %s", func_name, str(current_time))
+logging_client = get_logger(__name__)
+logger = Logger(logger=logging_client)
 
 
 def run(_, context):
@@ -29,6 +19,12 @@ def run(_, context):
     context:
         the lambda function metadata
     """
-    log_start(context.function_name)
-    sp_client = Client()
-    sp_client.get_current_song()
+    logger.log_execution(context.function_name, LambdaAction.TRIGGERED)
+
+    try:
+        sp_client = SpotifyClient()
+        sp_client.get_current_song()
+    except Exception as ex:
+        logger.log_failure(context.function_name, ex)
+
+    logger.log_execution(context.function_name, LambdaAction.COMPLETED)
