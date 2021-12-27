@@ -16,7 +16,6 @@ provider:
 
 package:
   exclude:
-    - .cache/**
     - .pytest_cache/**
     - venv/**
     - tests/**
