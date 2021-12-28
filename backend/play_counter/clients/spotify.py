@@ -64,7 +64,7 @@ class SpotifyClient:
             attributes=["val"],
         )
 
-    def insert_cache_item(self, item: dict):
+    def insert_cache_item(self, item: dict) -> None:
         """
         Inserts an item into the cache table
 
@@ -78,7 +78,7 @@ class SpotifyClient:
             table_name=environ["SPOTIFY_CACHE_TABLE"], item=item
         )
 
-    def insert_track(self, track: Track):
+    def insert_track(self, track: Track) -> None:
         """
         Inserts a track into the tracks table
 
@@ -102,7 +102,7 @@ class SpotifyClient:
             },
         )
 
-    def update_track(self, track: Track, update_expr: str, expr_vals: dict):
+    def update_track(self, track: Track, update_expr: str, expr_vals: dict) -> None:
         """
         Update a track in the database
 
@@ -115,11 +115,7 @@ class SpotifyClient:
         expr_vals: dict
             a mapping to the `update_expr` with the values to update
         """
-        logger.info(
-            "Updating existing track",
-            track_id=track.id,
-            track_name=track.name,
-        )
+        logger.info("Updating existing track", track_id=track.id, track_name=track.name)
 
         self.aws_client.update_dynamo_item(
             table_name=environ["SPOTIFY_TRACKS_TABLE"],
@@ -129,11 +125,7 @@ class SpotifyClient:
             expr_vals=expr_vals,
         )
 
-        logger.info(
-            "Updated existing track",
-            track_id=track.id,
-            track_name=track.name,
-        )
+        logger.info("Updated existing track", track_id=track.id, track_name=track.name)
 
     def update_database(self, track: Track) -> None:
         """
@@ -179,7 +171,7 @@ class SpotifyClient:
         currently_playing = self.spotify_client.current_user_playing_track()
 
         if not currently_playing:
-            logger.info("Currently Playing", track_name="None")
+            logger.info("No Track Playing")
             return None
 
         current_track = Track.from_dict(currently_playing)
