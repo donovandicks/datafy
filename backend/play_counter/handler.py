@@ -6,8 +6,8 @@ from clients.spotify import SpotifyClient
 from models.lambda_state import LambdaAction
 from telemetry.logging import Logger
 
-logging_client = get_logger(__name__)
-logger = Logger(logger=logging_client)
+log_client = get_logger(__name__)
+logger = Logger(logger=log_client)
 
 
 def run(_, context):
