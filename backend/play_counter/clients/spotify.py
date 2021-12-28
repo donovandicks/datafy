@@ -1,6 +1,7 @@
 """Code for interacting with Spotify"""
 
 from os import environ
+from typing import Union
 
 from models.track import Track
 from spotipy import Spotify, SpotifyOAuth
@@ -102,7 +103,7 @@ class SpotifyClient:
             new_plays=current_play_count + 1,
         )
 
-    def get_current_song(self) -> Track | None:
+    def get_current_song(self) -> Union[Track, None]:
         """
         Retrieves the current user's currently playing track
 
