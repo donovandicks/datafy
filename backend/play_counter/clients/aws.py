@@ -45,11 +45,24 @@ class AWS:
             region_name=environ["REGION_NAME"],
         )
 
-        self.dyn_table = self.__dynamo_client.Table(environ["SPOTIFY_TRACKS_TABLE"])
+        self.dynamo_tables = {
+            environ["SPOTIFY_TRACKS_TABLE"]: self.__dynamo_client.Table(
+                environ["SPOTIFY_TRACKS_TABLE"]
+            ),
+            environ["SPOTIFY_CACHE_TABLE"]: self.__dynamo_client.Table(
+                environ["SPOTIFY_CACHE_TABLE"]
+            ),
+        }
         self.sm_client = self.__boto3_session.client(
             service_name="secretsmanager",
             region_name=environ["REGION_NAME"],
         )
+
+    def __get_table(self, table_name: str):
+        if table_name not in self.dynamo_tables:
+            raise KeyError(f"Table {table_name} is not valid")
+
+        return self.dynamo_tables[table_name]
 
     def get_secret(self, sec_name: str) -> str:
         """
@@ -78,7 +91,7 @@ class AWS:
             raise ex
 
     def get_dynamo_item(
-        self, key_name: str, key_val: str, attributes: list[str]
+        self, table_name: str, key_name: str, key_val: str, attributes: list[str]
     ) -> dict:
         """
         Retrieves an item from the dynamo table
@@ -101,7 +114,7 @@ class AWS:
         a botocore `ClientError` if an error occurs while retrieving an item
         """
         try:
-            return self.dyn_table.get_item(
+            return self.__get_table(table_name=table_name).get_item(
                 Key={key_name: key_val},
                 ProjectionExpression=", ".join(attributes),
             )
@@ -113,7 +126,7 @@ class AWS:
             )
             raise ex
 
-    def insert_dynamo_item(self, item: dict) -> dict:
+    def insert_dynamo_item(self, table_name: str, item: dict) -> dict:
         """
         Inserts an item into the dynamo table
 
@@ -132,7 +145,7 @@ class AWS:
         a botocore `ClientError` if an error occurs while inserting an item
         """
         try:
-            return self.dyn_table.put_item(
+            return self.__get_table(table_name=table_name).put_item(
                 Item=item,
                 ReturnValues="ALL_OLD",
             )
@@ -141,7 +154,12 @@ class AWS:
             raise ex
 
     def update_dynamo_item(
-        self, key_name: str, key_val: str, update_expr: str, expr_vals: dict
+        self,
+        table_name: str,
+        key_name: str,
+        key_val: str,
+        update_expr: str,
+        expr_vals: dict,
     ) -> dict:
         """
         Updates an existing item in the dynamo table
@@ -166,7 +184,7 @@ class AWS:
         a botocore `ClientError` if an error occurs while inserting an item
         """
         try:
-            return self.dyn_table.update_item(
+            return self.__get_table(table_name=table_name).update_item(
                 Key={key_name: key_val},
                 UpdateExpression=update_expr,
                 ExpressionAttributeValues=expr_vals,
