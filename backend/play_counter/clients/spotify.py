@@ -23,7 +23,7 @@ class SpotifyClient:
                 client_id=self.aws_client.get_secret(environ["CLIENT_ID_KEY"]),
                 client_secret=self.aws_client.get_secret(environ["CLIENT_SECRET_KEY"]),
                 redirect_uri="http://localhost:8080",
-                scope=environ["API_SCOPE"],
+                scope=environ["API_SCOPES"],
             )
         )
 
@@ -37,9 +37,17 @@ class SpotifyClient:
             a `Track` object to update information for
         """
         existing = self.aws_client.get_dynamo_item(
+            table_name=environ["SPOTIFY_TRACKS_TABLE"],
             key_name="track_id",
             key_val=track.id,
             attributes=["play_count"],
+        )
+
+        last_played = self.aws_client.get_dynamo_item(
+            table_name=environ["SPOTIFY_CACHE_TABLE"],
+            key_name="key",
+            key_val="last_played",
+            attributes=["val"],
         )
 
         if "Item" not in existing:
@@ -49,11 +57,24 @@ class SpotifyClient:
                 track_name=track.name,
             )
             self.aws_client.insert_dynamo_item(
+                table_name=environ["SPOTIFY_TRACKS_TABLE"],
                 item={
                     "track_id": track.id,
                     "track_name": track.name,
                     "play_count": 1,
                 },
+            )
+            self.aws_client.insert_dynamo_item(
+                table_name=environ["SPOTIFY_CACHE_TABLE"],
+                item={"key": "last_played", "val": track.id},
+            )
+            return
+
+        if last_played.get("Item", {}).get("val", "") == track.id:
+            logger.info(
+                "Skipping Update",
+                track_id=track.id,
+                track_name=track.name,
             )
             return
 
@@ -66,6 +87,7 @@ class SpotifyClient:
         )
 
         self.aws_client.update_dynamo_item(
+            table_name=environ["SPOTIFY_TRACKS_TABLE"],
             key_name="track_id",
             key_val=track.id,
             update_expr="SET play_count = play_count + :c",
@@ -90,17 +112,14 @@ class SpotifyClient:
             a `Track` object with the information from the currently playing song
             if the user is playing a song, otherwise `None`
         """
-        # TODO: Refactor to reduce chances of returing `None`
-        # Can accomplish by retrieving last played song if the user is not currently
-        # playing a song. Does not encompass case where user has never played a
-        # track. Unclear if there is a limit in lookback time as well.
-        current_track = self.spotify_client.current_user_playing_track()
-        if not current_track:
+        currently_playing = self.spotify_client.current_user_playing_track()
+
+        if not currently_playing:
             logger.info("Currently Playing", track_name="None")
             return None
 
-        track = Track.from_dict(current_track)
-        logger.info("Currently Playing", track_name=track.name)
+        current_track = Track.from_dict(currently_playing)
+        logger.info("Currently Playing", track_name=current_track.name)
 
-        self.update_track(track)
-        return track
+        self.update_track(current_track)
+        return current_track
