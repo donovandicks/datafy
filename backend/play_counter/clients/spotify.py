@@ -1,5 +1,6 @@
 """Code for interacting with Spotify"""
 
+from datetime import datetime
 from os import environ
 from typing import Union
 
@@ -152,10 +153,11 @@ class SpotifyClient:
             )
             return
 
+        self.insert_cache_item(item={"key": "last_played", "val": track.id})
         self.update_track(
             track=track,
-            update_expr="SET play_count = play_count + :c",
-            expr_vals={":c": 1},
+            update_expr="SET play_count = play_count + :c, last_played_on = :d",
+            expr_vals={":c": 1, ":d": str(datetime.now())},
         )
 
     def get_current_song(self) -> Union[Track, None]:
