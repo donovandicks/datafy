@@ -100,6 +100,7 @@ class SpotifyClient:
                 "track_id": track.id,
                 "track_name": track.name,
                 "play_count": 1,
+                "last_played_on": str(datetime.now()),
             },
         )
 
