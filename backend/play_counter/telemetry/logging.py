@@ -54,5 +54,5 @@ class Logger:
             f"Function {LambdaAction.FAILED.name} due to exception",
             function_name=func_name,
             time=get_current_time,
-            exception=exception,
+            exception=str(exception),
         )
