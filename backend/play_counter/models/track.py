@@ -1,6 +1,6 @@
 """Internal Track Model"""
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 
 class Track(BaseModel):
@@ -20,5 +20,9 @@ class Track(BaseModel):
         """
         Converts an object to a `Track` object
         """
+        if "item" not in obj:
+            raise ValidationError("`item` not found in object", Track)
+
         item = obj.get("item", {})
+
         return Track(id=item.get("id", ""), name=item.get("name", ""))
