@@ -3,7 +3,7 @@
 from json import loads
 from os import environ
 
-from boto3 import resource, session
+from boto3 import client, resource, session
 from botocore.exceptions import ClientError
 from structlog import get_logger
 
@@ -44,6 +44,7 @@ class AWS:
             "dynamodb",
             region_name=environ["REGION_NAME"],
         )
+        self.eb_client = client("events")
 
         self.dynamo_tables = {
             environ["SPOTIFY_TRACKS_TABLE"]: self.__dynamo_client.Table(
@@ -197,3 +198,65 @@ class AWS:
                 key_value=key_val,
             )
             raise ex
+
+    def get_event_rule(self, name: str) -> dict:
+        """
+        Retrieves details about an EventBridge rule
+
+        Params
+        ------
+        name: str
+            the name of the rule to retrieve
+
+        Returns
+        -------
+        an object containing information about the EventBridge rule
+
+        Raises
+        ------
+        `ClientError` if an error is encountered when retrieving the rule from AWS
+        """
+        logger.info("Retrieving EventBridge Rule", name=name)
+        try:
+            rule = self.eb_client.describe_rule(Name=name)
+            return rule
+        except ClientError as ex:
+            logger.error(
+                "Failed to retrieve EventBridge Rule", name=name, error=str(ex)
+            )
+            raise ex
+
+    def get_rule_schedule(self, name: str) -> str:
+        """
+        Retrieves the schedule for the rule with the given name
+
+        Params
+        ------
+        name: str
+            the name of the EventBridge rule to retrieve the schedule for
+
+        Returns
+        -------
+        the schedule expression of the rule
+        """
+        logger.info("Retrieving EventBridge Rule Schedule", name=name)
+        return self.get_event_rule(name=name).get("ScheduleExpression", "")
+
+    def update_event_rule(self, name: str, rate: int):
+        """
+        Updates an EventBridge rule
+
+        Params
+        ------
+        rate: int
+            the minute interval on which to trigger the event. expecting a rate gte 1 and
+            lte 59
+        """
+        assert rate >= 1
+
+        logger.info("Updating EventBridge Rule", name=name, rate=rate)
+        expression = f"rate({rate} minute{'s' if rate != 1 else ''})"
+        self.eb_client.put_rule(
+            Name=name,
+            ScheduleExpression=expression,
+        )
