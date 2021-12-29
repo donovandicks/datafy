@@ -18,8 +18,8 @@ logger = Logger(log_client)
 class SpotifyClient:
     """The Spotiy client wrapper"""
 
-    def __init__(self) -> None:
-        self.aws_client = AWS()
+    def __init__(self, aws_client: AWS) -> None:
+        self.aws_client = aws_client
         self.spotify_client = Spotify(
             auth_manager=SpotifyOAuth(
                 client_id=self.aws_client.get_secret(environ["CLIENT_ID_KEY"]),
