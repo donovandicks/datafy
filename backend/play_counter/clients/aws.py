@@ -5,9 +5,9 @@ from os import environ
 
 from boto3 import client, resource, session
 from botocore.exceptions import ClientError
-from structlog import get_logger
+from telemetry.logging import Logger
 
-logger = get_logger(__name__)
+logger = Logger(module_name=__name__)
 
 
 def parse_sm_error(err_obj: ClientError, sec_name: str) -> str:

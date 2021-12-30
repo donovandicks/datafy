@@ -2,6 +2,8 @@
 from datetime import datetime
 
 from models.lambda_state import LambdaAction
+from structlog import get_logger, wrap_logger
+from structlog.processors import JSONRenderer
 
 
 def get_current_time() -> str:
@@ -14,8 +16,16 @@ def get_current_time() -> str:
 class Logger:
     """Logging Wrapper"""
 
-    def __init__(self, logger):
-        self.logger = logger
+    def __init__(self, module_name: str):
+        self.logger = wrap_logger(
+            get_logger(module_name),
+            processors=[
+                JSONRenderer(
+                    indent=2,
+                    sort_keys=True,
+                )
+            ],
+        )
 
     def info(self, *args, **kwargs):
         """Wrapper for the logger's own `info` method"""
