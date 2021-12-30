@@ -242,20 +242,21 @@ class AWS:
         logger.info("Retrieving EventBridge Rule Schedule", name=name)
         return self.get_event_rule(name=name).get("ScheduleExpression", "")
 
-    def update_event_rule(self, name: str, rate: int):
+    def update_event_rule(self, name: str, rate: int, period: str):
         """
         Updates an EventBridge rule
 
         Params
         ------
         rate: int
-            the minute interval on which to trigger the event. expecting a rate gte 1 and
-            lte 59
+            the number of `period`s to pass before triggering the event again
+        period: str
+            the time period to pass (minute, hour, etc.)
         """
         assert rate >= 1
 
         logger.info("Updating EventBridge Rule", name=name, rate=rate)
-        expression = f"rate({rate} minute{'s' if rate != 1 else ''})"
+        expression = f"rate({rate} {period})"
         self.eb_client.put_rule(
             Name=name,
             ScheduleExpression=expression,
