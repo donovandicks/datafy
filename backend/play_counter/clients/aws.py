@@ -5,9 +5,7 @@ from os import environ
 
 from boto3 import client, resource, session
 from botocore.exceptions import ClientError
-from telemetry.logging import Logger
-
-logger = Logger(module_name=__name__)
+from telemetry.logging import logger
 
 
 def parse_sm_error(err_obj: ClientError, sec_name: str) -> str:
@@ -222,7 +220,7 @@ class AWS:
             return rule
         except ClientError as ex:
             logger.error(
-                "Failed to retrieve EventBridge Rule", name=name, error=str(ex)
+                "Failed to retrieve EventBridge Rule", rule_name=name, error=str(ex)
             )
             raise ex
 
@@ -239,7 +237,7 @@ class AWS:
         -------
         the schedule expression of the rule
         """
-        logger.info("Retrieving EventBridge Rule Schedule", name=name)
+        logger.info("Retrieving EventBridge Rule Schedule", rule_name=name)
         return self.get_event_rule(name=name).get("ScheduleExpression", "")
 
     def update_event_rule(self, name: str, rate: int, period: str):

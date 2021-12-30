@@ -7,9 +7,7 @@ from botocore.exceptions import ClientError
 from clients.aws import AWS
 from clients.spotify import SpotifyClient
 from models.lambda_state import LambdaAction
-from telemetry.logging import Logger
-
-logger = Logger(module_name=__name__)
+from telemetry.logging import log_execution, log_failure, logger
 
 
 def reschedule(aws_client: AWS, listening_now: bool):
@@ -65,7 +63,7 @@ def run(_, context):
     context:
         the lambda function metadata
     """
-    logger.log_execution(context.function_name, LambdaAction.TRIGGERED)
+    log_execution(context.function_name, LambdaAction.TRIGGERED)
     aws_client = AWS()
     sp_client = SpotifyClient(aws_client=aws_client)
 
@@ -73,6 +71,6 @@ def run(_, context):
         current_song = sp_client.get_current_song()
         reschedule(aws_client=aws_client, listening_now=(current_song is not None))
     except ClientError as ex:
-        logger.log_failure(context.function_name, ex)
+        log_failure(context.function_name, ex)
 
-    logger.log_execution(context.function_name, LambdaAction.COMPLETED)
+    log_execution(context.function_name, LambdaAction.COMPLETED)

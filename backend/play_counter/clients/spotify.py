@@ -6,11 +6,9 @@ from typing import Union
 
 from models.track import Track
 from spotipy import Spotify, SpotifyOAuth
-from telemetry.logging import Logger
+from telemetry.logging import logger
 
 from .aws import AWS
-
-logger = Logger(module_name=__name__)
 
 
 class SpotifyClient:

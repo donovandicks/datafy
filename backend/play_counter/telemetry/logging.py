@@ -1,68 +1,42 @@
 """Code for logging"""
-from datetime import datetime
 
 from models.lambda_state import LambdaAction
-from structlog import get_logger, wrap_logger
-from structlog.processors import JSONRenderer
+from structlog import configure
+from structlog.processors import JSONRenderer, TimeStamper
+from structlog.stdlib import BoundLogger, add_log_level, get_logger
+
+configure(
+    wrapper_class=BoundLogger,
+    processors=[
+        add_log_level,
+        TimeStamper(fmt="iso"),
+        JSONRenderer(
+            sort_keys=True,
+        ),
+    ],
+)
+
+logger = get_logger()
 
 
-def get_current_time() -> str:
+def log_execution(func_name: str, action: LambdaAction):
     """
-    Returns the current time as "HH:MM:SS.MILLI"
+    Logs a key moment in lambda execution
+
+    func_name: str
+        the name of the lambda function
+    action: FunctionAction
+        the lambda lifecycle event to log for
     """
-    return str(datetime.now().time())
+    logger.info(f"Function {action.name}", function_name=func_name)
 
 
-class Logger:
-    """Logging Wrapper"""
-
-    def __init__(self, module_name: str):
-        self.logger = wrap_logger(
-            get_logger(module_name),
-            processors=[
-                JSONRenderer(
-                    indent=2,
-                    sort_keys=True,
-                )
-            ],
-        )
-
-    def info(self, *args, **kwargs):
-        """Wrapper for the logger's own `info` method"""
-        self.logger.info(*args, **kwargs)
-
-    def warn(self, *args, **kwargs):
-        """Wrapper for the logger's own `warn` method"""
-        self.logger.warn(*args, **kwargs)
-
-    def error(self, *args, **kwargs):
-        """Wrapper for the logger's own `error` method"""
-        self.logger.error(*args, **kwargs)
-
-    def debug(self, *args, **kwargs):
-        """Wrapper for the logger's own `debug` method"""
-        self.logger.debug(*args, **kwargs)
-
-    def log_execution(self, func_name: str, action: LambdaAction):
-        """
-        Logs a key moment in lambda execution
-
-        func_name: str
-            the name of the lambda function
-        action: FunctionAction
-            the lambda lifecycle event to log for
-        """
-        self.logger.info(
-            f"Function {action.name}", function_name=func_name, time=get_current_time()
-        )
-
-    def log_failure(self, func_name: str, exception: Exception):
-        """
-        Logs the failure of a lambda function
-        """
-        self.logger.error(
-            f"Function {LambdaAction.FAILED.name} due to exception",
-            function_name=func_name,
-            time=get_current_time,
-            exception=str(exception),
-        )
+def log_failure(func_name: str, exception: Exception):
+    """
+    Logs the failure of a lambda function
+    """
+    logger.error(
+        f"Function {LambdaAction.FAILED.name} due to exception",
+        function_name=func_name,
+        exception=str(exception),
+    )
