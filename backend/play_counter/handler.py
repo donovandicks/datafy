@@ -31,15 +31,31 @@ def reschedule(aws_client: AWS, listening_now: bool):
         < datetime.now().time()
         < time.fromisoformat("08:00:00")
     ) and (current_rule_schedule != "rate(1 hour)"):
+        logger.info(
+            "Rescheduling Execution", current=current_rule_schedule, new="rate(1 hour)"
+        )
         aws_client.update_event_rule(name=eb_rule, rate=1, period="hour")
         return
 
     if not listening_now and (current_rule_schedule != "rate(5 minutes)"):
+        logger.info(
+            "Rescheduling Execution",
+            current=current_rule_schedule,
+            new="rate(5 minutes)",
+        )
         aws_client.update_event_rule(name=eb_rule, rate=5, period="minutes")
         return
 
     if listening_now and (current_rule_schedule == "rate(5 minutes)"):
+        logger.info(
+            "Rescheduling Execution",
+            current=current_rule_schedule,
+            new="rate(1 minute)",
+        )
         aws_client.update_event_rule(name=eb_rule, rate=1, period="minute")
+        return
+
+    logger.info("Continuing at Existing Schedule", current=current_rule_schedule)
 
 
 def run(_, context):
