@@ -9,6 +9,7 @@ A web application to view Spotify data
   - [CLI](#cli)
   - [Backend](#backend)
     - [API](#api)
+    - [Play Counter](#play-counter)
   - [Contributing](#contributing)
   - [Resources](#resources)
 
@@ -21,6 +22,11 @@ Data can be accessed and visualized via the terminal as well by using the [CLI](
 ### API
 
 The core [API](./backend/api/README.md) is responsible for interacting with Spotify.
+
+### Play Counter
+
+The [Play Counter](./backend/play_counter/README.md) is a scheduled functino to
+count track plays.
 
 ## Contributing
 
