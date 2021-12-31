@@ -65,7 +65,10 @@ def run(_, context):
         the lambda function metadata
     """
     logger.info(f"Function {LambdaAction.TRIGGERED}", function=context.function_name)
-    sp_client = SpotifyClient(dynamo_client=Dynamo(), secret_manager=SecretManager())
+    sp_client = SpotifyClient(
+        dynamo_client=Dynamo(table_names=environ["SPOTIFY_TABLES"].split(",")),
+        secret_manager=SecretManager(),
+    )
 
     try:
         current_song = sp_client.get_current_song()

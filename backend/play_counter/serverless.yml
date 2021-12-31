@@ -8,6 +8,7 @@ provider:
   lambdaHashingVersion: 20201221
   environment:
     REGION_NAME: us-east-1
+    SPOTIFY_TABLES: spotify_track_count, spotify_cache
     SPOTIFY_TRACKS_TABLE: spotify_track_count
     SPOTIFY_CACHE_TABLE: spotify_cache
     API_SCOPES: user-read-recently-played
