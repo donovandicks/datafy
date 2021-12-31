@@ -1,8 +1,10 @@
 """Code for working with DynamoDB"""
 
 from os import environ
+from typing import Optional
 
 from boto3 import resource
+from boto3.dynamodb.conditions import ComparisonCondition
 from botocore.exceptions import ClientError
 from telemetry.logging import logger
 
@@ -140,20 +142,30 @@ class Dynamo:
             )
             raise ex
 
-    def scan_table(self, table_name: str, filter_expr) -> list[dict]:
+    def scan_table(
+        self,
+        table_name: str,
+        filter_expr: Optional[ComparisonCondition] = None,
+    ) -> list[dict]:
         """
         Scans a table
         """
         table = self.__get_table(table_name=table_name)
-        logger.info(
-            "Scanning Table",
-            table_name=table_name,
-            filter=filter_expr,
-        )
+        items = []
 
-        items = table.scan(
-            FilterExpression=filter_expr,
-        ).get("Items", [{}])
+        if filter_expr:
+            logger.info(
+                "Scanning Table With Filter",
+                table_name=table_name,
+                filter=filter_expr.get_expression(),
+            )
+
+            items = table.scan(
+                FilterExpression=filter_expr,
+            ).get("Items", [{}])
+        else:
+            logger.info("Scanning Table", table_name=table_name)
+            items = table.scan().get("Items", [{}])
 
         logger.info("Retrieved Items", item_count=len(items))
         return items
