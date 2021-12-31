@@ -41,7 +41,7 @@ class SpotifyClient:
         -------
         An object containing the play count of the existing track if it was found
         """
-        return self.dynamo_client.get_dynamo_item(
+        return self.dynamo_client.get_item(
             table_name=environ["SPOTIFY_TRACKS_TABLE"],
             key_name="track_id",
             key_val=track_id,
@@ -57,7 +57,7 @@ class SpotifyClient:
         An object containing the id of the last played song if one is found in
         the cache
         """
-        return self.dynamo_client.get_dynamo_item(
+        return self.dynamo_client.get_item(
             table_name=environ["SPOTIFY_CACHE_TABLE"],
             key_name="key",
             key_val="last_played",
@@ -74,7 +74,7 @@ class SpotifyClient:
             the key-value pairs to be inserted into the cache table
         """
         logger.info("Inserting new cache item", item=str(item))
-        self.dynamo_client.insert_dynamo_item(
+        self.dynamo_client.insert_item(
             table_name=environ["SPOTIFY_CACHE_TABLE"], item=item
         )
 
@@ -93,7 +93,7 @@ class SpotifyClient:
             track_name=track.name,
         )
 
-        self.dynamo_client.insert_dynamo_item(
+        self.dynamo_client.insert_item(
             table_name=environ["SPOTIFY_TRACKS_TABLE"],
             item={
                 "track_id": track.id,
@@ -118,7 +118,7 @@ class SpotifyClient:
         """
         logger.info("Updating existing track", track_id=track.id, track_name=track.name)
 
-        self.dynamo_client.update_dynamo_item(
+        self.dynamo_client.update_item(
             table_name=environ["SPOTIFY_TRACKS_TABLE"],
             key_name="track_id",
             key_val=track.id,
