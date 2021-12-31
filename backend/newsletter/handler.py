@@ -1,6 +1,10 @@
 """Main Lambda function"""
 
+from os import environ
+
+from aws import Dynamo
 from aws.models.lambda_func import LambdaAction
+from libs.newsletter import Newsletter
 from telemetry.logging import logger
 
 
@@ -16,6 +20,11 @@ def run(_, context):
         metadata about the lambda function
     """
     logger.info(f"Function {LambdaAction.TRIGGERED}", function=context.function_name)
+
+    newsletter = Newsletter(
+        dynamo_client=Dynamo(table_names=environ["SPOTIFY_TABLES"].split(","))
+    )
+    newsletter.scan_table(table_name=environ["SPOTIFY_TRACKS_TABLE"])
 
     # 1. Scan table for data <= 1 week ago
     # 2. Total play counts
