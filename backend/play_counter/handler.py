@@ -22,28 +22,14 @@ def reschedule(eb_client: EventBridge, listening_now: bool):
     eb_rule = environ["EVENT_BRIDGE_RULE"]
     current_rule_schedule = eb_client.get_rule_schedule(name=eb_rule)
 
-    if (
-        # times are in UTC
-        time.fromisoformat("07:00:00")
-        < datetime.now().time()
-        < time.fromisoformat("13:00:00")
-    ) and (current_rule_schedule != "rate(1 hour)"):
-        logger.info(
-            "Rescheduling Execution", current=current_rule_schedule, new="rate(1 hour)"
-        )
-        eb_client.update_event_rule(name=eb_rule, rate=1, period="hour")
-        return
+    # Rate should be 1 minute if currently listening regardless of any other factor
+    if listening_now:
+        if current_rule_schedule == "rate(1 minute)":
+            logger.info(
+                "Continuing at Existing Schedule", current=current_rule_schedule
+            )
+            return
 
-    if not listening_now and (current_rule_schedule != "rate(5 minutes)"):
-        logger.info(
-            "Rescheduling Execution",
-            current=current_rule_schedule,
-            new="rate(5 minutes)",
-        )
-        eb_client.update_event_rule(name=eb_rule, rate=5, period="minutes")
-        return
-
-    if listening_now and (current_rule_schedule == "rate(5 minutes)"):
         logger.info(
             "Rescheduling Execution",
             current=current_rule_schedule,
@@ -52,7 +38,39 @@ def reschedule(eb_client: EventBridge, listening_now: bool):
         eb_client.update_event_rule(name=eb_rule, rate=1, period="minute")
         return
 
-    logger.info("Continuing at Existing Schedule", current=current_rule_schedule)
+    # If not paying and within 7-13 UTC, rate should be 1 hour
+    if (
+        # times are in UTC
+        time.fromisoformat("07:00:00")
+        < datetime.now().time()
+        < time.fromisoformat("13:00:00")
+    ):
+        if current_rule_schedule == "rate(1 hour)":
+            logger.info(
+                "Continuing at Existing Schedule", current=current_rule_schedule
+            )
+            return
+
+        logger.info(
+            "Rescheduling Execution",
+            current=current_rule_schedule,
+            new="rate(1 hour)",
+        )
+        eb_client.update_event_rule(name=eb_rule, rate=1, period="hour")
+        return
+
+    # If not playing and not within 7-13 UTC, rate should be 5 minutes
+    if current_rule_schedule == "rate(5 minutes)":
+        logger.info("Continuing at Existing Schedule", current=current_rule_schedule)
+        return
+
+    logger.info(
+        "Rescheduling Execution",
+        current=current_rule_schedule,
+        new="rate(5 minutes)",
+    )
+    eb_client.update_event_rule(name=eb_rule, rate=5, period="minutes")
+    return
 
 
 def run(_, context):
