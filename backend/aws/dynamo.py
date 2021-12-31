@@ -10,19 +10,21 @@ from telemetry.logging import logger
 class Dynamo:
     """Wrapper for AWS DynamoDB"""
 
-    def __init__(self) -> None:
+    def __init__(self, table_names: list[str]) -> None:
+        self.__table_names = table_names
         self.__client = resource(
             "dynamodb",
             region_name=environ["REGION_NAME"],
         )
-        self.dynamo_tables = {
-            environ["SPOTIFY_TRACKS_TABLE"]: self.__client.Table(
-                environ["SPOTIFY_TRACKS_TABLE"]
-            ),
-            environ["SPOTIFY_CACHE_TABLE"]: self.__client.Table(
-                environ["SPOTIFY_CACHE_TABLE"]
-            ),
-        }
+        self.dynamo_tables = self.__init_tables()
+
+    def __init_tables(self) -> dict:
+        tables = {}
+        for name in self.__table_names:
+            logger.info("Initializing DynamoDB Table", table_name=name)
+            tables[name.strip()] = self.__client.Table(name.strip())
+
+        return tables
 
     def __get_table(self, table_name: str):
         if table_name not in self.dynamo_tables:
@@ -30,7 +32,7 @@ class Dynamo:
 
         return self.dynamo_tables[table_name]
 
-    def get_dynamo_item(
+    def get_item(
         self, table_name: str, key_name: str, key_val: str, attributes: list[str]
     ) -> dict:
         """
@@ -66,7 +68,7 @@ class Dynamo:
             )
             raise ex
 
-    def insert_dynamo_item(self, table_name: str, item: dict) -> dict:
+    def insert_item(self, table_name: str, item: dict) -> dict:
         """
         Inserts an item into the dynamo table
 
@@ -93,7 +95,7 @@ class Dynamo:
             logger.error("Failed to insert item into Dynamo table", item=item)
             raise ex
 
-    def update_dynamo_item(
+    def update_item(
         self,
         table_name: str,
         key_name: str,
@@ -137,3 +139,21 @@ class Dynamo:
                 key_value=key_val,
             )
             raise ex
+
+    def scan_table(self, table_name: str, filter_expr) -> list[dict]:
+        """
+        Scans a table
+        """
+        table = self.__get_table(table_name=table_name)
+        logger.info(
+            "Scanning Table",
+            table_name=table_name,
+            filter=filter_expr,
+        )
+
+        items = table.scan(
+            FilterExpression=filter_expr,
+        ).get("Items", [{}])
+
+        logger.info("Retrieved Items", item_count=len(items))
+        return items
