@@ -3,10 +3,10 @@ from datetime import datetime, time
 from os import environ
 
 from botocore.exceptions import ClientError
-from telemetry.logging import LambdaAction, log_execution, log_failure, logger
 
-from clients.aws import AWS
+from aws.aws import AWS
 from clients.spotify import SpotifyClient
+from telemetry.logging import LambdaAction, log_execution, log_failure, logger
 
 
 def reschedule(aws_client: AWS, listening_now: bool):

@@ -4,7 +4,7 @@ from datetime import datetime
 from os import environ
 from typing import Union
 
-from aws import AWS
+from aws.aws import AWS
 from models.track import Track
 from spotipy import Spotify, SpotifyOAuth
 from telemetry.logging import logger
