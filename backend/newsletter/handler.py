@@ -19,12 +19,14 @@ def run(_, context):
     context
         metadata about the lambda function
     """
-    logger.info(f"Function {LambdaAction.TRIGGERED}", function=context.function_name)
+    logger.info(
+        f"Function {LambdaAction.TRIGGERED.name}", function=context.function_name
+    )
 
     newsletter = Newsletter(
         dynamo_client=Dynamo(table_names=environ["SPOTIFY_TABLES"].split(","))
     )
-    newsletter.scan_table(table_name=environ["SPOTIFY_TRACKS_TABLE"])
+    newsletter.create_report()
 
     # 1. Scan table for data <= 1 week ago
     # 2. Total play counts
@@ -35,4 +37,6 @@ def run(_, context):
     # 7. Update cached play count
     # 8. Report to user
 
-    logger.info(f"Function {LambdaAction.COMPLETED}", function=context.function_name)
+    logger.info(
+        f"Function {LambdaAction.COMPLETED.name}", function=context.function_name
+    )
