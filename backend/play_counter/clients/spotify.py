@@ -157,8 +157,12 @@ class SpotifyClient:
         self.insert_cache_item(item={"key": "last_played", "val": track.id})
         self.update_track(
             track=track,
-            update_expr="SET play_count = play_count + :c, last_played_on = :d",
-            expr_vals={":c": 1, ":d": str(datetime.now())},
+            update_expr="SET play_count = play_count + :c, last_played_date = :d, last_played_timestamp = :t",
+            expr_vals={
+                ":c": 1,
+                ":d": str(datetime.now()),
+                ":t": int(datetime.now().timestamp()),
+            },
         )
 
     def get_current_song(self) -> Union[Track, None]:
