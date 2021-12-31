@@ -1,9 +1,21 @@
 """Code for logging"""
 
-from models.lambda_state import LambdaAction
+from enum import Enum
+
 from structlog import configure
 from structlog.processors import JSONRenderer, TimeStamper
 from structlog.stdlib import BoundLogger, add_log_level, get_logger
+
+
+class LambdaAction(Enum):
+    """
+    States representing pieces of the lambda function lifecycle
+    """
+
+    TRIGGERED = 1
+    COMPLETED = 2
+    FAILED = 3
+
 
 configure(
     wrapper_class=BoundLogger,
