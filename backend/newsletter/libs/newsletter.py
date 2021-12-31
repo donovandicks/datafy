@@ -22,15 +22,17 @@ class Newsletter:
         """
         logger.info("Retrieving Last Total Count", as_of=str(self.__one_week_ago))
 
-        cached_count = (
-            self.__dynamo.get_item(
-                table_name=environ["SPOTIFY_CACHE_TABLE"],
-                key_name="key",
-                key_val="total_count",
-                attributes=["val"],
+        cached_count = int(
+            (
+                self.__dynamo.get_item(
+                    table_name=environ["SPOTIFY_CACHE_TABLE"],
+                    key_name="key",
+                    key_val="total_count",
+                    attributes=["val"],
+                )
+                .get("Item", {})
+                .get("val", 0)
             )
-            .get("Item", {})
-            .get("val", 0)
         )
 
         if cached_count:
@@ -79,6 +81,16 @@ class Newsletter:
         logger.info("Total Current Plays", count=count, as_of=str(self.__today))
         return count
 
+    def __cache_new_plays(self, count: int):
+        logger.info("Caching New Plays", count=count)
+        self.__dynamo.insert_item(
+            table_name=environ["SPOTIFY_CACHE_TABLE"],
+            item={
+                "key": "total_count",
+                "val": count,
+            },
+        )
+
     def get_new_count(self) -> int:
         """
         Calculates the number of plays added in the last week
@@ -99,6 +111,7 @@ class Newsletter:
             current_count=current_count,
             last_count=last_count,
         )
+        self.__cache_new_plays(count=new_plays)
         return new_plays
 
     def create_report(self):
