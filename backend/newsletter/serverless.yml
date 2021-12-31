@@ -20,7 +20,7 @@ package:
     - .vscode/**
 
 functions:
-  cronHandler:
+  newsletter:
     handler: handler.run
     events:
       # Invoke Lambda function at 12:00 every Sunday

@@ -35,7 +35,7 @@ lambda function every Sunday at 12pm EST.
 Users can run locally using the `serverless` framework CLI or via the `just` tool
 (similar to `make`).
 
-To run with `serverless`, use the command `serverless invoke local --function play-counter`
+To run with `serverless`, use the command `serverless invoke local --function newsletter`
 To run with `just`, use the command `just run` from the current directory.
 
 View the [`Justfile`](./Justfile) for more commands.

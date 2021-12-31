@@ -1,10 +1,7 @@
 """Main Lambda function"""
 
-import datetime
-import logging
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+from aws.models.lambda_func import LambdaAction
+from telemetry.logging import logger
 
 
 def run(_, context):
@@ -18,6 +15,15 @@ def run(_, context):
     context
         metadata about the lambda function
     """
-    current_time = datetime.datetime.now().time()
-    name = context.function_name
-    logger.info("Your cron function " + name + " ran at " + str(current_time))
+    logger.info(f"Function {LambdaAction.TRIGGERED}", function=context.function_name)
+
+    # 1. Scan table for data <= 1 week ago
+    # 2. Total play counts
+    # 3. Cache play counts (Only need to do step 1 again if cache is lost)
+    # 4. Scan table for data > 1 week ago
+    # 5. Total play counts
+    # 6. Calculate difference in counts (5 - 2)
+    # 7. Update cached play count
+    # 8. Report to user
+
+    logger.info(f"Function {LambdaAction.COMPLETED}", function=context.function_name)

@@ -4,7 +4,8 @@ from datetime import datetime
 from os import environ
 from typing import Union
 
-from aws.aws import AWS
+from aws.dynamo import Dynamo
+from aws.secretmanager import SecretManager
 from models.track import Track
 from spotipy import Spotify, SpotifyOAuth
 from telemetry.logging import logger
@@ -13,12 +14,15 @@ from telemetry.logging import logger
 class SpotifyClient:
     """The Spotiy client wrapper"""
 
-    def __init__(self, aws_client: AWS) -> None:
-        self.aws_client = aws_client
+    def __init__(self, dynamo_client: Dynamo, secret_manager: SecretManager) -> None:
+        self.dynamo_client = dynamo_client
+        self.secret_manager = secret_manager
         self.spotify_client = Spotify(
             auth_manager=SpotifyOAuth(
-                client_id=self.aws_client.get_secret(environ["CLIENT_ID_KEY"]),
-                client_secret=self.aws_client.get_secret(environ["CLIENT_SECRET_KEY"]),
+                client_id=self.secret_manager.get_secret(environ["CLIENT_ID_KEY"]),
+                client_secret=self.secret_manager.get_secret(
+                    environ["CLIENT_SECRET_KEY"]
+                ),
                 redirect_uri="http://localhost:8080",
                 scope=environ["API_SCOPES"],
             )
@@ -37,7 +41,7 @@ class SpotifyClient:
         -------
         An object containing the play count of the existing track if it was found
         """
-        return self.aws_client.get_dynamo_item(
+        return self.dynamo_client.get_dynamo_item(
             table_name=environ["SPOTIFY_TRACKS_TABLE"],
             key_name="track_id",
             key_val=track_id,
@@ -53,7 +57,7 @@ class SpotifyClient:
         An object containing the id of the last played song if one is found in
         the cache
         """
-        return self.aws_client.get_dynamo_item(
+        return self.dynamo_client.get_dynamo_item(
             table_name=environ["SPOTIFY_CACHE_TABLE"],
             key_name="key",
             key_val="last_played",
@@ -70,7 +74,7 @@ class SpotifyClient:
             the key-value pairs to be inserted into the cache table
         """
         logger.info("Inserting new cache item", item=str(item))
-        self.aws_client.insert_dynamo_item(
+        self.dynamo_client.insert_dynamo_item(
             table_name=environ["SPOTIFY_CACHE_TABLE"], item=item
         )
 
@@ -89,7 +93,7 @@ class SpotifyClient:
             track_name=track.name,
         )
 
-        self.aws_client.insert_dynamo_item(
+        self.dynamo_client.insert_dynamo_item(
             table_name=environ["SPOTIFY_TRACKS_TABLE"],
             item={
                 "track_id": track.id,
@@ -114,7 +118,7 @@ class SpotifyClient:
         """
         logger.info("Updating existing track", track_id=track.id, track_name=track.name)
 
-        self.aws_client.update_dynamo_item(
+        self.dynamo_client.update_dynamo_item(
             table_name=environ["SPOTIFY_TRACKS_TABLE"],
             key_name="track_id",
             key_val=track.id,

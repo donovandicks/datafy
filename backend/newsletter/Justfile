@@ -5,4 +5,4 @@ deploy:
     serverless deploy
 
 run:
-    serverless invoke local --function play-counter
+    serverless invoke local --function newsletter
