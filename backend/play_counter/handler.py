@@ -23,9 +23,10 @@ def reschedule(eb_client: EventBridge, listening_now: bool):
     current_rule_schedule = eb_client.get_rule_schedule(name=eb_rule)
 
     if (
-        time.fromisoformat("02:00:00")
+        # times are in UTC
+        time.fromisoformat("07:00:00")
         < datetime.now().time()
-        < time.fromisoformat("08:00:00")
+        < time.fromisoformat("13:00:00")
     ) and (current_rule_schedule != "rate(1 hour)"):
         logger.info(
             "Rescheduling Execution", current=current_rule_schedule, new="rate(1 hour)"
