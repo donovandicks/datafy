@@ -1,0 +1,30 @@
+service: newsletter
+
+frameworkVersion: "2 || 3"
+
+provider:
+  name: aws
+  runtime: python3.9
+  lambdaHashingVersion: 20201221
+  environment:
+    REGION_NAME: us-east-1
+    SPOTIFY_TRACKS_TABLE: spotify_track_count
+
+package:
+  exclude:
+    - .pytest_cache/**
+    - venv/**
+    - tests/**
+    - node_modules/**
+    - package*.json
+    - .vscode/**
+
+functions:
+  cronHandler:
+    handler: handler.run
+    events:
+      # Invoke Lambda function at 12:00 every Sunday
+      - schedule: cron(0 12 * * SUN *)
+
+plugins:
+  - serverless-python-requirements
