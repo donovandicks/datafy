@@ -2,7 +2,7 @@
 
 from os import environ
 
-from aws import Dynamo
+from aws import SES, Dynamo
 from aws.models.lambda_func import LambdaAction
 from libs.newsletter import Newsletter
 from telemetry.logging import logger
@@ -24,18 +24,10 @@ def run(_, context):
     )
 
     newsletter = Newsletter(
-        dynamo_client=Dynamo(table_names=environ["SPOTIFY_TABLES"].split(","))
+        dynamo_client=Dynamo(table_names=environ["SPOTIFY_TABLES"].split(",")),
+        ses_client=SES(),
     )
-    newsletter.create_report()
-
-    # 1. Scan table for data <= 1 week ago
-    # 2. Total play counts
-    # 3. Cache play counts (Only need to do step 1 again if cache is lost)
-    # 4. Scan table for data > 1 week ago
-    # 5. Total play counts
-    # 6. Calculate difference in counts (5 - 2)
-    # 7. Update cached play count
-    # 8. Report to user
+    newsletter.send_report(recipients=[environ["DATAFY_NEWSLETTER_EMAIL"]])
 
     logger.info(
         f"Function {LambdaAction.COMPLETED.name}", function=context.function_name

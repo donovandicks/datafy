@@ -3,7 +3,8 @@
 from datetime import datetime, timedelta
 from os import environ
 
-from aws import Dynamo
+from aws import SES, Dynamo
+from aws.models.email import Email
 from boto3.dynamodb.conditions import Key
 from telemetry.logging import logger
 
@@ -11,10 +12,12 @@ from telemetry.logging import logger
 class Newsletter:
     """Class containing methods for the newsletter"""
 
-    def __init__(self, dynamo_client: Dynamo) -> None:
+    def __init__(self, dynamo_client: Dynamo, ses_client: SES) -> None:
         self.__dynamo = dynamo_client
+        self.__ses = ses_client
         self.__one_week_ago = datetime.now() - timedelta(days=7)
         self.__today = datetime.now()
+        self.current_count = None
 
     def get_last_count(self) -> int:
         """
@@ -69,7 +72,7 @@ class Newsletter:
         count: int
             the total number of plays for all tracks in the database
         """
-        count = sum(
+        self.current_count = sum(
             [
                 int(item["play_count"])
                 for item in self.__dynamo.scan_table(
@@ -77,12 +80,15 @@ class Newsletter:
                 )
             ]
         )
+        self.__cache_plays(count=self.current_count)
 
-        logger.info("Total Current Plays", count=count, as_of=str(self.__today))
-        return count
+        logger.info(
+            "Total Current Plays", count=self.current_count, as_of=str(self.__today)
+        )
+        return self.current_count
 
-    def __cache_new_plays(self, count: int):
-        logger.info("Caching New Plays", count=count)
+    def __cache_plays(self, count: int):
+        logger.info("Caching Plays", count=count)
         self.__dynamo.insert_item(
             table_name=environ["SPOTIFY_CACHE_TABLE"],
             item={
@@ -102,21 +108,17 @@ class Newsletter:
         )
 
         last_count = self.get_last_count()
-
-        current_count = self.get_current_count()
-        self.__cache_new_plays(count=current_count)
-
-        new_plays = current_count - last_count
+        new_plays = self.get_current_count() - last_count
 
         logger.info(
             "Calculated New Plays",
             new_plays=new_plays,
-            current_count=current_count,
+            current_count=self.current_count,
             last_count=last_count,
         )
         return new_plays
 
-    def create_report(self):
+    def create_report(self) -> str:
         """
         Generates a report to send to the user regarding the changes in their listening
         habits over the last week
@@ -127,3 +129,34 @@ class Newsletter:
             week_ending=str(self.__today),
         )
         new_plays = self.get_new_count()
+
+        return f"""
+        Hello from Datafy!
+
+        You listened to {new_plays} songs this week, bringing your total plays to {self.current_count}.
+
+        Regards,
+
+        Datafy
+        """
+
+    def send_report(self, recipients: list[str]):
+        """
+        Sends a listening report to the user
+        """
+
+        logger.info("Sending Listening Report")
+        self.__ses.send_email(
+            email=Email.from_dict(
+                {
+                    "source": environ["DATAFY_NEWSLETTER_EMAIL"],
+                    "to_addresses": recipients,
+                    "subject": {
+                        "data": "Datafy Weekly Newsletter",
+                    },
+                    "body": {
+                        "data": self.create_report(),
+                    },
+                }
+            )
+        )
