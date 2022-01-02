@@ -11,6 +11,7 @@ provider:
     SPOTIFY_TABLES: spotify_track_count, spotify_cache
     SPOTIFY_TRACKS_TABLE: spotify_track_count
     SPOTIFY_CACHE_TABLE: spotify_cache
+    DATAFY_NEWSLETTER_EMAIL: datafy.newsletter@gmail.com
 
 package:
   exclude:
