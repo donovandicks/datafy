@@ -4,5 +4,8 @@ _default:
 deploy:
     serverless deploy
 
+test:
+    poetry run pytest
+
 run:
     serverless invoke local --function newsletter
