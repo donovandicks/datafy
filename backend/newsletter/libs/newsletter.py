@@ -102,7 +102,10 @@ class Newsletter:
         )
 
         last_count = self.get_last_count()
+
         current_count = self.get_current_count()
+        self.__cache_new_plays(count=current_count)
+
         new_plays = current_count - last_count
 
         logger.info(
@@ -111,7 +114,6 @@ class Newsletter:
             current_count=current_count,
             last_count=last_count,
         )
-        self.__cache_new_plays(count=new_plays)
         return new_plays
 
     def create_report(self):
