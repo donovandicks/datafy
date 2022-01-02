@@ -42,7 +42,7 @@ def reschedule(eb_client: EventBridge, listening_now: bool):
     if (
         # times are in UTC
         time.fromisoformat("07:00:00")
-        < datetime.now().time()
+        <= datetime.now().time()
         < time.fromisoformat("13:00:00")
     ):
         if current_rule_schedule == "rate(1 hour)":
