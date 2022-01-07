@@ -1,4 +1,4 @@
-service: play-counter
+service: newsletter
 
 frameworkVersion: "2 || 3"
 
@@ -11,11 +11,7 @@ provider:
     SPOTIFY_TABLES: spotify_track_count, spotify_cache
     SPOTIFY_TRACKS_TABLE: spotify_track_count
     SPOTIFY_CACHE_TABLE: spotify_cache
-    API_SCOPES: user-read-recently-played
-    CLIENT_ID_KEY: spotify_client_id
-    CLIENT_SECRET_KEY: spotify_secret
-    SPOTIFY_SECRETS: arn:aws:secretsmanager:us-east-1:357317004725:secret:Spotify_Client_Secrets-qPW7mA
-    EVENT_BRIDGE_RULE: play-counter-dev-PlayDashcounterEventsRuleSchedule-DRBP6IDXXM02
+    DATAFY_NEWSLETTER_EMAIL: datafy.newsletter@gmail.com
 
 package:
   exclude:
@@ -27,11 +23,11 @@ package:
     - .vscode/**
 
 functions:
-  play-counter:
+  newsletter:
     handler: handler.run
     events:
-      # Invoke Lambda function every minute
-      - schedule: rate(1 minute)
+      # Invoke Lambda function at 12:00 every Sunday
+      - schedule: cron(0 12 ? * SUN *)
 
 plugins:
   - serverless-python-requirements

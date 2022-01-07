@@ -1,3 +1,5 @@
+"""Metadata definitions for AWS Lambda functions"""
+
 from enum import Enum
 
 

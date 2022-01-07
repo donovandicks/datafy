@@ -27,12 +27,36 @@ jobs:
         run: poetry install
         working-directory: backend/api
 
-      - name: Run Test Suite
+      - name: Run API Test Suite
         run: poetry run pytest
         working-directory: backend/api
         env:
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+
+  test-newsletter-service:
+    name: Test Newsletter Service
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9.x"
+
+      - name: Install Poetry
+        run: python -m pip install -U pip poetry
+        working-directory: backend/newsletter
+
+      - name: Install Release Dependencies
+        run: poetry install
+        working-directory: backend/newsletter
+
+      - name: Run Newsletter Test Suite
+        run: poetry run pytest
+        working-directory: backend/newsletter
 
   test-cli:
     name: Rust CLI Tests
