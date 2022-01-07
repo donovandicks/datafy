@@ -5,7 +5,7 @@ description = "Scheduled task to report to a user about their listening habits"
 authors = ["Donovan Dicks <donovan.dicks@outlook.com>"]
 
 [tool.poetry.dependencies]
-python = "3.9"
+python = "^3.9"
 boto3 = "^1.20.26"
 pydantic = "^1.8.2"
 structlog = "^21.5.0"
