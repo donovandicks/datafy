@@ -22,6 +22,11 @@ class Newsletter:
     def get_last_count(self) -> int:
         """
         Retrieves the total play count as of 7 days ago
+
+        Returns
+        -------
+        count: int
+            the play count from 7 days ago
         """
         logger.info("Retrieving Last Total Count", as_of=str(self.__one_week_ago))
 
@@ -69,7 +74,7 @@ class Newsletter:
 
         Returns
         -------
-        count: int
+        current_count: int
             the total number of plays for all tracks in the database
         """
         self.current_count = sum(
@@ -88,6 +93,14 @@ class Newsletter:
         return self.current_count
 
     def __cache_plays(self, count: int):
+        """
+        Caches the given count in AWS under the key `total_count`
+
+        Params
+        ------
+        count: int
+            the play count to be cached
+        """
         logger.info("Caching Plays", count=count)
         self.__dynamo.insert_item(
             table_name=environ["SPOTIFY_CACHE_TABLE"],
@@ -100,6 +113,11 @@ class Newsletter:
     def get_new_count(self) -> int:
         """
         Calculates the number of plays added in the last week
+
+        Returns
+        -------
+        new_plays: int
+            the total number of new plays between now and 7 days ago
         """
         logger.info(
             "Calculating New Plays",
@@ -122,6 +140,11 @@ class Newsletter:
         """
         Generates a report to send to the user regarding the changes in their listening
         habits over the last week
+
+        Returns
+        -------
+        report: str
+            a string message that will be sent to the user
         """
         logger.info(
             "Generating Listening Report",
@@ -143,8 +166,12 @@ class Newsletter:
     def send_report(self, recipients: list[str]):
         """
         Sends a listening report to the user
-        """
 
+        Params
+        ------
+        recipients: list[str]
+            a list of user emails to send the report to
+        """
         logger.info("Sending Listening Report")
         self.__ses.send_email(
             email=Email.from_dict(

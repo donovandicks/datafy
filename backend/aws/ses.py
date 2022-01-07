@@ -16,6 +16,12 @@ class SES:
     def send_email(self, email: Email):
         """
         Attempt to send the given email
+
+        Params
+        ------
+        email: Email
+            an Email data model containing the metadata and data for the actual email
+            to be sent to a user
         """
         try:
             self.__client.send_email(**email.to_dict())
