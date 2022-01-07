@@ -27,7 +27,7 @@ functions:
     handler: handler.run
     events:
       # Invoke Lambda function at 12:00 every Sunday
-      - schedule: cron(0 12 * * SUN *)
+      - schedule: cron(0 12 ? * SUN *)
 
 plugins:
   - serverless-python-requirements
