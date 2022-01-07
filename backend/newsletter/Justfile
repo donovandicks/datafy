@@ -1,11 +1,14 @@
 _default:
     @just --list
 
+# Deploys the current serverless project o AWS
 deploy:
     serverless deploy
 
+# Runs all tests for the current project
 test:
     poetry run pytest
 
+# Triggers the function locally
 run:
     serverless invoke local --function newsletter
