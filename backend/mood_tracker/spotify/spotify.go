@@ -42,7 +42,7 @@ type Song struct {
 // GetSongsPlayedInLastWeek accepts a DynamoDB client and the name of a DynamoDB
 // table and returns a list of `Song`s from the table that were played within the
 // last 7 days.
-func GetSongsPlayedInLastWeek(client *dynamodb.DynamoDB, tableName string) []Song {
+func getSongsPlayedInLastWeek(client *dynamodb.DynamoDB, tableName string) []Song {
 	logger := telemetry.InitLogger()
 	defer logger.Sync()
 	logger.Info("Retrieving Songs Played Within Last Week")
@@ -114,7 +114,7 @@ func getAccessToken(secrets *Secrets) AccessToken {
 	return token
 }
 
-func Authorize(awsSession *session.Session) string {
+func authorize(awsSession *session.Session) string {
 	logger := telemetry.InitLogger()
 	defer logger.Sync()
 	logger.Info("Authorizing with Spotify")
@@ -162,9 +162,9 @@ func AnalayzeTracks(awsSession *session.Session) {
 
 	dynamoClient := dynamodb.New(awsSession)
 	tableName := os.Getenv("SPOTIFY_TRACKS_TABLE")
-	songs := GetSongsPlayedInLastWeek(dynamoClient, tableName)
+	songs := getSongsPlayedInLastWeek(dynamoClient, tableName)
 
-	token := Authorize(awsSession)
+	token := authorize(awsSession)
 
 	infoChannel := make(chan TrackInfo)
 	for _, song := range songs {

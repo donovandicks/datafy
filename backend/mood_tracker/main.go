@@ -19,8 +19,6 @@ func Handler(ctx context.Context) (string, error) {
 	}))
 
 	spotify.AnalayzeTracks(awsSession)
-
-	spotify.Authorize(awsSession)
 	return "Function COMPLETED", nil
 }
 
