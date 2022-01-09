@@ -31,7 +31,7 @@ type AccessToken struct {
 }
 
 type TrackInfo struct {
-	Energy float32 `json:"energy"`
+	Energy float64 `json:"energy"`
 }
 
 type Song struct {
@@ -156,16 +156,11 @@ func getTrackInfo(token string, trackId string) TrackInfo {
 	return info
 }
 
-func AnalayzeTracks(awsSession *session.Session) {
+func getAllTrackInfo(songs []Song, token string) []TrackInfo {
 	logger := telemetry.InitLogger()
 	defer logger.Sync()
 
-	dynamoClient := dynamodb.New(awsSession)
-	tableName := os.Getenv("SPOTIFY_TRACKS_TABLE")
-	songs := getSongsPlayedInLastWeek(dynamoClient, tableName)
-
-	token := authorize(awsSession)
-
+	logger.Info("Analyzing Tracks", zap.Int("count", len(songs)))
 	infoChannel := make(chan TrackInfo)
 	for _, song := range songs {
 		go func(id string) {
@@ -175,9 +170,30 @@ func AnalayzeTracks(awsSession *session.Session) {
 	}
 
 	var songsInfo []TrackInfo
-	for _, song := range songs {
+	for range songs {
 		info := <-infoChannel
 		songsInfo = append(songsInfo, info)
-		logger.Info("Retrieved Track Info for Song", zap.String("Song ID", song.Id))
 	}
+
+	logger.Info("Analyzed Tracks", zap.Int("count", len(songsInfo)))
+	return songsInfo
+}
+
+func AnalayzeTracks(awsSession *session.Session) {
+	logger := telemetry.InitLogger()
+	defer logger.Sync()
+
+	dynamoClient := dynamodb.New(awsSession)
+	tableName := os.Getenv("SPOTIFY_TRACKS_TABLE")
+	songs := getSongsPlayedInLastWeek(dynamoClient, tableName)
+	token := authorize(awsSession)
+
+	songsInfo := getAllTrackInfo(songs, token)
+
+	meanEnergy := 0.0
+	for _, info := range songsInfo {
+		meanEnergy += info.Energy
+	}
+
+	logger.Info("Calculated Mean Energy", zap.Float64("meanEnergy", meanEnergy/float64(len(songsInfo))))
 }
