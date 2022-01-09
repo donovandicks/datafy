@@ -6,6 +6,9 @@ build:
 clean:
 	rm -rf ./bin
 
+tidy:
+	go mod tidy
+
 deploy: clean build
 	sls deploy --verbose
 
