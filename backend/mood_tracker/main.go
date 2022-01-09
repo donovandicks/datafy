@@ -2,51 +2,34 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"os"
 
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/donovandicks/datafy/backend/mood-tracker/spotify"
+	"github.com/donovandicks/datafy/backend/mood-tracker/telemetry"
 )
-
-type Song struct {
-	Id    string `json:"track_id"`
-	Count int    `json:"play_count"`
-}
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context) (string, error) {
-	aws_session := session.Must(session.NewSessionWithOptions(session.Options{
+	logger := telemetry.InitLogger()
+	defer logger.Sync()
+
+	awsSession := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 
-	dynamo_client := dynamodb.New(aws_session)
+	spotify.AnalayzeTracks(awsSession)
 
-	table_name := os.Getenv("SPOTIFY_TRACKS_TABLE")
-
-	result, err := dynamo_client.Scan(&dynamodb.ScanInput{
-		TableName: aws.String(table_name),
-	})
-
-	if err != nil {
-		fmt.Println(err.Error())
-		panic(fmt.Sprint("Failed to scan DynamoDB table: ", table_name))
-	}
-
-	var songs []Song
-
-	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &songs)
-
-	if err != nil {
-		panic(fmt.Sprint("Failed to unmarshal DynamoDB data: ", err))
-	}
-
-	return fmt.Sprint("Results: ", songs), nil
+	spotify.Authorize(awsSession)
+	return "Function COMPLETED", nil
 }
 
 func main() {
+	logger := telemetry.InitLogger()
+	defer logger.Sync()
+	logger.Info("Function TRIGGERED")
+
 	lambda.Start(Handler)
+
+	logger.Info("Function COMPLETED")
 }
