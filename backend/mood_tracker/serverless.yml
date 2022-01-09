@@ -13,6 +13,7 @@ provider:
   lambdaHashingVersion: 20201221
   environment:
     SPOTIFY_TRACKS_TABLE: spotify_track_count
+    SPOTIFY_SECRETS: arn:aws:secretsmanager:us-east-1:357317004725:secret:Spotify_Client_Secrets-qPW7mA
   #  stage: dev
   #  region: us-east-1
 
