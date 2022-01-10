@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -18,6 +19,8 @@ import (
 	"github.com/donovandicks/datafy/backend/mood-tracker/telemetry"
 	"go.uber.org/zap"
 )
+
+var logger = telemetry.InitLogger()
 
 type Secrets struct {
 	ClientId string `json:"spotify_client_id"`
@@ -30,7 +33,8 @@ type AccessToken struct {
 	ExpiresIn int    `json:"expires_in"`
 }
 
-type TrackInfo struct {
+type SongInfo struct {
+	Id     string  `json:"id"`
 	Energy float64 `json:"energy"`
 }
 
@@ -43,7 +47,6 @@ type Song struct {
 // table and returns a list of `Song`s from the table that were played within the
 // last 7 days.
 func getSongsPlayedInLastWeek(client *dynamodb.DynamoDB, tableName string) []Song {
-	logger := telemetry.InitLogger()
 	defer logger.Sync()
 	logger.Info("Retrieving Songs Played Within Last Week")
 
@@ -60,7 +63,6 @@ func getSongsPlayedInLastWeek(client *dynamodb.DynamoDB, tableName string) []Son
 }
 
 func getSecrets(awsSession *session.Session) *Secrets {
-	logger := telemetry.InitLogger()
 	defer logger.Sync()
 
 	logger.Info("Retrieving Spotify Secrets")
@@ -75,7 +77,6 @@ func getSecrets(awsSession *session.Session) *Secrets {
 }
 
 func getAccessToken(secrets *Secrets) AccessToken {
-	logger := telemetry.InitLogger()
 	defer logger.Sync()
 
 	endpoint := "https://accounts.spotify.com/api/token"
@@ -115,7 +116,6 @@ func getAccessToken(secrets *Secrets) AccessToken {
 }
 
 func authorize(awsSession *session.Session) string {
-	logger := telemetry.InitLogger()
 	defer logger.Sync()
 	logger.Info("Authorizing with Spotify")
 
@@ -125,7 +125,9 @@ func authorize(awsSession *session.Session) string {
 	return token.Token
 }
 
-func getTrackInfo(token string, trackId string) TrackInfo {
+func getSongInfo(token string, trackId string) SongInfo {
+	defer logger.Sync()
+	logger.Info("Retrieving Track Info", zap.String("songId", trackId))
 	endpoint := fmt.Sprintf("https://api.spotify.com/v1/audio-features/%s", trackId)
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", endpoint, strings.NewReader(""))
@@ -138,62 +140,83 @@ func getTrackInfo(token string, trackId string) TrackInfo {
 
 	res, err := client.Do(req)
 	if err != nil {
+		logger.Error("Failed to Execute Request", zap.String("error", err.Error()))
 		panic(fmt.Sprint("Failed to Execute Request: ", err.Error()))
 	}
 
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		panic(fmt.Sprint("Failed to Ready Response Body: ", err.Error()))
+		logger.Error("Failed to Read Response Body", zap.String("error", err.Error()))
+		panic(fmt.Sprint("Failed to Read Response Body: ", err.Error()))
 	}
 
-	info := TrackInfo{}
+	info := SongInfo{}
 	err = json.Unmarshal([]byte(string(body)), &info)
 	if err != nil {
+		logger.Error("Failed to Unmarshal Response Body", zap.String("error", err.Error()))
 		panic(fmt.Sprint("Failed to Unmarshal Response Body: ", err.Error()))
 	}
 
+	logger.Info("Retrieved Track Info", zap.String("songId", trackId))
 	return info
 }
 
-func getAllTrackInfo(songs []Song, token string) []TrackInfo {
-	logger := telemetry.InitLogger()
-	defer logger.Sync()
-
-	logger.Info("Analyzing Tracks", zap.Int("count", len(songs)))
-	infoChannel := make(chan TrackInfo)
+func getTotalPlayCount(songs []Song) int {
+	totalPlays := 0
 	for _, song := range songs {
-		go func(id string) {
-			info := getTrackInfo(token, id)
-			infoChannel <- info
-		}(song.Id)
+		totalPlays += song.Count
 	}
-
-	var songsInfo []TrackInfo
-	for range songs {
-		info := <-infoChannel
-		songsInfo = append(songsInfo, info)
-	}
-
-	logger.Info("Analyzed Tracks", zap.Int("count", len(songsInfo)))
-	return songsInfo
+	logger.Info("Total Play Count", zap.Int("count", totalPlays))
+	return totalPlays
 }
 
-func AnalayzeTracks(awsSession *session.Session) {
-	logger := telemetry.InitLogger()
+func analayzeTracks(awsSession *session.Session, wg *sync.WaitGroup, songs []Song, infoChan chan SongInfo) {
 	defer logger.Sync()
+	token := authorize(awsSession)
 
+	for _, song := range songs {
+		wg.Add(1)
+		go func(id string) {
+			defer wg.Done()
+			select {
+			case infoChan <- getSongInfo(token, id):
+			default:
+			}
+		}(song.Id)
+	}
+}
+
+func GetMeanWeightedEnergy(awsSession *session.Session, wg *sync.WaitGroup) {
 	dynamoClient := dynamodb.New(awsSession)
 	tableName := os.Getenv("SPOTIFY_TRACKS_TABLE")
 	songs := getSongsPlayedInLastWeek(dynamoClient, tableName)
-	token := authorize(awsSession)
+	totalPlays := getTotalPlayCount(songs)
 
-	songsInfo := getAllTrackInfo(songs, token)
+	infoChan := make(chan SongInfo, len(songs))
+	analayzeTracks(awsSession, wg, songs, infoChan)
 
-	meanEnergy := 0.0
-	for _, info := range songsInfo {
-		meanEnergy += info.Energy
+	weightedEnergy := 0.0
+	for range songs {
+		info := <-infoChan
+		logger.Info("Info from Channel", zap.Any("info", info))
+
+		weight := 0.0
+		for _, song := range songs {
+			if song.Id == info.Id {
+				weight = float64(song.Count) / float64(totalPlays)
+				break
+			}
+		}
+
+		if weight == 0.0 {
+			logger.Warn("Failed to Find Match", zap.String("songId", info.Id))
+			continue
+		}
+
+		weightedEnergy += weight * info.Energy
 	}
 
-	logger.Info("Calculated Mean Energy", zap.Float64("meanEnergy", meanEnergy/float64(len(songsInfo))))
+	meanWeightedEnergy := weightedEnergy / float64(len(songs))
+	logger.Info("Calculated Mean Weighted Energy", zap.Float64("energy", meanWeightedEnergy))
 }
