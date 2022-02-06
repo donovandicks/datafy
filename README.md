@@ -6,12 +6,36 @@
 A web application to view Spotify data
 
 - [Datafy](#datafy)
+  - [REWRITE DESIGN](#rewrite-design)
   - [CLI](#cli)
   - [Backend](#backend)
     - [API](#api)
     - [Play Counter](#play-counter)
+    - [Newsletter](#newsletter)
   - [Contributing](#contributing)
   - [Resources](#resources)
+
+## REWRITE DESIGN
+
+New Design:
+
+- Play Tracker
+  - Long running service that queries spotify for currently playing song
+  - Emits events containing the track data to a queue
+- Play Counter
+  - Event driven service that reads track data from queue
+  - Stores and updates track data in a database
+- Vibe Check
+  - Scheduled task to track listening patterns on a weekly basis
+  - Reads data from counter database
+  - Analyze amount listened, sentiment, etc
+  - Stores analysis in another database
+- Data Viewer
+  - Frontend to display data from both counter and analysis databases
+  - Focus on data visualizations
+- Telemetry Insights
+  - Sink for logs from all services
+  - Analyze logs for system health
 
 ## CLI
 
