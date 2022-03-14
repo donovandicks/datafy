@@ -11,9 +11,13 @@ run: shell
   poetry run python main.py
 
 # Build the docker image
-dbuild:
-  docker build -t pclr -f Dockerfile .
+build:
+  docker build -t ddicks98/pclr:latest .
 
 # Run the `pclr` docker image
-drun: dbuild
+run-docker: build
   docker run pclr:latest
+
+# Cross build to linux/amd64 platform
+build-amd:
+  docker build --platform linux/amd64 -t ddicks98/pclr:latest .
