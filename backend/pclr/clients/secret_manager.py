@@ -60,7 +60,6 @@ class SecretManager:
         secret: str
             the secret retrieved from AWS
         """
-        print(f"Attempting to retrieve secret {sec_name} from {sec_id}")
         secrets = self.get_secrets(sec_id=sec_id)
 
         if secrets.value:
@@ -77,7 +76,6 @@ class SecretManager:
     def get_secrets(self, sec_id: str) -> Result[Dict]:
         """Retrieves the secrets under the specified ID"""
         try:
-            print(f"Attempting to retrieve secrets under {sec_id}")
             secrets = self.sm_client.get_secret_value(SecretId=sec_id).get(
                 "SecretString"
             )
