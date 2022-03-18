@@ -6,8 +6,11 @@ from typing import Any, Dict, List, Optional, Tuple
 from clients.secret_manager import SecretManager
 from models.db import FilterExpression, UpdateClause
 
-
+import prefect
 import psycopg2
+
+
+logger = prefect.logging.get_logger(__name__)
 
 
 class PostgresClient:
@@ -94,7 +97,7 @@ class PostgresClient:
 
         self.__conn.commit()
 
-        if not keep_alive:
+        if not keep_alive and not self.cursor.closed:
             self.__close_cursor()
 
     def insert(self, table: str, values: Tuple) -> None:
