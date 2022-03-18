@@ -30,6 +30,18 @@ class Track(BaseModel):
     def __str__(self) -> str:
         return str(self.dict())
 
+    def get_id(self, item: str):
+        """Retrieves the identifier for the given item"""
+        match item:
+            case "artist":
+                return self.artist_id
+            case "track":
+                return self.track_id
+            case "album":
+                return self.album_id
+            case _:
+                raise ValueError(f"Item {item} does not have a valid identifier")
+
     @classmethod
     def from_dict(cls, obj: Dict):
         """
