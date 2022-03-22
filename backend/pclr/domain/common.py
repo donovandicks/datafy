@@ -1,6 +1,7 @@
 from clients.postgres import PostgresClient
 from models.db import FilterExpression
 from models.track import Track
+from telemetry.logging import logger
 
 OBJECTS = ["artist", "track", "album", "play_count"]
 
@@ -11,6 +12,7 @@ def check_exists(
     item: str,
 ) -> bool:
     """Generic function to check item existence in the db"""
+    logger.info(f"Checking for an existing {item}")
     if item not in OBJECTS:
         raise ValueError(f"Object {item} is not valid. Must be one of {OBJECTS}")
 

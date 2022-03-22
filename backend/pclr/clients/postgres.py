@@ -1,16 +1,10 @@
 """Code for connection to Postgresql"""
 
 import os
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
-from clients.secret_manager import SecretManager
-from models.db import FilterExpression, UpdateClause
-
-import prefect
 import psycopg2
-
-
-logger = prefect.logging.get_logger(__name__)
+from models.db import FilterExpression, UpdateClause
 
 
 class PostgresClient:
@@ -38,38 +32,16 @@ class PostgresClient:
         ],
     }
 
-    def __init__(self, sm_client: SecretManager) -> None:
-        self.__sm_client = sm_client
+    def __init__(self) -> None:
         self.__conn = self.__init_conn()
         self.cursor = self.__conn.cursor()
 
-    def __get_credentials(self) -> Dict:
-        """Retrieves DB credentials"""
-        rds_secrets_id = os.environ.get("RDS_SECRETS_ID", "")
-        secrets = {}
-
-        response = self.__sm_client.get_secrets(sec_id=rds_secrets_id)
-        if not response.value:
-            raise Exception(f"Failed to retrieve RDS secrets: {response.error}")
-
-        for sec_name in ["RDS_ENDPOINT", "RDS_USER", "RDS_PASSWORD"]:
-            secret_key = os.environ.get(sec_name, "")
-            if not secret_key:
-                raise KeyError(
-                    f"Unable to find secret identifier with name {sec_name} in environment"
-                )
-
-            secrets[sec_name] = response.value.get(secret_key, "")
-
-        return secrets
-
     def __init_conn(self):
         """Initializes the DB connection"""
-        secrets = self.__get_credentials()
         return psycopg2.connect(
-            user=secrets.get("RDS_USER"),
-            password=secrets.get("RDS_PASSWORD"),
-            host=secrets.get("RDS_ENDPOINT"),
+            user=os.environ.get("POSTGRES_USER", ""),
+            password=os.environ.get("POSTGRES_PASSWORD", ""),
+            host="localhost",
             port=5432,
             database="datafy",
             connect_timeout=3,

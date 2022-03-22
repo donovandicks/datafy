@@ -3,21 +3,18 @@ from clients.postgres import PostgresClient
 from domain.common import check_exists
 from models.db import FilterExpression, UpdateClause
 from models.track import Track
-
-import prefect
-from prefect import task
-
-logger = prefect.logging.get_logger(__name__)
+from telemetry.logging import logger
 
 
-@task
 def insert_album(client: PostgresClient, track: Track) -> bool:
     """Inserts an album"""
+    logger.info("Inserting new album", album_id=track.album_id)
     album_exists = check_exists(client=client, track=track, item="album")
     if album_exists:
+        logger.info(
+            "Skipping album insertion - already exists", album_id=track.album_id
+        )
         return True
-
-    logger.info(f"Inserting album {track.album_id}")
 
     values = (
         track.album_id,
@@ -26,21 +23,23 @@ def insert_album(client: PostgresClient, track: Track) -> bool:
 
     try:
         client.insert(table="album", values=values)
+        logger.info("Inserted album", album_id=track.album_id)
     except Exception as ex:
-        logger.error(f"Failed to insert album {track.album_id}")
+        logger.error("Failed to insert album", exception=ex)
         return False
 
     return True
 
 
-@task
 def insert_artist(client: PostgresClient, track: Track) -> bool:
     """Inserts an artist"""
+    logger.info("Inserting new artist", artist_id=track.artist_id)
     artist_exists = check_exists(client=client, track=track, item="artist")
     if artist_exists:
+        logger.info(
+            "Skipping artist insertion - already exists", artist_id=track.artist_id
+        )
         return True
-
-    logger.info(f"Inserting artist {track.artist_id}")
 
     values = (
         track.artist_id,
@@ -49,21 +48,23 @@ def insert_artist(client: PostgresClient, track: Track) -> bool:
 
     try:
         client.insert(table="artist", values=values)
+        logger.info("Inserted artist", artist_id=track.artist_id)
     except Exception as ex:
-        logger.error(f"Failed to insert artist {track.artist_id}: {ex}")
+        logger.error("Failed to insert artist", artist_id=track.artist_id)
         return False
 
     return True
 
 
-@task
 def insert_track(client: PostgresClient, track: Track) -> bool:
     """Inserts a track"""
+    logger.info("Inserting new track", track_id=track.track_id)
     track_exists = check_exists(client=client, track=track, item="track")
     if track_exists:
+        logger.info(
+            "Skipping track insertion - already exists", track_id=track.track_id
+        )
         return True
-
-    logger.info(f"Inserting track {track.track_id}")
 
     values = (
         track.track_id,
@@ -74,17 +75,17 @@ def insert_track(client: PostgresClient, track: Track) -> bool:
 
     try:
         client.insert(table="track", values=values)
+        logger.info("Inserted track", track_id=track.track_id)
     except Exception as ex:
-        logger.error(f"Failed insert track {track.track_id}: {ex}")
+        logger.info("Failed to insert track", track_id=track.track_id)
         return False
 
     return True
 
 
-@task
 def count_new_track(client: PostgresClient, track: Track) -> bool:
     """Inserts a play count record"""
-    logger.info(f"Counting play for track {track.track_id}")
+    logger.info("Counting play for new track", track_id=track.track_id)
 
     values = (
         track.track_id,
@@ -93,13 +94,13 @@ def count_new_track(client: PostgresClient, track: Track) -> bool:
     )
 
     client.insert(table="play_count", values=values)
+    logger.info("Play counted", track_id=track.track_id)
     return True
 
 
-@task
 def update_track_count(client: PostgresClient, track: Track) -> bool:
     """Updates the play count for an existing track"""
-    logger.info(f"Updating play count for {track.track_id}")
+    logger.info("Updating play count for existing track", track_id=track.track_id)
 
     update = UpdateClause(
         update_field="total_play_count",
@@ -113,23 +114,19 @@ def update_track_count(client: PostgresClient, track: Track) -> bool:
 
     try:
         client.update(table="play_count", clause=update)
+        logger.info("Updated play count", track_id=track.track_id)
     except Exception as ex:
-        logger.error(f"Failed to update play count for {track.track_id}: {ex}")
+        logger.error("Failed to update count for track", track_id=track.track_id)
         return False
 
     return True
 
 
-@task
 def check_counted(client: PostgresClient, track: Track) -> bool:
     """Checks for an existing track"""
-    logger.info(f"Checking if track {track.track_id} is being counted")
     return check_exists(client=client, track=track, item="play_count")
 
 
-@task
 def view_database(client: PostgresClient):
     """Shows existing data in the db"""
-    logger.info("Retrieving all data from the database")
     records = client.get_all_rows(table="play_count")
-    logger.info(f"Retrieved records: {records}")

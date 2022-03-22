@@ -2,63 +2,71 @@
 from time import sleep
 from typing import Tuple
 
-from clients.secret_manager import SecretManager
-from clients.spotify import init_spotify_client
+from spotipy import Spotify
+
 from clients.postgres import PostgresClient
-from tasks.spotify import get_current_track
+from clients.spotify import init_spotify_client
 from tasks.db import (
     check_counted,
+    count_new_track,
     insert_album,
     insert_artist,
     insert_track,
-    count_new_track,
     update_track_count,
 )
-
-from prefect import flow
-from spotipy import Spotify
+from tasks.spotify import get_current_track
+from telemetry.logging import logger, bind_pipeline
 
 
 def init_clients() -> Tuple[Spotify, PostgresClient]:
     """Initializes various application clients"""
-    sm_client = SecretManager()
-    spotify_client = init_spotify_client(sm_client=sm_client)
-    database_client = PostgresClient(sm_client=sm_client)
-    return spotify_client, database_client
+    logger.info("Initializing External Clients")
+    return init_spotify_client(), PostgresClient()
 
 
-sp_client, db_client = init_clients()
-
-
-@flow
 def main_flow():
     """Main flow"""
-    track = get_current_track(client=sp_client).wait().result()
+    bind_pipeline()
+    logger.bind()
+    logger.info("BEGINNING PIPELINE EXECUTION")
+    sp_client, db_client = init_clients()
+
+    track = get_current_track(client=sp_client)
 
     if not track:
+        logger.info("ENDING PIPELINE EXECUTION")
         return
 
-    exists = check_counted(client=db_client, track=track).wait().result()
+    exists = check_counted(client=db_client, track=track)
 
     if exists:
         update_track_count(client=db_client, track=track)
+        logger.info("ENDING PIPELINE EXECUTION")
         return
 
-    inserted_album = insert_album(client=db_client, track=track).wait().result()
-    inserted_artist = insert_artist(client=db_client, track=track).wait().result()
+    inserted_album = insert_album(client=db_client, track=track)
+    inserted_artist = insert_artist(client=db_client, track=track)
 
     if not inserted_album or not inserted_artist:
+        logger.error("ENDING PIPELINE EXECUTION WITH FAILURE")
         return
 
-    inserted_track = insert_track(client=db_client, track=track).wait().result()
+    inserted_track = insert_track(client=db_client, track=track)
 
     if not inserted_track:
+        logger.error("ENDING PIPELINE EXECUTION WITH FAILURE")
         return
 
     count_new_track(client=db_client, track=track)
+    logger.info("ENDING PIPELINE EXECUTION")
 
 
-if __name__ == "__main__":
+def main():
+    """Runs the flow"""
     while True:
         main_flow()
         sleep(30)
+
+
+if __name__ == "__main__":
+    main()
