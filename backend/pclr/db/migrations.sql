@@ -4,7 +4,7 @@ CREATE TABLE album (
 );
 CREATE TABLE artist (
     artist_id VARCHAR(80) PRIMARY KEY,
-    artist_name varhcar(240)
+    artist_name VARCHAR(240)
 );
 CREATE TABLE track (
     track_id VARCHAR(80) PRIMARY KEY,
@@ -18,5 +18,18 @@ CREATE TABLE play_count (
     track_id VARCHAR(80) PRIMARY KEY,
     last_played_timestamp BIGINT,
     total_play_count INTEGER,
+    CONSTRAINT fk_track FOREIGN KEY(track_id) REFERENCES track(track_id)
+);
+CREATE TABLE track_detail(
+    track_id VARCHAR(80) PRIMARY KEY,
+    acousticness DECIMAL(5),
+    danceability DECIMAL(3),
+    duration_ms INT,
+    energy DECIMAL(3),
+    instrumentalness DECIMAL(5),
+    loudness DECIMAL(3),
+    speechiness DECIMAL(4),
+    tempo DECIMAL(3),
+    valence DECIMAL(3),
     CONSTRAINT fk_track FOREIGN KEY(track_id) REFERENCES track(track_id)
 );
