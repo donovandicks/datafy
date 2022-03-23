@@ -1,47 +1,29 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	"os"
-
-	"github.com/jackc/pgx/v4"
+	"github.com/donovandicks/datafy/backend/song-analyzer/database"
+	"github.com/donovandicks/datafy/backend/song-analyzer/spotify"
+	"github.com/donovandicks/datafy/backend/song-analyzer/telemetry"
+	"go.uber.org/zap"
 )
 
-type Track struct {
-	track_id string
-}
+var logger = telemetry.InitLogger()
 
 func main() {
-	url := "postgres://localhost:5432/datafy"
-	conn, err := pgx.Connect(context.Background(), url)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
+	db := database.Database{}
+	db.Connect()
+	defer db.Conn.Close()
+
+	rows := db.GetRowsMissingDetail()
+
+	var trackIds []string
+	database.UnmarshalRows(rows, &trackIds)
+	logger.Info("Retrieved track IDs", zap.Strings("trackIds", trackIds))
+
+	token := spotify.Authorize()
+
+	for _, id := range trackIds {
+		info := spotify.GetTrackInfo(token, id)
+		db.InsertTrackDetail(&info)
 	}
-
-	defer conn.Close(context.Background())
-
-	rows, err := conn.Query(context.Background(), `
-	SELECT track.track_id
-	FROM track
-	LEFT JOIN track_detail
-	ON track.track_id = track_detail.track_id
-	`)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Query failed: %v\n", err)
-		os.Exit(1)
-	}
-
-	var rowSlice []Track
-	for rows.Next() {
-		var track Track
-		err := rows.Scan(&track.track_id)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to scan row: %v\n", err)
-		}
-		rowSlice = append(rowSlice, track)
-	}
-
-	fmt.Println(rowSlice)
 }
