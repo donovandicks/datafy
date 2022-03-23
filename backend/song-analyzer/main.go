@@ -16,13 +16,13 @@ func main() {
 
 	rows := db.GetRowsMissingDetail()
 
-	var trackIds []string
-	database.UnmarshalRows(rows, &trackIds)
-
-	if len(trackIds) == 0 {
+	if !rows.Next() {
 		logger.Info("No track IDs retrieved, database up-to-date.")
 		return
 	}
+
+	var trackIds []string
+	database.UnmarshalRows(rows, &trackIds)
 
 	logger.Info("Retrieved track IDs", zap.Strings("trackIds", trackIds))
 
