@@ -1,8 +1,0 @@
-_default:
-    @just --list
-
-deploy:
-    serverless deploy
-
-run:
-    serverless invoke local --function play-counter

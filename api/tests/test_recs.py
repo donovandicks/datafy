@@ -19,14 +19,20 @@ class RecsTest(TestCase):
                 item_type="Recommendation",
                 items=[
                     Rec(
-                        content="Recommendation", song="Erase Your Social", artists=["Lil Uzi Vert"]
+                        content="Recommendation",
+                        song="Erase Your Social",
+                        artists=["Lil Uzi Vert"],
                     ),
                     Rec(
                         content="Recommendation",
                         song="Flex",
                         artists=["Playboi Carti", "Leven Kali"],
                     ),
-                    Rec(content="Recommendation", song="Self Care", artists=["Mac Miller"]),
+                    Rec(
+                        content="Recommendation",
+                        song="Self Care",
+                        artists=["Mac Miller"],
+                    ),
                 ],
                 item_headers=["Song", "Artist"],
                 count=3,

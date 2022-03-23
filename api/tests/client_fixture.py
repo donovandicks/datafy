@@ -118,6 +118,9 @@ class FakeClient(SpotifyClient):
     def get_recommendations_from_spotify(self) -> List[Dict]:
         return [
             {"name": "Erase Your Social", "artists": [{"name": "Lil Uzi Vert"}]},
-            {"name": "Flex", "artists": [{"name": "Playboi Carti"}, {"name": "Leven Kali"}]},
+            {
+                "name": "Flex",
+                "artists": [{"name": "Playboi Carti"}, {"name": "Leven Kali"}],
+            },
             {"name": "Self Care", "artists": [{"name": "Mac Miller"}]},
         ]

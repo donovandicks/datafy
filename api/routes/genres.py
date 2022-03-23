@@ -42,7 +42,9 @@ GENRE_BINS = [
 ]
 
 
-def filter_dict(obj: Dict[str, T], opr: Callable[[str, Any], bool], query: Any) -> List[T]:
+def filter_dict(
+    obj: Dict[str, T], opr: Callable[[str, Any], bool], query: Any
+) -> List[T]:
     """
     Uses an operator to compare dictionary keys against a query value to filter
     the dictionary and retrieve the values for the matching keys
@@ -129,7 +131,9 @@ def get_genres(client: SpotifyClient) -> Collection[Genre]:
 
     genre_list = [
         Genre.from_tuple(genre_tuple=(name, count))
-        for name, count in sorted(genre_object.items(), key=lambda genre: genre[1], reverse=True)
+        for name, count in sorted(
+            genre_object.items(), key=lambda genre: genre[1], reverse=True
+        )
     ]
 
     items = (

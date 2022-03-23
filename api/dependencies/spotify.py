@@ -117,7 +117,9 @@ class Client(SpotifyClient):
             raise HTTPException(404, "Top artists not found")
 
         for artist in top_artists["items"]:
-            self.artists_collection.update_one({"id": artist["id"]}, {"$set": artist}, upsert=True)
+            self.artists_collection.update_one(
+                {"id": artist["id"]}, {"$set": artist}, upsert=True
+            )
 
         return top_artists["items"]
 
