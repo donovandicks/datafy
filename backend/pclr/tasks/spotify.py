@@ -20,7 +20,11 @@ def get_current_track(client: Spotify) -> Union[Track, None]:
         return None
 
     track = Track.from_dict(response)
-    logger.info("Currently playing", track_id=track.track_id)
+    logger.info(
+        "Currently playing",
+        track_id=track.track_id,
+        progress_pct=f"{track.progress_pct:.1f}%",
+    )
 
     if LAST_PLAYED["id"] == track.track_id:
         logger.info(
