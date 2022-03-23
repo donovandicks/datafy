@@ -338,3 +338,6 @@ pip-selfcheck.json
 
 # JS package locks
 **/*package-lock.json
+
+# data samples
+**/samples/*
