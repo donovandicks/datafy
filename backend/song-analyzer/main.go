@@ -18,6 +18,12 @@ func main() {
 
 	var trackIds []string
 	database.UnmarshalRows(rows, &trackIds)
+
+	if len(trackIds) == 0 {
+		logger.Info("No track IDs retrieved, database up-to-date.")
+		return
+	}
+
 	logger.Info("Retrieved track IDs", zap.Strings("trackIds", trackIds))
 
 	token := spotify.Authorize()
