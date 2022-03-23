@@ -27,7 +27,7 @@ func CreateRequest(method string, endpoint string, token string) *http.Request {
 func MakeRequest(client *http.Client, request *http.Request) *http.Response {
 	res, err := client.Do(request)
 	if err != nil {
-		logger.Error("Failed to Execute Request", zap.String("error", err.Error()))
+		logger.Error("Failed to Execute Request", zap.Error(err))
 		panic(fmt.Sprint("Failed to Execute Request: ", err.Error()))
 	}
 	return res
@@ -36,7 +36,7 @@ func MakeRequest(client *http.Client, request *http.Request) *http.Response {
 func ReadResponse(response *http.Response) []byte {
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		logger.Error("Failed to Read Response Body", zap.String("error", err.Error()))
+		logger.Error("Failed to Read Response Body", zap.Error(err))
 		panic(fmt.Sprint("Failed to Read Response Body: ", err.Error()))
 	}
 
@@ -46,7 +46,7 @@ func ReadResponse(response *http.Response) []byte {
 func ParseResponse[T any](body []byte, target *T) {
 	err := json.Unmarshal([]byte(string(body)), target)
 	if err != nil {
-		logger.Error("Failed to Unmarshal Response Body", zap.String("error", err.Error()))
+		logger.Error("Failed to Unmarshal Response Body", zap.Error(err))
 		panic(fmt.Sprint("Failed to Unmarshal Response Body: ", err.Error()))
 	}
 }

@@ -25,7 +25,7 @@ func (db *Database) Connect() {
 	}
 	conn, err := pgx.Connect(config)
 	if err != nil {
-		logger.Error("Unable to connect to database", zap.Any("error", err))
+		logger.Error("Unable to connect to database", zap.Error(err))
 		os.Exit(1)
 	}
 
@@ -41,7 +41,7 @@ func (db *Database) GetRowsMissingDetail() *pgx.Rows {
 	WHERE track_detail.track_id IS NULL;
 	`)
 	if err != nil {
-		logger.Error("Failed to retrieve tracks missing detailed data", zap.Any("error", err))
+		logger.Error("Failed to retrieve tracks missing detailed data", zap.Error(err))
 		os.Exit(1)
 	}
 
@@ -54,7 +54,7 @@ func UnmarshalRows[T any](rows *pgx.Rows, target *[]T) {
 		var item T
 		err := rows.Scan(&item)
 		if err != nil {
-			logger.Error("Failed to scan row", zap.Any("error", err))
+			logger.Error("Failed to scan row", zap.Error(err))
 		}
 		*target = append(*target, item)
 	}
