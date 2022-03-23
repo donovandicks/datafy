@@ -1,5 +1,6 @@
 """Internal Track Model"""
 
+import math
 from typing import Dict
 
 from pydantic import BaseModel, ValidationError  # pylint: disable=no-name-in-module
@@ -27,6 +28,10 @@ class Track(BaseModel):
 
     album_name: str
 
+    duration: int
+
+    progress: int
+
     def __str__(self) -> str:
         return str(self.dict())
 
@@ -41,6 +46,21 @@ class Track(BaseModel):
                 return self.album_id
             case _:
                 raise ValueError(f"Item {item} does not have a valid identifier")
+
+    @property
+    def progress_pct(self) -> float:
+        """Retrieve the current song progress as a percentage"""
+        return (self.progress / self.duration) * 100
+
+    @property
+    def remaining(self) -> int:
+        """Retrieves the number of milliseconds remaining in the track"""
+        return self.duration - self.progress
+
+    @property
+    def remaining_seconds(self) -> int:
+        """Retrieves the number of seconds remaining in the track"""
+        return math.ceil(self.remaining / 1000)
 
     @classmethod
     def from_dict(cls, obj: Dict):
@@ -62,4 +82,6 @@ class Track(BaseModel):
             artist_name=artists[0].get("name", ""),
             album_id=album.get("id", ""),
             album_name=album.get("name", ""),
+            duration=item.get("duration_ms", 0),
+            progress=obj.get("progress_ms", 0),
         )
