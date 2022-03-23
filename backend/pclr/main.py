@@ -1,4 +1,5 @@
 """Main flow"""
+from datetime import datetime, timedelta
 from time import sleep
 from typing import Tuple
 
@@ -24,7 +25,7 @@ def init_clients() -> Tuple[Spotify, PostgresClient]:
     return init_spotify_client(), PostgresClient()
 
 
-def main_flow():
+def main_flow() -> int:
     """Main flow"""
     bind_pipeline()
     logger.bind()
@@ -34,38 +35,42 @@ def main_flow():
     track = get_current_track(client=sp_client)
 
     if not track:
-        logger.info("ENDING PIPELINE EXECUTION")
-        return
+        return 30
 
     exists = check_counted(client=db_client, track=track)
 
     if exists:
         update_track_count(client=db_client, track=track)
-        logger.info("ENDING PIPELINE EXECUTION")
-        return
+        return track.remaining_seconds
 
     inserted_album = insert_album(client=db_client, track=track)
     inserted_artist = insert_artist(client=db_client, track=track)
 
     if not inserted_album or not inserted_artist:
         logger.error("ENDING PIPELINE EXECUTION WITH FAILURE")
-        return
+        raise Exception(
+            f"Failed to insert an album ({inserted_album}) or artist ({inserted_artist})"
+        )
 
     inserted_track = insert_track(client=db_client, track=track)
 
     if not inserted_track:
         logger.error("ENDING PIPELINE EXECUTION WITH FAILURE")
-        return
+        raise Exception("Failed to insert track")
 
     count_new_track(client=db_client, track=track)
-    logger.info("ENDING PIPELINE EXECUTION")
+    return track.remaining_seconds
 
 
 def main():
     """Runs the flow"""
     while True:
-        main_flow()
-        sleep(30)
+        sleep_time = main_flow()
+        logger.info(
+            "Next scheduled exeuction time",
+            time=str(datetime.now() + timedelta(seconds=sleep_time)),
+        )
+        sleep(sleep_time + 1)
 
 
 if __name__ == "__main__":
