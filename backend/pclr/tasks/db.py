@@ -23,7 +23,6 @@ def insert_album(client: PostgresClient, track: Track) -> bool:
 
     try:
         client.insert(table="album", values=values)
-        logger.info("Inserted album", album_id=track.album_id)
     except Exception as ex:
         logger.error("Failed to insert album", exception=ex)
         return False
@@ -48,7 +47,6 @@ def insert_artist(client: PostgresClient, track: Track) -> bool:
 
     try:
         client.insert(table="artist", values=values)
-        logger.info("Inserted artist", artist_id=track.artist_id)
     except Exception as ex:
         logger.error("Failed to insert artist", artist_id=track.artist_id)
         return False
@@ -75,9 +73,8 @@ def insert_track(client: PostgresClient, track: Track) -> bool:
 
     try:
         client.insert(table="track", values=values)
-        logger.info("Inserted track", track_id=track.track_id)
     except Exception as ex:
-        logger.info("Failed to insert track", track_id=track.track_id)
+        logger.error("Failed to insert track", track_id=track.track_id)
         return False
 
     return True
@@ -94,7 +91,6 @@ def count_new_track(client: PostgresClient, track: Track) -> bool:
     )
 
     client.insert(table="play_count", values=values)
-    logger.info("Play counted", track_id=track.track_id)
     return True
 
 
@@ -114,7 +110,6 @@ def update_track_count(client: PostgresClient, track: Track) -> bool:
 
     try:
         client.update(table="play_count", clause=update)
-        logger.info("Updated play count", track_id=track.track_id)
     except Exception as ex:
         logger.error("Failed to update count for track", track_id=track.track_id)
         return False
