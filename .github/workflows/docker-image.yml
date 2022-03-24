@@ -1,4 +1,4 @@
-name: Build Backend API Image
+name: Build Docker Images
 
 on:
   push:
@@ -17,3 +17,14 @@ jobs:
         run: |
           docker build -t datafy-api:$(date +%s) .
         working-directory: api/
+
+  build-pclr:
+    name: Build PCLR Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the Docker image
+        run: |
+          docker build -t pclr:$(date +%s) .
+        working-directory: pclr/
