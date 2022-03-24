@@ -8,12 +8,12 @@ on:
 
 jobs:
   build-api:
-    name: Build Backend API Service
+    name: Build API Server Image
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
       - name: Build the Docker image
         run: |
-          docker build . --file Dockerfile --tag datafy-api:$(date +%s) --target runtime
+          docker build -t datafy-api:$(date +%s) .
         working-directory: api/
