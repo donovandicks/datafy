@@ -7,31 +7,23 @@ A web application to view Spotify data
 
 - [Datafy](#datafy)
   - [CLI](#cli)
-  - [Backend](#backend)
-    - [API](#api)
-    - [Play Counter](#play-counter)
+  - [API](#api)
+  - [PCLR](#pclr)
   - [Contributing](#contributing)
   - [Resources](#resources)
 
 ## CLI
 
-Data can be accessed and visualized via the terminal as well by using the [CLI](./cli/README.md).
+The [CLI](./cli/README.md) can be used to access and visualize data.
 
-## Backend
+## API
 
-### API
+The core [API](./api/README.md) supports interacting with some Spotify endpoints.
 
-The core [API](./backend/api/README.md) is responsible for interacting with Spotify.
+## PCLR
 
-### Play Counter
-
-The [Play Counter](./backend/play_counter/README.md) is a scheduled function that counts plays
-per track for the user.
-
-### Newsletter
-
-The [Newsletter](./backend/newsletter/README.md) is a scheduled function that sends a report
-to the user about their play counts over the past week.
+[PCLR](./pclr/README.md) is a long running service that keeps track of the user's
+listening activity.
 
 ## Contributing
 
