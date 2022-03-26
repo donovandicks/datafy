@@ -32,6 +32,8 @@ class Track(BaseModel):
 
     progress: int
 
+    popularity: int
+
     def __str__(self) -> str:
         return str(self.dict())
 
@@ -84,4 +86,5 @@ class Track(BaseModel):
             album_name=album.get("name", ""),
             duration=item.get("duration_ms", 0),
             progress=obj.get("progress_ms", 0),
+            popularity=item.get("popularity", 0),
         )

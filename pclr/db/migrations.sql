@@ -11,6 +11,7 @@ CREATE TABLE track (
     track_name VARCHAR(240),
     artist_id VARCHAR(80),
     album_id VARCHAR(80),
+    popularity INTEGER,
     CONSTRAINT fk_artist FOREIGN KEY(artist_id) REFERENCES artist(artist_id),
     CONSTRAINT fk_album FOREIGN KEY(album_id) REFERENCES album(album_id)
 );

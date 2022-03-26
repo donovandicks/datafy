@@ -15,6 +15,7 @@ class PostgresClient:
             "track_id",
             "last_played_timestamp",
             "total_play_count",
+            "popularity",
         ],
         "track": [
             "track_id",

@@ -69,6 +69,7 @@ def insert_track(client: PostgresClient, track: Track) -> bool:
         track.track_name,
         track.artist_id,
         track.album_id,
+        track.popularity,
     )
 
     try:
