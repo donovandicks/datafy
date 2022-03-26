@@ -4,11 +4,11 @@ The core Datafy API
 
 ## Running Locally
 
-The API can be run containerized via `docker-compose` or just `docker` using the
-[Dockerfile](./Dockerfile) and targeting the `dev` stage.
+The API can be run containerized via `docker-compose`.
 
 You can also run the service directly by running the appropriate `python` command
-for your environment on the [main](./main.py) file.
+for your environment on the [main](./main.py) file, however, this requires you
+have a MongoDB instance up and running as well.
 
 The development server is exposed on port 8000 and is run with reload on, meaning
 changes are automatically picked up during development.
@@ -26,10 +26,12 @@ and creating an app.
 For a well-formatted response and an ergonomic user interface, you can use the
 [CLI](../cli/README.md) to interact with the API.
 
-Any other tool that can send HTTP requests will do. For example, with curl:
+Any other tool that can send HTTP requests will also do. For example, with curl:
 
-```shell
-curl http://0.0.0.0:8000/artists?limit=5&time_range=medium_term
+```console
+foo@bar:~$ curl http://0.0.0.0:8000/artists?limit=5&time_range=medium_term
+
+{"item_type":"Artist","items":[{"content":"Artist","id":"5K4W6rqBFWDnAN6FQUkS6x","name":"Kanye West","popularity":96,"followers":16811978,"genres":["chicago rap","rap"]},{"content":"Artist","id":"6yJ6QQ3Y5l0s0tn7b0arrO","name":"JPEGMAFIA","popularity":69,"followers":469973,"genres":["alternative hip hop","escape room","experimental hip hop","hip hop","industrial hip hop","rap","underground hip hop"]},{"content":"Artist","id":"3A5tHz1SfngyOZM2gItYKu","name":"Earl Sweatshirt","popularity":74,"followers":1732337,"genres":["alternative hip hop","experimental hip hop","hip hop","rap","underground hip hop"]},{"content":"Artist","id":"68kEuyFKyqrdQQLLsmiatm","name":"Vince Staples","popularity":73,"followers":1538467,"genres":["conscious hip hop","escape room","hip hop","rap","underground hip hop"]},{"content":"Artist","id":"1ybINI1qPiFbwDXamRtwxD","name":"Smino","popularity":73,"followers":624800,"genres":["alternative r&b","hip hop","rap","underground hip hop"]}],"item_headers":["Rank","Artist","Popularity","Followers","Genres","ID"],"count":5}
 ```
 
 ## Routes
