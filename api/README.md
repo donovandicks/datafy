@@ -14,17 +14,23 @@ The development server is exposed on port 8000 and is run with reload on, meanin
 changes are automatically picked up during development.
 
 __Note:__ To authenticate correctly, either a `.env` file must be present in the
-`datafy/backend/api` directory or the environment variables `CLIENT_ID` and
+`datafy/api` directory or the environment variables `CLIENT_ID` and
 `CLIENT_SECRET` must be defined with the appropriate secrets.
+
+Currently, the user is required to provide their own tokens for authentication.
+You can retrieve tokens by going to the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/login)
+and creating an app.
 
 ## Retrieving Data
 
 For a well-formatted response and an ergonomic user interface, you can use the
-[CLI](../../cli/README.md) to interact with the API.
+[CLI](../cli/README.md) to interact with the API.
 
 Any other tool that can send HTTP requests will do. For example, with curl:
 
-`curl http://0.0.0.0:8000/artists?limit=5&time_range=medium_term`
+```shell
+curl http://0.0.0.0:8000/artists?limit=5&time_range=medium_term
+```
 
 ## Routes
 

@@ -3,27 +3,36 @@
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](CODE_OF_CONDUCT.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A web application to view Spotify data
+A collection of systems for gathering and analyzing data from Spotify.
 
 - [Datafy](#datafy)
   - [CLI](#cli)
   - [API](#api)
   - [PCLR](#pclr)
+  - [Song Analyzer](#song-analyzer)
   - [Contributing](#contributing)
   - [Resources](#resources)
 
 ## CLI
 
-The [CLI](./cli/README.md) can be used to access and visualize data.
+The CLI can be used to access and visualize data from the terminal. View the
+[README](./cli/README.md) for more information.
 
 ## API
 
-The core [API](./api/README.md) supports interacting with some Spotify endpoints.
+The core API supports interacting with some Spotify endpoints to get data directly
+from the platform. See the [README](./api/README.md) for more information.
 
 ## PCLR
 
-[PCLR](./pclr/README.md) is a long running service that keeps track of the user's
-listening activity.
+PCLR is a long running service that keeps track of the user's listening activity.
+See the [README](./pclr/README.md) for more information.
+
+## Song Analyzer
+
+The Song Analyzer service retrieves and stores detailed information about tracks
+that the user has listened to. See the [README](./song-analyzer/README.md) for
+more information.
 
 ## Contributing
 
