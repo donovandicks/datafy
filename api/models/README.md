@@ -59,7 +59,7 @@ The model for an individual song is defined as:
 | id           | `str`       | The Spotify ID of the artist                |
 | name         | `str`       | The plain name of the artist                |
 | artists      | `List[str]` | A list of artist names who perform the song |
-| popularity   | `int`       | The popularity of the artist; from 0 to 100 |
+| popularity   | `int`       | The popularity of the song; from 0 to 100   |
 | album        | `str`       | The name of the album the song is from      |
 | release_date | `str`       | The date when the album was first released  |
 
