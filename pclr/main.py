@@ -1,5 +1,4 @@
 """Main flow"""
-from datetime import datetime, timedelta
 from time import sleep
 from typing import Tuple
 
