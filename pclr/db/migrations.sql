@@ -15,13 +15,13 @@ CREATE TABLE track (
     CONSTRAINT fk_artist FOREIGN KEY(artist_id) REFERENCES artist(artist_id),
     CONSTRAINT fk_album FOREIGN KEY(album_id) REFERENCES album(album_id)
 );
-CREATE TABLE play_count (
+CREATE TABLE playcount (
     track_id VARCHAR(80) PRIMARY KEY,
     last_played_timestamp BIGINT,
     total_play_count INTEGER,
     CONSTRAINT fk_track FOREIGN KEY(track_id) REFERENCES track(track_id)
 );
-CREATE TABLE track_detail(
+CREATE TABLE trackdetail(
     track_id VARCHAR(80) PRIMARY KEY,
     acousticness DECIMAL(5),
     danceability DECIMAL(3),
