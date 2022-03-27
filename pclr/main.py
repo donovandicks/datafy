@@ -1,11 +1,14 @@
 """Main flow"""
 from time import sleep
-from typing import Tuple
+from typing import List, Tuple, Union
 
 from spotipy import Spotify
 
 from clients.postgres import PostgresClient
 from clients.spotify import init_spotify_client
+from models.ops import Status, PipelineStatus
+from models.db import PlayCount
+from models.track import CurrentlyPlaying
 from tasks.db import (
     check_counted,
     count_new_track,
@@ -24,46 +27,114 @@ def init_clients() -> Tuple[Spotify, PostgresClient]:
     return init_spotify_client(), PostgresClient()
 
 
-def main_flow():
+def update_flow(
+    client: PostgresClient,
+    track: CurrentlyPlaying,
+    pls: PipelineStatus,
+    row: List[PlayCount],
+) -> PipelineStatus:
+    updated = update_track_count(client=client, track=track, row=row[0])
+    pls.operations.append(updated)
+
+    if updated.error:
+        return pls
+
+    pls.status = Status.COMPLETED
+    return pls
+
+
+def spotify_flow(client: Spotify, pls: PipelineStatus) -> Union[CurrentlyPlaying, None]:
+    """"""
+    track_task = get_current_track(client=client)
+    pls.operations.append(track_task)
+
+    if track_task.status in [Status.NO_CONTENT, Status.NOT_APPLICABLE]:
+        pls.status = Status.COMPLETED
+        return None
+
+    if not track_task.data:
+        return None
+
+    return track_task.data
+
+
+def insert_flow(
+    client: PostgresClient, track: CurrentlyPlaying, pls: PipelineStatus
+) -> bool:
+    inserted_album = insert_album(client=client, track=track)
+    pls.operations.append(inserted_album)
+    inserted_artist = insert_artist(client=client, track=track)
+    pls.operations.append(inserted_artist)
+
+    if not inserted_album.data or not inserted_artist.data:
+        return False
+
+    inserted_track = insert_track(client=client, track=track)
+    pls.operations.append(inserted_track)
+
+    if not inserted_track.data:
+        return False
+
+    counted = count_new_track(client=client, track=track)
+    pls.operations.append(counted)
+
+    if counted.error:
+        return False
+
+    return True
+
+
+def main_flow() -> PipelineStatus:
     """Main flow"""
     bind_pipeline()
     logger.bind()
     logger.info("BEGINNING PIPELINE EXECUTION")
+
+    pls = PipelineStatus(status=Status.FAILED, operations=[])
+
     sp_client, db_client = init_clients()
 
-    track = get_current_track(client=sp_client)
+    track = spotify_flow(client=sp_client, pls=pls)
 
     if not track:
-        return
+        return pls
 
     exists = check_counted(client=db_client, track=track)
+    pls.operations.append(exists)
 
-    if exists:
-        update_track_count(client=db_client, track=track, row=exists[0])
-        return
+    if exists.error:
+        return pls
 
-    inserted_album = insert_album(client=db_client, track=track)
-    inserted_artist = insert_artist(client=db_client, track=track)
+    if exists.data:
+        return update_flow(client=db_client, track=track, pls=pls, row=exists.data)
 
-    if not inserted_album or not inserted_artist:
-        logger.error("ENDING PIPELINE EXECUTION WITH FAILURE")
-        raise Exception(
-            f"Failed to insert an album ({inserted_album}) or artist ({inserted_artist})"
-        )
+    inserted = insert_flow(client=db_client, track=track, pls=pls)
 
-    inserted_track = insert_track(client=db_client, track=track)
+    if not inserted:
+        return pls
 
-    if not inserted_track:
-        logger.error("ENDING PIPELINE EXECUTION WITH FAILURE")
-        raise Exception("Failed to insert track")
-
-    count_new_track(client=db_client, track=track)
+    pls.status = Status.COMPLETED
+    return pls
 
 
 def main():
     """Runs the flow"""
     while True:
-        main_flow()
+        output = main_flow()
+        if output.status != Status.COMPLETED:
+            logger.error(
+                "Pipeline execution failed",
+                status=output.status.value,
+                tasks=output.operations,
+                errors=output.errors,
+            )
+        else:
+            logger.info(
+                "Pipeline execution succeeded",
+                status=output.status.value,
+                tasks=output.operations,
+            )
+
         sleep(30)
 
 
