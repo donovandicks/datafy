@@ -6,7 +6,7 @@ from typing import Dict
 from pydantic import BaseModel, ValidationError  # pylint: disable=no-name-in-module
 
 
-class Track(BaseModel):
+class CurrentlyPlaying(BaseModel):
     """
     An internal model for Spotify tracks. The model contains a reduced information
     set to save space and strip out unused information from the Spotify API.
@@ -50,9 +50,9 @@ class Track(BaseModel):
                 raise ValueError(f"Item {item} does not have a valid identifier")
 
     @property
-    def progress_pct(self) -> float:
+    def progress_pct(self) -> str:
         """Retrieve the current song progress as a percentage"""
-        return (self.progress / self.duration) * 100
+        return f"{(self.progress / self.duration):.2%}"
 
     @property
     def remaining(self) -> int:
@@ -70,13 +70,13 @@ class Track(BaseModel):
         Converts an object to a `Track` object
         """
         if "item" not in obj:
-            raise ValidationError("`item` not found in object", Track)
+            raise ValidationError("`item` not found in object", CurrentlyPlaying)
 
         item = obj.get("item", {})
         artists = item.get("artists", [])
         album = item.get("album", {})
 
-        return Track(
+        return CurrentlyPlaying(
             timestamp=obj.get("timestamp", 0),
             track_id=item.get("id", ""),
             track_name=item.get("name", ""),
