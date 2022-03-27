@@ -1,125 +1,57 @@
 """Code for connection to Postgresql"""
 
 import os
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Type
 
-import psycopg2
-from models.db import FilterExpression, UpdateClause
+# Required to initialize schema
+import models.db  # pylint: disable=unused-import
+from sqlmodel import Session, SQLModel, create_engine, select
 
 
 class PostgresClient:
     """The postgresql client"""
 
-    table_props = {
-        "play_count": [
-            "track_id",
-            "last_played_timestamp",
-            "total_play_count",
-            "popularity",
-        ],
-        "track": [
-            "track_id",
-            "track_name",
-            "artist_id",
-            "album_id",
-        ],
-        "artist": [
-            "artist_id",
-            "artist_name",
-        ],
-        "album": [
-            "album_id",
-            "album_name",
-        ],
-    }
-
     def __init__(self) -> None:
-        self.__conn = self.__init_conn()
-        self.cursor = self.__conn.cursor()
-
-    def __init_conn(self):
-        """Initializes the DB connection"""
-        return psycopg2.connect(
-            user=os.environ.get("POSTGRES_USER", ""),
-            password=os.environ.get("POSTGRES_PASSWORD", ""),
-            host="localhost",
-            port=5432,
-            database="datafy",
-            connect_timeout=3,
+        self.__debug = bool(os.getenv("DATAFY_DEBUG", ""))
+        self.__engine = create_engine(
+            url="postgresql://localhost:5432/datafy", echo=self.__debug
         )
+        SQLModel.metadata.create_all(self.__engine)
 
-    def __close_cursor(self) -> None:
-        """Closes an open cursor"""
-        if self.cursor:
-            self.cursor.close()
-
-    def __validate_table(self, table_name: str) -> None:
-        if not table_name in self.table_props:
-            raise KeyError(f"Invalid table name: {table_name}")
-
-    def __run_query(
-        self,
-        query: str,
-        params: Optional[Tuple] = None,
-        keep_alive: Optional[bool] = False,
-    ) -> None:
-        """Executes a query"""
-        if self.cursor.closed:
-            self.cursor = self.__conn.cursor()
-        self.cursor.execute(query=query, vars=params)
-
-        self.__conn.commit()
-
-        if not keep_alive and not self.cursor.closed:
-            self.__close_cursor()
-
-    def insert(self, table: str, values: Tuple) -> None:
+    def insert(self, item: SQLModel) -> None:
         """Inserts a record into the database"""
-        self.__validate_table(table)
+        with Session(self.__engine) as session:
+            session.add(item)
+            session.commit()
 
-        sql = f"""
-        INSERT INTO {table}
-        ({','.join(self.table_props[table])})
-        VALUES ({','.join(["%s" for _ in self.table_props[table]])});
-        """
-        self.__run_query(query=sql, params=values)
+    def update(
+        self,
+        table: Type[SQLModel],
+        filter_key: str,
+        filter_value: Any,
+        update_key: str,
+        update_value: Any,
+    ):
+        """Updates a record where the filter_key equals the filter_value"""
+        with Session(self.__engine) as session:
+            stmt = select(table).where(filter_key == filter_value)
+            result: SQLModel = session.exec(stmt).one()
 
-    def update(self, table: str, clause: UpdateClause):
-        """Updates a record where the filter_key equals the filter_value
+            setattr(result, update_key, update_value)
+            session.add(result)
+            session.commit()
 
-        class UpdateClause {
-            update_field: str
-            new_value: str
-            filter_field: str
-            filter_condition: str,
-            filter_value: Any
-        }
-        """
-        self.__validate_table(table)
-
-        sql = f"""
-        UPDATE {table}
-        SET {clause.update_field} = {clause.update_field} + 1
-        WHERE {clause.filter_expr.filter_field} {clause.filter_expr.filter_condition} {clause.filter_expr.filter_value!r}
-        """
-        self.__run_query(query=sql)
-
-    def get_all_rows(self, table: str) -> List[Tuple[Any]]:
+    def get_all_rows(self, table: Type[SQLModel]) -> List:
         """Retrieves all rows from a table"""
-        sql = f"SELECT * FROM {table}"
-        self.__run_query(query=sql, keep_alive=True)
-        results = self.cursor.fetchall()
-        self.__close_cursor()
-        return results
+        with Session(self.__engine) as session:
+            return session.exec(select(table)).all()
 
-    def get_row(self, table: str, filter_expr: FilterExpression) -> Tuple:
+    def get_row(self, table: Type[SQLModel], key: str, value: Any) -> List:
         """Retrieves a single row where the conditions are met"""
-        sql = f"""
-        SELECT *
-        FROM {table}
-        WHERE {filter_expr.build_filter_expression()}
-        """
-        self.__run_query(query=sql, keep_alive=True)
-        result = self.cursor.fetchone()
-        self.__close_cursor()
-        return result
+        with Session(self.__engine) as session:
+            stmt = select(table).where(key == value)
+            return session.exec(stmt).all()
+
+    def check_exists(self, table: Type[SQLModel], key: str, value: Any) -> bool:
+        """Checks if a row exists on a table where the given key matches the value"""
+        return bool(self.get_row(table=table, key=key, value=value))
