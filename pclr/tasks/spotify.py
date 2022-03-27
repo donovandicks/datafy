@@ -2,13 +2,13 @@ from typing import Union
 
 from spotipy import Spotify
 
-from models.track import Track
+from models.track import CurrentlyPlaying
 from telemetry.logging import logger
 
 LAST_PLAYED = {"id": ""}
 
 
-def get_current_track(client: Spotify) -> Union[Track, None]:
+def get_current_track(client: Spotify) -> Union[CurrentlyPlaying, None]:
     """Task to get the current track from Spotify. Raises a SKIP signal
     if no track is playing.
     """
@@ -19,11 +19,11 @@ def get_current_track(client: Spotify) -> Union[Track, None]:
         logger.info("No track currently playing")
         return None
 
-    track = Track.from_dict(response)
+    track = CurrentlyPlaying.from_dict(response)
     logger.info(
         "Currently playing",
         track_id=track.track_id,
-        progress_pct=f"{track.progress_pct:.1f}%",
+        progress_pct=track.progress_pct,
     )
 
     if LAST_PLAYED["id"] == track.track_id:
