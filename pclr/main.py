@@ -25,7 +25,7 @@ def init_clients() -> Tuple[Spotify, PostgresClient]:
     return init_spotify_client(), PostgresClient()
 
 
-def main_flow() -> int:
+def main_flow():
     """Main flow"""
     bind_pipeline()
     logger.bind()
@@ -35,13 +35,13 @@ def main_flow() -> int:
     track = get_current_track(client=sp_client)
 
     if not track:
-        return 30
+        return
 
     exists = check_counted(client=db_client, track=track)
 
     if exists:
-        update_track_count(client=db_client, track=track)
-        return track.remaining_seconds
+        update_track_count(client=db_client, track=track, row=exists[0])
+        return
 
     inserted_album = insert_album(client=db_client, track=track)
     inserted_artist = insert_artist(client=db_client, track=track)
@@ -59,18 +59,13 @@ def main_flow() -> int:
         raise Exception("Failed to insert track")
 
     count_new_track(client=db_client, track=track)
-    return track.remaining_seconds
 
 
 def main():
     """Runs the flow"""
     while True:
-        sleep_time = main_flow()
-        logger.info(
-            "Next scheduled exeuction time",
-            time=str(datetime.now() + timedelta(seconds=sleep_time)),
-        )
-        sleep(sleep_time + 1)
+        main_flow()
+        sleep(30)
 
 
 if __name__ == "__main__":
