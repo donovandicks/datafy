@@ -120,21 +120,8 @@ def main_flow() -> PipelineStatus:
 def main():
     """Runs the flow"""
     while True:
-        output = main_flow()
-        if output.status != Status.COMPLETED:
-            logger.error(
-                "Pipeline execution failed",
-                status=output.status.value,
-                tasks=output.operations,
-                errors=output.errors,
-            )
-        else:
-            logger.info(
-                "Pipeline execution succeeded",
-                status=output.status.value,
-                tasks=output.operations,
-            )
-
+        pls = main_flow()
+        pls.log_status(logger=logger)
         sleep(30)
 
 
