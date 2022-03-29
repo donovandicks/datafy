@@ -2,7 +2,7 @@
 """
 
 from enum import Enum
-from typing import Any, Generic, List, Optional, TypeVar
+from typing import Any, Dict, Generic, List, Optional, TypeVar
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
 T = TypeVar("T")  # pylint: disable=invalid-name
@@ -27,6 +27,8 @@ class Status(Enum):
     """task execution was not required for the state """
     NO_CONTENT = "no content"
     """task execution received no content """
+    NONE = "none"
+    """execution was not started, can be used from blank initialization"""
 
 
 class Task(BaseModel, Generic[T]):
@@ -65,6 +67,8 @@ class Task(BaseModel, Generic[T]):
 
     status: Status
     """represents the outcome of the task"""
+    name: str
+    """the name of the task executed"""
     error: Optional[Exception] = None
     """any error encountered during task execution"""
     data: Optional[T] = None
@@ -96,6 +100,19 @@ class Task(BaseModel, Generic[T]):
         """Checks whether the task failed or not"""
         return self.status != Status.FAILED
 
+    def with_status(self, status: Status):
+        """Updates the status of the task"""
+        self.status = status
+        return self
+
+    def with_error(self, error: Exception):
+        self.error = error
+        return self
+
+    def with_data(self, data: T):
+        self.data = data
+        return self
+
 
 class PipelineStatus(BaseModel):
     """Represents the outcome of a pipeline with the overall status of the execution
@@ -118,6 +135,10 @@ class PipelineStatus(BaseModel):
                 errs.append(opr.error)
         return errs
 
+    @property
+    def summary(self) -> List[Dict]:
+        return [{task.name: task.status.value} for task in self.operations]
+
     def log_status(self, logger: Any):
         """Logs the PipelineStatus object
 
@@ -130,12 +151,17 @@ class PipelineStatus(BaseModel):
             logger.error(
                 "Pipeline execution failed",
                 status=self.status.value,
-                tasks=self.operations,
+                tasks=self.summary,
                 errors=self.errors,
             )
         else:
             logger.info(
                 "Pipeline execution succeeded",
                 status=self.status.value,
-                tasks=self.operations,
+                tasks=self.summary,
             )
+
+    def with_status(self, status: Status):
+        """Updates the status of the pipeline"""
+        self.status = status
+        return self

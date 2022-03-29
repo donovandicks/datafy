@@ -1,6 +1,9 @@
+from typing import List, TypeGuard
+
 from sqlalchemy import BigInteger, Column
 from sqlmodel import Field, SQLModel
 from pydantic import condecimal
+
 from models.track import CurrentlyPlaying
 
 
@@ -67,3 +70,7 @@ class PlayCount(SQLModel, table=True):
     id: str = Field(primary_key=True, foreign_key="track.id")
     last_played_timestamp: int = Field(sa_column=Column(BigInteger()))
     total_play_count: int
+
+
+def is_playcount_list(val: List) -> TypeGuard[List[PlayCount]]:
+    return all(isinstance(item, PlayCount) for item in val)
