@@ -3,9 +3,11 @@
 import os
 from typing import Any, List, Type, TypeAlias
 
-# Required to initialize schema
-import models.db  # pylint: disable=unused-import
 from sqlmodel import Session, SQLModel, create_engine, select
+from sqlmodel.sql.expression import Select, SelectOfScalar
+
+SelectOfScalar.inherit_cache = True  # type: ignore
+Select.inherit_cache = True  # type: ignore
 
 Table: TypeAlias = Type[SQLModel]
 
@@ -18,7 +20,6 @@ class PostgresClient:
         self.__engine = create_engine(
             url="postgresql://localhost:5432/datafy", echo=self.__debug
         )
-        SQLModel.metadata.create_all(self.__engine)
 
     def insert(self, item: SQLModel) -> None:
         """Inserts a record into the database"""
