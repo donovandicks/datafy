@@ -8,7 +8,7 @@ from clients.postgres import PostgresClient
 from clients.spotify import init_spotify_client
 from models.ops import Status, PipelineStatus
 from models.db import is_playcount_list
-from tasks.db import check_counted, update_track_count, insert_flow
+from tasks.db import check_counted, count_new_track, update_track_count
 from tasks.spotify import spotify_flow
 from telemetry.logging import logger, bind_pipeline
 
@@ -45,9 +45,10 @@ def main_flow() -> PipelineStatus:
         pls.operations.append(updated)
         return pls.with_status(updated.status)
 
-    inserted = insert_flow(client=db_client, track=track, pls=pls)
-    if not inserted:
-        return pls.with_status(status=Status.FAILED)
+    inserted = count_new_track(client=db_client, track=track)
+    pls.operations.append(inserted)
+    if inserted.error:
+        return pls.with_status(status=inserted.status)
 
     return pls.with_status(status=Status.COMPLETED)
 

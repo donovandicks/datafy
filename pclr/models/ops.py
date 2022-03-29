@@ -45,9 +45,9 @@ class Task(BaseModel, Generic[T]):
     def divide(x: int, y: int) -> Task[int]:
         try:
             data = x / y
-            return Task(status=Status.COMPLETED, data=data)
+            return Task(status=Status.COMPLETED, name="divide_ints", data=data)
         except Exception as ex:
-            return Task(status=Status.FAILED, error=ex)
+            return Task(status=Status.FAILED, name="divide_ints", error=ex)
     ```
 
     Or with more context:
@@ -59,9 +59,9 @@ class Task(BaseModel, Generic[T]):
         }
         try:
             data['result'] = x / y
-            return Task(status=Status.COMPLETED, data=data)
+            return Task(status=Status.COMPLETED, name="divide_ints", data=data)
         except Exception as ex:
-            return Task(status=Status.FAILED, error=ex, data=data)
+            return Task(status=Status.FAILED, name="divide_ints", error=ex, data=data)
     ```
     """
 
@@ -136,7 +136,7 @@ class PipelineStatus(BaseModel):
         return errs
 
     @property
-    def summary(self) -> List[Dict]:
+    def summary(self) -> List[Dict[str, str]]:
         return [{task.name: task.status.value} for task in self.operations]
 
     def log_status(self, logger: Any):
