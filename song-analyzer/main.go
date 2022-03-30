@@ -16,10 +16,10 @@ func main() {
 
 	rows := db.GetRowsMissingDetail()
 
-	if !rows.Next() {
-		logger.Info("No track IDs retrieved, database up-to-date.")
-		return
-	}
+	// if !rows.Next() {
+	// 	logger.Info("No track IDs retrieved, database up-to-date.")
+	// 	return
+	// }
 
 	var trackIds []string
 	database.UnmarshalRows(rows, &trackIds)
@@ -29,7 +29,16 @@ func main() {
 	token := spotify.Authorize()
 
 	for _, id := range trackIds {
-		info := spotify.GetTrackInfo(token, id)
+		rawTrack := spotify.GetTrack(token, id)
+		audio := spotify.GetTrackAudioFeatures(token, id)
+
+		var track spotify.Track
+		track.FromRawTrack(rawTrack)
+
+		db.InsertArtist(rawTrack)
+		db.InsertAlbum(rawTrack)
+
+		info := spotify.TrackInfo{Track: track, AudioFeatures: *audio}
 		db.InsertTrackDetail(&info)
 	}
 }

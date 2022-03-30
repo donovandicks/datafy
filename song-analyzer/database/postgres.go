@@ -35,10 +35,13 @@ func (db *Database) Connect() {
 func (db *Database) GetRowsMissingDetail() *pgx.Rows {
 	logger.Info("Retrieving tracks without detailed data")
 	rows, err := db.Conn.Query(`
-	SELECT track.track_id
-	FROM track
-	LEFT JOIN track_detail USING (track_id)
-	WHERE track_detail.track_id IS NULL;
+	SELECT
+		pc.track_id
+	FROM
+		playcount AS pc
+		LEFT JOIN track ON pc.track_id = track.id
+	WHERE
+		track.id IS NULL;
 	`)
 	if err != nil {
 		logger.Error("Failed to retrieve tracks missing detailed data", zap.Error(err))
@@ -60,19 +63,70 @@ func UnmarshalRows[T any](rows *pgx.Rows, target *[]T) {
 	}
 }
 
+func (db *Database) InsertArtist(row *spotify.RawTrack) {
+	_, err := db.Conn.Exec(`
+	INSERT INTO
+		artist
+		(id, name)
+	VALUES
+		($1, $2)
+	`,
+		row.Artists[0].Id,
+		row.Artists[0].Name,
+	)
+
+	if err != nil {
+		logger.Error("Error during artist insertion", zap.Error(err))
+		return
+	}
+}
+
+func (db *Database) InsertAlbum(row *spotify.RawTrack) {
+	_, err := db.Conn.Exec(`
+	INSERT INTO
+		album
+		(id, name)
+	VALUES
+		($1, $2)
+	`,
+		row.Album.Id,
+		row.Album.Name,
+	)
+
+	if err != nil {
+		logger.Error("Error during album insertion", zap.Error(err))
+		return
+	}
+}
+
 func (db *Database) InsertTrackDetail(row *spotify.TrackInfo) {
-	db.Conn.Exec(
-		`INSERT INTO track_detail
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+	_, err := db.Conn.Exec(`
+		INSERT INTO
+			track
+			(id, name, album_id, artist_id, acousticness, danceability, duration_ms,
+				energy, instrumentalness, loudness, popularity, speechiness, tempo,
+				valence)
+		VALUES
+			($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+		`,
 		row.Id,
+		row.Name,
+		row.AlbumId,
+		row.ArtistId,
 		row.Acousticness,
 		row.Danceability,
 		row.Duration,
 		row.Energy,
 		row.Instrumentalness,
 		row.Loudness,
+		row.Popularity,
 		row.Speechiness,
 		row.Tempo,
 		row.Valence,
 	)
+
+	if err != nil {
+		logger.Error("Error during track insertion", zap.Error(err))
+		return
+	}
 }
