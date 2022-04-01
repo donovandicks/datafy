@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/donovandicks/datafy/backend/song-analyzer/database"
-	"github.com/donovandicks/datafy/backend/song-analyzer/spotify"
-	"github.com/donovandicks/datafy/backend/song-analyzer/telemetry"
+	"github.com/donovandicks/datafy/oracle/database"
+	"github.com/donovandicks/datafy/oracle/spotify"
+	"github.com/donovandicks/datafy/oracle/telemetry"
 	"go.uber.org/zap"
 )
 
@@ -16,13 +16,13 @@ func main() {
 
 	rows := db.GetRowsMissingDetail()
 
-	// if !rows.Next() {
-	// 	logger.Info("No track IDs retrieved, database up-to-date.")
-	// 	return
-	// }
-
 	var trackIds []string
 	database.UnmarshalRows(rows, &trackIds)
+
+	if len(trackIds) == 0 {
+		logger.Info("No tracks to analyze")
+		return
+	}
 
 	logger.Info("Retrieved track IDs", zap.Strings("trackIds", trackIds))
 
@@ -32,13 +32,10 @@ func main() {
 		rawTrack := spotify.GetTrack(token, id)
 		audio := spotify.GetTrackAudioFeatures(token, id)
 
-		var track spotify.Track
-		track.FromRawTrack(rawTrack)
-
 		db.InsertArtist(rawTrack)
 		db.InsertAlbum(rawTrack)
 
-		info := spotify.TrackInfo{Track: track, AudioFeatures: *audio}
+		info := spotify.TrackInfo{RawTrack: *rawTrack, AudioFeatures: *audio}
 		db.InsertTrackDetail(&info)
 	}
 }

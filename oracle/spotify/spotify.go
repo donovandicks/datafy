@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/donovandicks/datafy/backend/song-analyzer/net"
-	"github.com/donovandicks/datafy/backend/song-analyzer/telemetry"
+	"github.com/donovandicks/datafy/oracle/net"
+	"github.com/donovandicks/datafy/oracle/telemetry"
 	"go.uber.org/zap"
 )
 
 var logger = telemetry.InitLogger()
 
 type TrackInfo struct {
-	Track
+	RawTrack
 	AudioFeatures
 }
 
@@ -40,23 +40,6 @@ type RawTrack struct {
 		Id   string `json:"id"`
 		Name string `json:"name"`
 	} `json:"artists"`
-}
-
-type Track struct {
-	Id         string
-	Name       string
-	Popularity int64
-	ArtistId   string
-	AlbumId    string
-}
-
-func (track *Track) FromRawTrack(raw *RawTrack) *Track {
-	track.Id = raw.Id
-	track.Name = raw.Name
-	track.Popularity = raw.Popularity
-	track.AlbumId = raw.Album.Id
-	track.ArtistId = raw.Artists[0].Id
-	return track
 }
 
 func GetTrackAudioFeatures(token string, trackId string) *AudioFeatures {

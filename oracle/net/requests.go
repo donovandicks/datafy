@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/donovandicks/datafy/backend/song-analyzer/telemetry"
+	"github.com/donovandicks/datafy/oracle/telemetry"
 	"go.uber.org/zap"
 )
 

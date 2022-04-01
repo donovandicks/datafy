@@ -1,4 +1,4 @@
-module github.com/donovandicks/datafy/backend/song-analyzer
+module github.com/donovandicks/datafy/oracle
 
 go 1.18
 

@@ -3,8 +3,8 @@ package database
 import (
 	"os"
 
-	"github.com/donovandicks/datafy/backend/song-analyzer/spotify"
-	"github.com/donovandicks/datafy/backend/song-analyzer/telemetry"
+	"github.com/donovandicks/datafy/oracle/spotify"
+	"github.com/donovandicks/datafy/oracle/telemetry"
 	"github.com/jackc/pgx"
 	"go.uber.org/zap"
 )
@@ -111,8 +111,8 @@ func (db *Database) InsertTrackDetail(row *spotify.TrackInfo) {
 		`,
 		row.Id,
 		row.Name,
-		row.AlbumId,
-		row.ArtistId,
+		row.Album.Id,
+		row.Artists[0].Id,
 		row.Acousticness,
 		row.Danceability,
 		row.Duration,
